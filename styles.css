@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-bg: #f5f3ef;
+    --color-text: #2d3a2d;
+    --color-accent: #5a7247;
+    --color-accent-hover: #4a6237;
+    --color-muted: #6b7b6b;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 600px;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+}
+
+.tagline {
+    font-size: 1.125rem;
+    color: var(--color-muted);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+main {
+    margin-bottom: 4rem;
+}
+
+.description {
+    font-size: 1.25rem;
+    color: var(--color-muted);
+    margin-bottom: 3rem;
+    font-weight: 300;
+}
+
+.signup p {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+@media (min-width: 480px) {
+    .email-form {
+        flex-direction: row;
+    }
+}
+
+.email-form input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: 1px solid #d4d0c8;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: var(--font-body);
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.email-form input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.email-form button {
+    padding: 0.875rem 1.5rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.email-form button:hover {
+    background: var(--color-accent-hover);
+}
+
+footer {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
