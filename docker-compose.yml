@@ -48,3 +48,6 @@ networks:
     external: true
   votc-internal:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/24
