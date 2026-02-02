@@ -3,8 +3,6 @@ services:
     build: .
     container_name: votc
     restart: unless-stopped
-    env_file:
-      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.votc.rule=Host(`votc.jeffemmett.com`)"
