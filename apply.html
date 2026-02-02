@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply - Valley of the Commons</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-light: #4a7c23;
+            --cream: #faf8f5;
+            --sand: #f5f5f0;
+            --charcoal: #2c2c2c;
+            --error: #c53030;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--forest);
+        }
+
+        .header a { color: var(--forest); text-decoration: none; }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .intro h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.25rem;
+            color: var(--forest);
+            margin-bottom: 1rem;
+        }
+
+        .intro p { color: #666; font-size: 0.95rem; }
+
+        .event-badge {
+            display: inline-block;
+            background: var(--forest);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--forest);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Form */
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .form-section.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--forest);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-section > p.hint {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        label .required { color: var(--error); }
+        label .optional { color: #999; font-weight: 400; font-size: 0.8rem; }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--forest);
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        textarea { min-height: 120px; resize: vertical; }
+
+        .field-hint {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Theme ranking */
+        .theme-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .theme-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--sand);
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .theme-item:active { cursor: grabbing; }
+
+        .theme-item .emoji { font-size: 1.25rem; }
+        .theme-item .text { flex: 1; font-size: 0.9rem; }
+
+        .theme-item .rank {
+            width: 24px;
+            height: 24px;
+            background: var(--forest);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Week cards */
+        .week-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .week-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .week-card:hover { border-color: var(--forest-light); }
+        .week-card.selected { border-color: var(--forest); background: rgba(45, 80, 22, 0.05); }
+        .week-card input { display: none; }
+
+        .week-card h4 { font-size: 0.95rem; color: var(--forest); margin-bottom: 0.25rem; }
+        .week-card .dates { font-size: 0.8rem; color: #666; margin-bottom: 0.5rem; }
+        .week-card .desc { font-size: 0.85rem; color: #555; }
+
+        /* Ticket options */
+        .ticket-section { margin-bottom: 1.5rem; }
+        .ticket-section h4 { font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--charcoal); }
+
+        .ticket-options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .ticket-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .ticket-card:hover { border-color: var(--forest-light); }
+        .ticket-card.selected { border-color: var(--forest); background: rgba(45, 80, 22, 0.05); }
+        .ticket-card input { display: none; }
+
+        .ticket-name { font-size: 0.9rem; }
+        .ticket-price { font-weight: 600; color: var(--forest); }
+
+        .ticket-note {
+            font-size: 0.8rem;
+            color: #666;
+            background: var(--sand);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        /* Nav */
+        .form-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--forest); color: white; }
+        .btn-primary:hover { background: var(--forest-light); }
+        .btn-secondary { background: var(--sand); color: var(--charcoal); }
+        .btn-secondary:hover { background: #eee; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Success */
+        .success-message { text-align: center; padding: 2rem; }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--forest);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon svg { width: 35px; height: 35px; stroke: white; }
+
+        .success-message h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            color: var(--forest);
+            margin-bottom: 1rem;
+        }
+
+        /* Error */
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--error);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .field-error { border-color: var(--error) !important; }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .footer a { color: var(--forest); }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .form-section { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1><a href="/">Valley of the Commons</a></h1>
+            <a href="/">← Back</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <span class="event-badge">August 24 – September 20, 2026</span>
+            <h1>Application Form</h1>
+            <p>Valley of the Commons is a four-week pop-up village exploring housing, production, decision-making and ownership in community. We ask that you be thoughtful in your answers to help us understand if you are the right fit. We will not penalize you for unfamiliarity with any topic; please be honest.</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-text"><span id="progress-percent">0</span>% complete</div>
+        </div>
+
+        <form id="application-form">
+            <!-- Q1: Contact Information -->
+            <div class="form-section active" data-step="1">
+                <div class="question-number">Question 1 of 13</div>
+                <h2>Contact Information</h2>
+
+                <div class="form-group">
+                    <label for="name">Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required placeholder="Your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="social_media">Social Media Handles <span class="optional">(optional)</span></label>
+                    <input type="text" id="social_media" name="social_media" placeholder="@handle (please specify which platforms)">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_other">Anything else? <span class="optional">(optional)</span></label>
+                    <textarea id="contact_other" name="contact_other" rows="2" placeholder="Phone, website, etc."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <div></div>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q2: How did you hear -->
+            <div class="form-section" data-step="2">
+                <div class="question-number">Question 2 of 13</div>
+                <h2>How did you hear about Valley of the Commons? <span class="required">*</span></h2>
+
+                <div class="form-group">
+                    <textarea id="how_heard" name="how_heard" required placeholder="Social media, friend referral, newsletter, event..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q3: Referral names -->
+            <div class="form-section" data-step="3">
+                <div class="question-number">Question 3 of 13</div>
+                <h2>Referral name(s) <span class="optional">(optional)</span></h2>
+                <p class="hint">Who can vouch for you?</p>
+
+                <div class="form-group">
+                    <textarea id="referral_names" name="referral_names" placeholder="Names of people who know you or referred you"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q4: Affiliations -->
+            <div class="form-section" data-step="4">
+                <div class="question-number">Question 4 of 13</div>
+                <h2>What are your affiliations? <span class="required">*</span></h2>
+                <p class="hint">What projects or groups are you affiliated with?</p>
+
+                <div class="form-group">
+                    <textarea id="affiliations" name="affiliations" required placeholder="Organizations, DAOs, cooperatives, communities, projects..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q5: Why join -->
+            <div class="form-section" data-step="5">
+                <div class="question-number">Question 5 of 13</div>
+                <h2>Why would you like to join Valley of the Commons, and why are you a good fit? <span class="required">*</span></h2>
+
+                <div class="form-group">
+                    <textarea id="why_join" name="why_join" required placeholder="What draws you to this gathering? Why are you a good fit for this community?"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q6: Current work -->
+            <div class="form-section" data-step="6">
+                <div class="question-number">Question 6 of 13</div>
+                <h2>What are you currently building, researching, or working on? <span class="required">*</span></h2>
+
+                <div class="form-group">
+                    <textarea id="current_work" name="current_work" required placeholder="Tell us about your current projects, research, or focus areas..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q7: How contribute -->
+            <div class="form-section" data-step="7">
+                <div class="question-number">Question 7 of 13</div>
+                <h2>How will you contribute to Valley of the Commons? <span class="required">*</span></h2>
+                <p class="hint">Villagers co-create their experience. You can start an interest club, lead a discussion or workshop, teach a cooking class, or more.</p>
+
+                <div class="form-group">
+                    <textarea id="contribution" name="contribution" required placeholder="What skills, energy, workshops, or perspectives will you bring?"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q8: Rank themes -->
+            <div class="form-section" data-step="8">
+                <div class="question-number">Question 8 of 13</div>
+                <h2>Please rank your interest in our themes <span class="required">*</span></h2>
+                <p class="hint">Drag to reorder from most interested (top) to least interested (bottom).</p>
+
+                <div class="theme-list" id="theme-list">
+                    <div class="theme-item" data-theme="valley-future">
+                        <span class="rank">1</span>
+                        <span class="emoji">🏞️</span>
+                        <span class="text">Developing the Future of the Valley</span>
+                    </div>
+                    <div class="theme-item" data-theme="cosmo-localism">
+                        <span class="rank">2</span>
+                        <span class="emoji">🌐</span>
+                        <span class="text">Cosmo-localism</span>
+                    </div>
+                    <div class="theme-item" data-theme="funding-token">
+                        <span class="rank">3</span>
+                        <span class="emoji">🪙</span>
+                        <span class="text">Funding Models & Token Engineering</span>
+                    </div>
+                    <div class="theme-item" data-theme="fablabs">
+                        <span class="rank">4</span>
+                        <span class="emoji">👾</span>
+                        <span class="text">Fablabs & Hackerspaces</span>
+                    </div>
+                    <div class="theme-item" data-theme="future-living">
+                        <span class="rank">5</span>
+                        <span class="emoji">🌌</span>
+                        <span class="text">Future Living Design & Development</span>
+                    </div>
+                    <div class="theme-item" data-theme="network-governance">
+                        <span class="rank">6</span>
+                        <span class="emoji">🧑‍⚖️</span>
+                        <span class="text">Network Societies & Decentralized Governance</span>
+                    </div>
+                    <div class="theme-item" data-theme="commons-theory">
+                        <span class="rank">7</span>
+                        <span class="emoji">⛲️</span>
+                        <span class="text">Commons Theory & Practice</span>
+                    </div>
+                    <div class="theme-item" data-theme="privacy">
+                        <span class="rank">8</span>
+                        <span class="emoji">👤</span>
+                        <span class="text">Privacy & Digital Sovereignty</span>
+                    </div>
+                    <div class="theme-item" data-theme="dacc">
+                        <span class="rank">9</span>
+                        <span class="emoji">🌏</span>
+                        <span class="text">d/acc: defensive accelerationism</span>
+                    </div>
+                    <div class="theme-item" data-theme="rationality">
+                        <span class="rank">10</span>
+                        <span class="emoji">💭</span>
+                        <span class="text">(Meta)rationality & Cognitive Sovereignty</span>
+                    </div>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q9: Theme familiarity -->
+            <div class="form-section" data-step="9">
+                <div class="question-number">Question 9 of 13</div>
+                <h2>Please explain your familiarity and interest in our themes and event overall <span class="required">*</span></h2>
+                <p class="hint">🏞️ Valley Future · 🌐 Cosmo-localism · 🪙 Funding & Token Engineering · 👾 Fablabs · 🌌 Future Living · 🧑‍⚖️ Network Governance · ⛲️ Commons · 👤 Privacy · 🌏 d/acc · 💭 (Meta)rationality</p>
+
+                <div class="form-group">
+                    <textarea id="theme_familiarity" name="theme_familiarity" required placeholder="Share your experience, learning journey, or curiosity about any of these themes..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q10: Belief update -->
+            <div class="form-section" data-step="10">
+                <div class="question-number">Question 10 of 13</div>
+                <h2>Describe a belief you have updated within the last 1-2 years <span class="required">*</span></h2>
+                <p class="hint">What was the belief and why did it change?</p>
+
+                <div class="form-group">
+                    <textarea id="belief_update" name="belief_update" required placeholder="We value intellectual humility. Share how your thinking has evolved..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q11: Which weeks -->
+            <div class="form-section" data-step="11">
+                <div class="question-number">Question 11 of 13</div>
+                <h2>Which week(s) would you like to attend? <span class="required">*</span></h2>
+
+                <div class="week-cards">
+                    <label class="week-card" onclick="toggleWeek(this)">
+                        <input type="checkbox" name="weeks" value="week1">
+                        <h4>Week 1: Return to the Commons</h4>
+                        <div class="dates">August 24 – 30, 2026</div>
+                        <div class="desc">A five-day course with Michel Bauwens and Adam Arvidsson exploring the history and future of the commons.</div>
+                    </label>
+
+                    <label class="week-card" onclick="toggleWeek(this)">
+                        <input type="checkbox" name="weeks" value="week2">
+                        <h4>Week 2: Post-Capitalist Production</h4>
+                        <div class="dates">August 31 – September 6, 2026</div>
+                        <div class="desc">How global knowledge commons and local production can sustain livelihoods and community resilience.</div>
+                    </label>
+
+                    <label class="week-card" onclick="toggleWeek(this)">
+                        <input type="checkbox" name="weeks" value="week3">
+                        <h4>Week 3: Future Living</h4>
+                        <div class="dates">September 7 – 13, 2026</div>
+                        <div class="desc">From vision to scouting: cooperative housing, mapping local resources, ecological design.</div>
+                    </label>
+
+                    <label class="week-card" onclick="toggleWeek(this)">
+                        <input type="checkbox" name="weeks" value="week4">
+                        <h4>Week 4: Governance & Funding Models</h4>
+                        <div class="dates">September 14 – 20, 2026</div>
+                        <div class="desc">Participatory governance, cooperative legal structures, and mechanisms for shared assets.</div>
+                    </label>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q12: Ticket option -->
+            <div class="form-section" data-step="12">
+                <div class="question-number">Question 12 of 13</div>
+                <h2>Which ticket option would you prefer? <span class="required">*</span></h2>
+                <p class="hint">Prices and options subject to change.</p>
+
+                <div class="ticket-section">
+                    <h4>🏡 Full Resident (4 weeks)</h4>
+                    <div class="ticket-options">
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="full-dorm" required>
+                            <span class="ticket-name">Dorm (4-6 people)</span>
+                            <span class="ticket-price">€1,500</span>
+                        </label>
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="full-shared">
+                            <span class="ticket-name">Shared Double</span>
+                            <span class="ticket-price">€1,800</span>
+                        </label>
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="full-single">
+                            <span class="ticket-name">Single (deluxe apartment)</span>
+                            <span class="ticket-price">€3,200</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="ticket-section">
+                    <h4>🗓 1-Week Visitor (max 20 per week)</h4>
+                    <div class="ticket-options">
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="week-dorm">
+                            <span class="ticket-name">Dorm (4-6 people)</span>
+                            <span class="ticket-price">€425</span>
+                        </label>
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="week-shared">
+                            <span class="ticket-name">Shared Double</span>
+                            <span class="ticket-price">€500</span>
+                        </label>
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="week-single">
+                            <span class="ticket-name">Single (deluxe apartment)</span>
+                            <span class="ticket-price">€850</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="ticket-section">
+                    <h4>🎟 Non-Accommodation Pass</h4>
+                    <div class="ticket-options">
+                        <label class="ticket-card" onclick="selectTicket(this)">
+                            <input type="radio" name="ticket" value="no-accom">
+                            <span class="ticket-name">Event access only</span>
+                            <span class="ticket-price">€300/week</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="ticket-note">
+                    <strong>Included:</strong> Accommodation (if applicable), venue access, event ticket<br>
+                    <strong>Not included:</strong> Food (~€10/day)<br>
+                    <strong>Note:</strong> +10% after June 1 (goes to event org costs)
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Q13: Anything else -->
+            <div class="form-section" data-step="13">
+                <div class="question-number">Question 13 of 13</div>
+                <h2>Anything else you'd like to add? <span class="optional">(optional)</span></h2>
+
+                <div class="form-group">
+                    <textarea id="anything_else" name="anything_else" placeholder="Questions, accessibility needs, dietary requirements, or anything else..."></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="privacy_accepted" name="privacy_accepted" required style="width: 18px; height: 18px; margin-top: 0.2rem;">
+                        <span>I agree to the <a href="privacy.html" target="_blank">privacy policy</a> and consent to my data being processed for this application <span class="required">*</span></span>
+                    </label>
+                </div>
+
+                <div id="form-error" class="error-message" style="display: none;"></div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Submit Application</button>
+                </div>
+            </div>
+
+            <!-- Success -->
+            <div class="form-section" data-step="success" style="display: none;">
+                <div class="success-message">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                    <h2>Application Submitted!</h2>
+                    <p>Thank you for applying to Valley of the Commons.</p>
+                    <p>We've sent a confirmation to <strong id="confirm-email"></strong>.</p>
+                    <p style="margin-top: 1.5rem; color: #666;">Our team will review your application and get back to you within 2-3 weeks.</p>
+                    <p style="margin-top: 2rem;">
+                        <a href="/" class="btn btn-primary">Return to Homepage</a>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <p>Valley of the Commons · <a href="https://www.commons-hub.at/">Commons Hub</a> · <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 13;
+
+        function updateProgress() {
+            const percent = Math.round(((currentStep - 1) / totalSteps) * 100);
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-percent').textContent = percent;
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            const target = document.querySelector(`.form-section[data-step="${step}"]`);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            updateProgress();
+        }
+
+        function validateStep(step) {
+            const section = document.querySelector(`.form-section[data-step="${step}"]`);
+            const required = section.querySelectorAll('[required]');
+            let valid = true;
+
+            required.forEach(field => {
+                field.style.borderColor = '';
+                if (field.type === 'checkbox') {
+                    if (!field.checked) valid = false;
+                } else if (!field.value.trim()) {
+                    valid = false;
+                    field.style.borderColor = 'var(--error)';
+                }
+            });
+
+            // Email validation
+            const emailField = section.querySelector('input[type="email"]');
+            if (emailField && emailField.value && !emailField.value.includes('@')) {
+                valid = false;
+                emailField.style.borderColor = 'var(--error)';
+            }
+
+            // Week selection (step 11)
+            if (step === 11) {
+                const checked = document.querySelectorAll('input[name="weeks"]:checked');
+                if (checked.length === 0) {
+                    valid = false;
+                    alert('Please select at least one week.');
+                }
+            }
+
+            return valid;
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) return;
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function toggleWeek(card) {
+            const cb = card.querySelector('input');
+            cb.checked = !cb.checked;
+            card.classList.toggle('selected', cb.checked);
+        }
+
+        function selectTicket(card) {
+            document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.querySelector('input').checked = true;
+        }
+
+        // Theme ranking drag & drop
+        const themeList = document.getElementById('theme-list');
+        let draggedItem = null;
+
+        themeList.addEventListener('dragstart', e => {
+            draggedItem = e.target.closest('.theme-item');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        themeList.addEventListener('dragover', e => {
+            e.preventDefault();
+            const target = e.target.closest('.theme-item');
+            if (target && target !== draggedItem) {
+                const rect = target.getBoundingClientRect();
+                const mid = rect.top + rect.height / 2;
+                if (e.clientY < mid) {
+                    themeList.insertBefore(draggedItem, target);
+                } else {
+                    themeList.insertBefore(draggedItem, target.nextSibling);
+                }
+            }
+        });
+
+        themeList.addEventListener('dragend', () => {
+            updateRanks();
+            draggedItem = null;
+        });
+
+        // Make items draggable
+        document.querySelectorAll('.theme-item').forEach(item => {
+            item.draggable = true;
+        });
+
+        function updateRanks() {
+            document.querySelectorAll('.theme-item').forEach((item, i) => {
+                item.querySelector('.rank').textContent = i + 1;
+            });
+        }
+
+        function getThemeRanking() {
+            return Array.from(document.querySelectorAll('.theme-item')).map((item, i) => ({
+                theme: item.dataset.theme,
+                rank: i + 1
+            }));
+        }
+
+        function getSelectedWeeks() {
+            return Array.from(document.querySelectorAll('input[name="weeks"]:checked')).map(cb => cb.value);
+        }
+
+        function collectFormData() {
+            const form = document.getElementById('application-form');
+            const nameParts = form.name.value.trim().split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+
+            return {
+                first_name: firstName,
+                last_name: lastName,
+                email: form.email.value,
+                social_links: form.social_media.value,
+                contact_other: form.contact_other.value,
+                how_heard: form.how_heard.value,
+                referral_name: form.referral_names.value,
+                affiliations: form.affiliations.value,
+                motivation: form.why_join.value,
+                current_work: form.current_work.value,
+                contribution: form.contribution.value,
+                theme_ranking: JSON.stringify(getThemeRanking()),
+                theme_familiarity: form.theme_familiarity.value,
+                belief_update: form.belief_update.value,
+                weeks: getSelectedWeeks(),
+                attendance_type: getSelectedWeeks().length === 4 ? 'full' : 'partial',
+                contribution_amount: form.querySelector('input[name="ticket"]:checked')?.value || null,
+                anything_else: form.anything_else.value,
+                privacy_policy_accepted: form.privacy_accepted.checked,
+                code_of_conduct_accepted: true
+            };
+        }
+
+        document.getElementById('application-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const errorDiv = document.getElementById('form-error');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (!document.getElementById('privacy_accepted').checked) {
+                errorDiv.textContent = 'Please accept the privacy policy.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const data = collectFormData();
+
+                const response = await fetch('/api/application', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('confirm-email').textContent = data.email;
+                    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+                    document.querySelector('.form-section[data-step="success"]').style.display = 'block';
+                    document.querySelector('.form-section[data-step="success"]').classList.add('active');
+                    document.querySelector('.progress-container').style.display = 'none';
+                } else {
+                    errorDiv.textContent = result.error || 'Something went wrong. Please try again.';
+                    errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Application';
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                errorDiv.textContent = 'Network error. Please check your connection.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        });
+
+        updateProgress();
+    </script>
+</body>
+</html>

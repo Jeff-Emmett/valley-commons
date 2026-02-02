@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Valley of the Commons</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-light: #4a7c23;
+            --cream: #faf8f5;
+            --sand: #f5f5f0;
+            --charcoal: #2c2c2c;
+            --pending: #f59e0b;
+            --reviewing: #3b82f6;
+            --accepted: #10b981;
+            --declined: #ef4444;
+            --waitlisted: #8b5cf6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--sand);
+            color: var(--charcoal);
+            line-height: 1.5;
+        }
+
+        /* Auth screen */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-box h1 {
+            color: var(--forest);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--forest);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .auth-box button:hover {
+            background: var(--forest-light);
+        }
+
+        .auth-error {
+            color: var(--declined);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.visible {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--forest);
+            font-size: 1.25rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--forest);
+        }
+
+        .stat-card .label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--forest);
+            color: white;
+            border-color: var(--forest);
+        }
+
+        .filter-btn .count {
+            background: var(--sand);
+            padding: 0 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .filter-btn.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: var(--sand);
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-reviewing { background: #dbeafe; color: #1e40af; }
+        .status-accepted { background: #d1fae5; color: #065f46; }
+        .status-declined { background: #fee2e2; color: #991b1b; }
+        .status-waitlisted { background: #ede9fe; color: #5b21b6; }
+
+        .applicant-name {
+            font-weight: 500;
+        }
+
+        .applicant-email {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .view-btn {
+            background: var(--forest);
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .view-btn:hover {
+            background: var(--forest-light);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            color: var(--forest);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .detail-item {
+            padding: 0.5rem 0;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item p {
+            font-size: 0.9rem;
+        }
+
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .long-text {
+            background: var(--sand);
+            padding: 1rem;
+            border-radius: 6px;
+            white-space: pre-wrap;
+        }
+
+        .chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .chip {
+            background: var(--sand);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            position: sticky;
+            bottom: 0;
+            background: white;
+        }
+
+        .status-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .btn-save {
+            background: var(--forest);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="auth-screen">
+        <div class="auth-box">
+            <h1>Admin Login</h1>
+            <p id="auth-error" class="auth-error" style="display: none;"></p>
+            <input type="password" id="api-key" placeholder="Enter admin API key">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <header class="header">
+            <h1>Valley of the Commons - Applications</h1>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="exportCSV()">Export CSV</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="stats-grid" id="stats">
+                <div class="stat-card">
+                    <div class="number" id="stat-total">-</div>
+                    <div class="label">Total Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="stat-pending">-</div>
+                    <div class="label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="stat-reviewing">-</div>
+                    <div class="label">Reviewing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="stat-accepted">-</div>
+                    <div class="label">Accepted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="stat-waitlisted">-</div>
+                    <div class="label">Waitlisted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="stat-declined">-</div>
+                    <div class="label">Declined</div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-status="all" onclick="filterByStatus('all')">
+                    All <span class="count" id="count-all">0</span>
+                </button>
+                <button class="filter-btn" data-status="pending" onclick="filterByStatus('pending')">
+                    Pending <span class="count" id="count-pending">0</span>
+                </button>
+                <button class="filter-btn" data-status="reviewing" onclick="filterByStatus('reviewing')">
+                    Reviewing <span class="count" id="count-reviewing">0</span>
+                </button>
+                <button class="filter-btn" data-status="accepted" onclick="filterByStatus('accepted')">
+                    Accepted <span class="count" id="count-accepted">0</span>
+                </button>
+                <button class="filter-btn" data-status="waitlisted" onclick="filterByStatus('waitlisted')">
+                    Waitlisted <span class="count" id="count-waitlisted">0</span>
+                </button>
+                <button class="filter-btn" data-status="declined" onclick="filterByStatus('declined')">
+                    Declined <span class="count" id="count-declined">0</span>
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Location</th>
+                            <th>Attendance</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="applications-table">
+                        <tr>
+                            <td colspan="6" class="loading">Loading applications...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-title">Application Details</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <select class="status-select" id="status-select">
+                    <option value="pending">Pending</option>
+                    <option value="reviewing">Reviewing</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="waitlisted">Waitlisted</option>
+                    <option value="declined">Declined</option>
+                </select>
+                <button class="btn-save" onclick="updateStatus()">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let apiKey = localStorage.getItem('votc_admin_key');
+        let applications = [];
+        let currentFilter = 'all';
+        let currentApplicationId = null;
+
+        // Check if already logged in
+        if (apiKey) {
+            showDashboard();
+            loadApplications();
+        }
+
+        function login() {
+            const key = document.getElementById('api-key').value;
+            if (!key) {
+                showAuthError('Please enter an API key');
+                return;
+            }
+
+            apiKey = key;
+            localStorage.setItem('votc_admin_key', key);
+            showDashboard();
+            loadApplications();
+        }
+
+        function logout() {
+            apiKey = null;
+            localStorage.removeItem('votc_admin_key');
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('visible');
+        }
+
+        function showAuthError(message) {
+            const errorEl = document.getElementById('auth-error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('dashboard').classList.add('visible');
+        }
+
+        async function loadApplications() {
+            try {
+                const response = await fetch('/api/application?limit=500', {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    logout();
+                    showAuthError('Invalid API key');
+                    return;
+                }
+
+                const data = await response.json();
+                applications = data.applications || [];
+                updateStats();
+                renderTable();
+
+            } catch (error) {
+                console.error('Failed to load applications:', error);
+                document.getElementById('applications-table').innerHTML =
+                    '<tr><td colspan="6" class="empty-state">Failed to load applications</td></tr>';
+            }
+        }
+
+        function updateStats() {
+            const counts = {
+                total: applications.length,
+                pending: 0,
+                reviewing: 0,
+                accepted: 0,
+                waitlisted: 0,
+                declined: 0
+            };
+
+            applications.forEach(app => {
+                if (counts.hasOwnProperty(app.status)) {
+                    counts[app.status]++;
+                }
+            });
+
+            document.getElementById('stat-total').textContent = counts.total;
+            document.getElementById('stat-pending').textContent = counts.pending;
+            document.getElementById('stat-reviewing').textContent = counts.reviewing;
+            document.getElementById('stat-accepted').textContent = counts.accepted;
+            document.getElementById('stat-waitlisted').textContent = counts.waitlisted;
+            document.getElementById('stat-declined').textContent = counts.declined;
+
+            document.getElementById('count-all').textContent = counts.total;
+            document.getElementById('count-pending').textContent = counts.pending;
+            document.getElementById('count-reviewing').textContent = counts.reviewing;
+            document.getElementById('count-accepted').textContent = counts.accepted;
+            document.getElementById('count-waitlisted').textContent = counts.waitlisted;
+            document.getElementById('count-declined').textContent = counts.declined;
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('applications-table');
+            let filtered = applications;
+
+            if (currentFilter !== 'all') {
+                filtered = applications.filter(app => app.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No applications found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(app => `
+                <tr>
+                    <td>
+                        <div class="applicant-name">${app.first_name} ${app.last_name}</div>
+                        <div class="applicant-email">${app.email}</div>
+                    </td>
+                    <td>${app.city || ''}, ${app.country || ''}</td>
+                    <td>${app.attendance_type === 'full' ? 'Full' : 'Partial'}</td>
+                    <td>${new Date(app.submitted_at).toLocaleDateString()}</td>
+                    <td><span class="status-badge status-${app.status}">${app.status}</span></td>
+                    <td><button class="view-btn" onclick="viewApplication('${app.id}')">View</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function viewApplication(id) {
+            const app = applications.find(a => a.id === id);
+            if (!app) return;
+
+            currentApplicationId = id;
+            document.getElementById('modal-title').textContent = `${app.first_name} ${app.last_name}`;
+            document.getElementById('status-select').value = app.status;
+
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `
+                <div class="detail-section">
+                    <h3>Personal Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Email</label>
+                            <p><a href="mailto:${app.email}">${app.email}</a></p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Phone</label>
+                            <p>${app.phone || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Location</label>
+                            <p>${app.city || ''} ${app.country ? ', ' + app.country : ''}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Pronouns</label>
+                            <p>${app.pronouns || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Background</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Occupation</label>
+                            <p>${app.occupation || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Organization</label>
+                            <p>${app.organization || '-'}</p>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Skills</label>
+                            <div class="chip-list">
+                                ${(app.skills || []).map(s => `<span class="chip">${s}</span>`).join('') || '-'}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Languages</label>
+                            <p>${(app.languages || []).join(', ') || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Website</label>
+                            <p>${app.website ? `<a href="${app.website}" target="_blank">${app.website}</a>` : '-'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Participation</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Attendance</label>
+                            <p>${app.attendance_type === 'full' ? 'Full 4 weeks' : 'Partial'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Dates</label>
+                            <p>${app.arrival_date || 'Aug 24'} to ${app.departure_date || 'Sep 20'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Accommodation</label>
+                            <p>${app.accommodation_preference || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Dietary</label>
+                            <p>${(app.dietary_requirements || []).join(', ') || 'None specified'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Motivation & Contribution</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item full-width">
+                            <label>Why do you want to join?</label>
+                            <div class="long-text">${app.motivation || '-'}</div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>What will you contribute?</label>
+                            <div class="long-text">${app.contribution || '-'}</div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Workshops to offer</label>
+                            <div class="long-text">${app.workshops_offer || '-'}</div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Areas of Interest</label>
+                            <div class="chip-list">
+                                ${(app.governance_interest || []).map(g => `<span class="chip">${g}</span>`).join('') || '-'}
+                            </div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Commons/Community Experience</label>
+                            <div class="long-text">${app.commons_experience || '-'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Financial & Practical</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Contribution Level</label>
+                            <p>${app.contribution_amount || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Scholarship</label>
+                            <p>${app.scholarship_needed ? 'Yes' : 'No'}</p>
+                        </div>
+                        ${app.scholarship_reason ? `
+                        <div class="detail-item full-width">
+                            <label>Scholarship Reason</label>
+                            <div class="long-text">${app.scholarship_reason}</div>
+                        </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <label>How Heard</label>
+                            <p>${app.how_heard || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Referral</label>
+                            <p>${app.referral_name || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Emergency Contact</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Name</label>
+                            <p>${app.emergency_name || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Phone</label>
+                            <p>${app.emergency_phone || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Relationship</label>
+                            <p>${app.emergency_relationship || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Agreements</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Code of Conduct</label>
+                            <p>${app.code_of_conduct_accepted ? '✓ Accepted' : '✗ Not accepted'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Privacy Policy</label>
+                            <p>${app.privacy_policy_accepted ? '✓ Accepted' : '✗ Not accepted'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Photo Consent</label>
+                            <p>${app.photo_consent ? '✓ Yes' : '✗ No'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section" style="font-size: 0.8rem; color: #666;">
+                    <p>Submitted: ${new Date(app.submitted_at).toLocaleString()}</p>
+                    <p>Application ID: ${app.id}</p>
+                </div>
+            `;
+
+            document.getElementById('modal-overlay').classList.add('visible');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modal-overlay').classList.remove('visible');
+            currentApplicationId = null;
+        }
+
+        async function updateStatus() {
+            if (!currentApplicationId) return;
+
+            const newStatus = document.getElementById('status-select').value;
+
+            try {
+                const response = await fetch(`/api/application/${currentApplicationId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    // Update local data
+                    const app = applications.find(a => a.id === currentApplicationId);
+                    if (app) app.status = newStatus;
+                    updateStats();
+                    renderTable();
+                    closeModal();
+                } else {
+                    alert('Failed to update status');
+                }
+            } catch (error) {
+                console.error('Failed to update status:', error);
+                alert('Failed to update status');
+            }
+        }
+
+        function exportCSV() {
+            const headers = [
+                'First Name', 'Last Name', 'Email', 'Phone', 'City', 'Country',
+                'Occupation', 'Organization', 'Attendance', 'Accommodation',
+                'Contribution Level', 'Scholarship', 'Status', 'Submitted'
+            ];
+
+            const rows = applications.map(app => [
+                app.first_name,
+                app.last_name,
+                app.email,
+                app.phone || '',
+                app.city || '',
+                app.country || '',
+                app.occupation || '',
+                app.organization || '',
+                app.attendance_type,
+                app.accommodation_preference || '',
+                app.contribution_amount || '',
+                app.scholarship_needed ? 'Yes' : 'No',
+                app.status,
+                new Date(app.submitted_at).toISOString()
+            ]);
+
+            const csv = [headers, ...rows]
+                .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `votc-applications-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

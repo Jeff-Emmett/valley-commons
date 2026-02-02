@@ -20,7 +20,8 @@ app.use((req, res, next) => {
 });
 
 // API routes - wrap Vercel serverless functions
-const waitlistHandler = require('./api/waitlist');
+const waitlistHandler = require('./api/waitlist-db');
+const applicationHandler = require('./api/application');
 const gameChatHandler = require('./api/game-chat');
 const shareToGithubHandler = require('./api/share-to-github');
 
@@ -37,6 +38,7 @@ const vercelToExpress = (handler) => async (req, res) => {
 };
 
 app.all('/api/waitlist', vercelToExpress(waitlistHandler));
+app.all('/api/application', vercelToExpress(applicationHandler));
 app.all('/api/game-chat', vercelToExpress(gameChatHandler));
 app.all('/api/share-to-github', vercelToExpress(shareToGithubHandler));
 

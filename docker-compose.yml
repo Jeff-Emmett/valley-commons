@@ -3,13 +3,48 @@ services:
     build: .
     container_name: votc
     restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://votc:votc_password@votc-db:5432/votc
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=Valley of the Commons <noreply@jeffemmett.com>
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - ADMIN_EMAILS=${ADMIN_EMAILS:-jeff@jeffemmett.com}
+      - NODE_ENV=production
+    depends_on:
+      votc-db:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.votc.rule=Host(`votc.jeffemmett.com`)"
       - "traefik.http.services.votc.loadbalancer.server.port=3000"
     networks:
       - traefik-public
+      - votc-internal
+
+  votc-db:
+    image: postgres:16-alpine
+    container_name: votc-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=votc
+      - POSTGRES_PASSWORD=votc_password
+      - POSTGRES_DB=votc
+    volumes:
+      - votc-postgres-data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U votc"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - votc-internal
+
+volumes:
+  votc-postgres-data:
 
 networks:
   traefik-public:
     external: true
+  votc-internal:
+    driver: bridge
