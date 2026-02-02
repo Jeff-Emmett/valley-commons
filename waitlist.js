@@ -36,25 +36,41 @@ function initLoadingScreen() {
     const loadingScreen = document.getElementById('loading-screen');
     if (!loadingScreen) return;
 
+    let isHiding = false;
+
+    function hideLoadingScreen() {
+        if (isHiding) return;
+        isHiding = true;
+        loadingScreen.classList.add('hidden');
+        // Remove from DOM after transition completes
+        setTimeout(function() {
+            loadingScreen.remove();
+        }, 1200);
+        // Clean up scroll listener
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('wheel', onScroll);
+        window.removeEventListener('touchmove', onScroll);
+    }
+
+    function onScroll() {
+        hideLoadingScreen();
+    }
+
     const skipButton = document.getElementById('skip-loading');
     if (skipButton) {
-        skipButton.addEventListener('click', function() {
-            loadingScreen.classList.add('hidden');
-            setTimeout(function() {
-                loadingScreen.remove();
-            }, 1200);
-        });
+        skipButton.addEventListener('click', hideLoadingScreen);
     }
+
+    // Hide on scroll, wheel, or touch
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', onScroll, { passive: true });
+    window.addEventListener('touchmove', onScroll, { passive: true });
 
     // Wait for page to fully load
     window.addEventListener('load', function() {
         // Add delay to allow title animation to complete (6s zoom + 4s title = ~6s total)
         setTimeout(function() {
-            loadingScreen.classList.add('hidden');
-            // Remove from DOM after transition completes
-            setTimeout(function() {
-                loadingScreen.remove();
-            }, 1200);
+            hideLoadingScreen();
         }, 6500); // Wait for animations to complete
     });
 }
