@@ -1,0 +1,1 @@
+Daniel manages hospitality at the Commons Hub with a unique blend of practicality, intelligence, and charm. His exceptional problem-solving skills and calm approach to tackling tough situations ground our community on a daily basis, and his positive energy lights our way as we transform our valley.

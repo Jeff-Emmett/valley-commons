@@ -1,12 +1,21 @@
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Copy static files
-COPY index.html /usr/share/nginx/html/
-COPY styles.css /usr/share/nginx/html/
+WORKDIR /app
 
-# Copy custom nginx config if needed
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy package files
+COPY package*.json ./
 
-EXPOSE 80
+# Install dependencies
+RUN npm ci --only=production
 
-CMD ["nginx", "-g", "daemon off;"]
+# Install express for serving
+RUN npm install express
+
+# Copy application files
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start server
+CMD ["node", "server.js"]

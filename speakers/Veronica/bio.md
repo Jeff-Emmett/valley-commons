@@ -1,0 +1,1 @@
+Veronica keeps organizing pop-up cities despite continuously declaring she is not an event organizer, and previously organized ZuVillage Georgia in 2024 and Zuitzerland in 2025. Her background and passions span education technology, artificial intelligence, decentralized technologies, individual and collective optimization, and truth seeking. 

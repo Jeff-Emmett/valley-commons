@@ -1,0 +1,1 @@
+Rashmi Abbigeri is a research engineer at MetaGov working on grant analytics through Open Grants. Her work emphasizes the development of AI-ready datasets, a critical factor for the sustainable scaling of beneficial AI systems across different sectors.

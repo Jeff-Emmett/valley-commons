@@ -1,0 +1,1 @@
+Adam Arvidsson is Professor of Sociology of Cultural and Communicative Processes at the Università Federico II di Napoli. His research explores emerging forms of cooperation enabled by digital media and their economic and political potential, with a particular focus on the evolving relationship between capitalism and the commons.

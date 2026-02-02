@@ -1,0 +1,1 @@
+Clara Gromaches is an architect working on housing and land as commons. Her work combines  fieldwork and emerging digital technologies to create experimental financial and governance mechanisms that protect and accelerate community-led models of collective ownership and stewardship through Komma.

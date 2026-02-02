@@ -1,0 +1,1 @@
+Michel Bauwens, founder of p2pfoundation & FairCoop, is a Belgian political theorist, writer, and conference speaker on the subjects of technology, culture and business innovation.

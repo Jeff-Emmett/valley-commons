@@ -1,0 +1,828 @@
+/* Terminal Game Page Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    color: #00ff00;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+/* GitHub Repo Link & Privacy FAQ */
+.top-links {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.home-link,
+.github-link,
+.privacy-link {
+    color: #666;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Increase touch target size for mobile */
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.home-link:hover,
+.github-link:hover,
+.privacy-link:hover {
+    opacity: 1;
+    color: #00ff00;
+}
+
+.home-link svg {
+    width: 18px;
+    height: 18px;
+}
+
+.github-link svg,
+.privacy-link svg {
+    width: 20px;
+    height: 20px;
+}
+
+.terminal {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--spacing-lg, 2rem);
+    padding-top: 4rem; /* Space for top links */
+    padding-bottom: 0; /* Input line handles its own space */
+    position: relative;
+    min-height: 0; /* Allow flex shrinking */
+}
+
+.terminal-content {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    min-height: 0; /* Allow flex shrinking */
+}
+
+.terminal-line {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.prompt {
+    color: #00ff00;
+    margin-right: 0.5rem;
+    font-weight: bold;
+    flex-shrink: 0; /* Prevent prompt from shrinking */
+}
+
+.question {
+    color: #fff;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+}
+
+#input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    padding: 1rem 0;
+    margin-top: 0;
+    z-index: 10;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow to separate from content */
+}
+
+#terminal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #00ff00;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 1.1rem;
+    flex: 1;
+    padding: 0;
+    margin-left: 0.5rem;
+    min-width: 0; /* Allow flex shrinking */
+}
+
+.submit-button {
+    background: #00ff00;
+    color: #000;
+    border: 1px solid #00ff00;
+    padding: 0.5rem 1rem;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.submit-button:hover {
+    background: #00cc00;
+    border-color: #00cc00;
+}
+
+.submit-button:active {
+    background: #009900;
+    border-color: #009900;
+}
+
+.submit-button:disabled {
+    background: #333;
+    color: #666;
+    border-color: #333;
+    cursor: not-allowed;
+}
+
+#terminal-input::placeholder {
+    color: #555;
+}
+
+.cursor {
+    color: #00ff00;
+    animation: blink 1s infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.terminal-output {
+    margin-top: 2rem;
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 6rem; /* Space for input line - increased to prevent overlap */
+    -webkit-overflow-scrolling: touch;
+    min-height: 0; /* Allow flex shrinking */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.terminal-output.show {
+    opacity: 1;
+}
+
+.terminal-output p {
+    margin-bottom: 1rem;
+}
+
+.terminal-output ul {
+    list-style: none;
+    margin: 1.5rem 0;
+    padding-left: 0;
+}
+
+.terminal-output li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.terminal-output li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #00ff00;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ai-message-streaming {
+    animation: blink 1s infinite;
+}
+
+.user-message {
+    color: #00ff00;
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.ai-message {
+    color: #fff;
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.loading-indicator {
+    opacity: 0.7;
+}
+
+.loading-text {
+    color: #666;
+    font-style: italic;
+}
+
+.error-message {
+    margin-top: 1rem;
+}
+
+.error-text {
+    color: #ff4444;
+}
+
+/* Message selection and sharing */
+.message-line {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 2px;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.message-line:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.message-line.selected {
+    background-color: rgba(0, 255, 0, 0.2);
+    border-left: 2px solid #00ff00;
+    padding-left: 0.75rem;
+}
+
+/* User messages appear below AI messages with distinct styling */
+.message-line[data-role="user"] {
+    margin-top: 0.75rem;
+}
+
+.message-line[data-role="assistant"] {
+    margin-bottom: 0.25rem;
+}
+
+.share-buttons-container {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.full-chat-share-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 4rem; /* Above input line */
+    left: 0;
+    right: 0;
+    background: transparent;
+    padding: 0.5rem 0;
+    z-index: 9;
+    pointer-events: none; /* Allow clicks to pass through to scrollable area */
+}
+
+.full-chat-share-container button {
+    pointer-events: auto; /* Re-enable clicks for the button */
+}
+
+/* Desktop: Keep input fixed at bottom like real CLI */
+@media (min-width: 769px) {
+    #input-line {
+        position: absolute;
+        bottom: 0;
+    }
+    
+    .terminal-output {
+        padding-bottom: 6rem; /* Space for fixed input line - increased to prevent overlap */
+    }
+    
+    .full-chat-share-container {
+        position: absolute;
+        bottom: 4rem;
+    }
+    
+    /* Ensure desktop input is at least 16px to prevent zoom on some tablets */
+    #terminal-input {
+        font-size: max(1.1rem, 16px);
+    }
+}
+
+.share-button {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex: 1;
+    min-width: 150px;
+}
+
+.share-button:hover:not(:disabled) {
+    background: #00ff00;
+    color: #000;
+}
+
+.share-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.share-button-default {
+    border-color: #00ff00;
+}
+
+.share-button-own {
+    border-color: #666;
+    color: #999;
+}
+
+.share-button-own:hover:not(:disabled) {
+    background: #666;
+    color: #000;
+    border-color: #666;
+}
+
+.success-message {
+    margin-top: 1rem;
+}
+
+.success-text {
+    color: #00ff00;
+}
+
+.success-text a {
+    color: #00ff00;
+    text-decoration: underline;
+}
+
+.success-text a:hover {
+    text-decoration: none;
+}
+
+/* LLM Information Footer */
+.llm-info {
+    position: fixed;
+    bottom: 4rem; /* Above input line */
+    left: 0.5rem;
+    font-size: 0.6rem;
+    color: #666;
+    max-width: 300px;
+    line-height: 1.3;
+    z-index: 8;
+    pointer-events: none; /* Allow clicks to pass through unless on a link */
+}
+
+.llm-info a {
+    color: #00ff00;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.llm-info a:hover {
+    text-decoration: underline;
+}
+
+.llm-info p {
+    margin: 0.25rem 0;
+}
+
+.model-note {
+    font-size: 0.55rem;
+    color: #555;
+    margin-top: 0.25rem;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+/* Share Modal */
+.share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.share-modal-content {
+    background: #000;
+    border: 2px solid #00ff00;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    color: #00ff00;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.share-modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid #00ff00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.share-modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #00ff00;
+}
+
+.share-modal-close {
+    background: transparent;
+    border: none;
+    color: #00ff00;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.share-modal-close:hover {
+    color: #fff;
+}
+
+.share-modal-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.share-template-section,
+.share-history-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.share-template-section {
+    flex: 1;
+    min-height: 0;
+}
+
+.share-template-section label,
+.share-history-section label {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.share-template-editor {
+    flex: 1;
+    min-height: 200px;
+    background: #111;
+    border: 1px solid #333;
+    color: #00ff00;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 0.85rem;
+    padding: 1rem;
+    resize: vertical;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.share-template-editor:focus {
+    outline: 2px solid #00ff00;
+    border-color: #00ff00;
+}
+
+.share-history-section {
+    flex: 0 0 200px;
+    min-height: 0;
+}
+
+.share-history-viewer {
+    flex: 1;
+    overflow-y: auto;
+    background: #111;
+    border: 1px solid #333;
+    padding: 1rem;
+    font-size: 0.8rem;
+    max-height: 200px;
+}
+
+.share-history-viewer .terminal-line {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.share-history-viewer .user-message {
+    color: #00ff00;
+}
+
+.share-history-viewer .assistant-message {
+    color: #fff;
+}
+
+.share-modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #00ff00;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.share-modal-footer .share-button {
+    min-width: 150px;
+}
+
+@media (max-width: 768px) {
+    /* Mobile-first: Prevent body scroll, handle in terminal */
+    body {
+        overflow: hidden;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        position: fixed;
+        width: 100%;
+    }
+    
+    .terminal {
+        padding: 0;
+        padding-top: 3rem; /* Space for top links */
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+        max-height: 100dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Allow scrolling when keyboard appears */
+    }
+    
+    .terminal-content {
+        max-width: 100%;
+        min-height: 100%;
+        padding: 0;
+        padding-bottom: 2rem; /* Space at bottom */
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Initial question - smaller on mobile */
+    .terminal-line:first-child {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+    }
+    
+    .question {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    /* Chat output - scrollable area, input appears below */
+    .terminal-output {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        padding-bottom: 0.5rem;
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 0;
+        /* Input will appear below in natural flow */
+    }
+    
+    /* Input line - follows chat content, appears below messages */
+    #input-line {
+        position: relative;
+        padding: 0.75rem;
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        background: #000;
+        border-top: 1px solid #333;
+        z-index: 10;
+        /* Ensure safe area on iOS */
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        /* Sticky at bottom when keyboard is closed, but follows content when keyboard opens */
+        position: sticky;
+        bottom: 0;
+    }
+    
+    #terminal-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 0.75rem 0.5rem;
+        min-height: 44px; /* Minimum touch target size */
+    }
+    
+    .submit-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        min-height: 44px; /* Minimum touch target size */
+        min-width: 70px;
+    }
+    
+    /* Top links - smaller and positioned */
+    .top-links {
+        position: fixed;
+        top: 0.5rem;
+        left: 0.5rem;
+        z-index: 1000;
+        gap: 0.5rem;
+        padding-left: env(safe-area-inset-left);
+    }
+    
+    .home-link svg,
+    .github-link svg,
+    .privacy-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Ensure touch targets are large enough on mobile */
+    .home-link,
+    .github-link,
+    .privacy-link {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
+    }
+    
+    /* Full chat share button - appears above input in flow */
+    .full-chat-share-container {
+        position: relative;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        padding: 0 0.75rem;
+        z-index: 9;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .full-chat-share-container button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        min-height: 44px;
+    }
+    
+    /* LLM info - hide on mobile to save space */
+    .llm-info {
+        display: none !important; /* Hide on mobile to save space */
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    /* Share buttons - touch-friendly */
+    .share-button {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+        min-width: auto;
+    }
+    
+    /* Message lines - better spacing on mobile */
+    .message-line {
+        padding: 0.75rem 0.5rem;
+        margin: 0.75rem 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* Share modal - full screen on mobile */
+    .share-modal {
+        padding: 0;
+        align-items: flex-end;
+    }
+    
+    .share-modal-content {
+        max-height: 90vh;
+        max-height: 90dvh;
+        border-radius: 1rem 1rem 0 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .share-modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #333;
+    }
+    
+    .share-modal-body {
+        flex-direction: column;
+        padding: 1rem;
+        max-height: calc(90vh - 150px);
+        max-height: calc(90dvh - 150px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .share-template-section,
+    .share-history-section {
+        flex: none;
+        margin-bottom: 1rem;
+    }
+    
+    .share-history-section {
+        max-height: 200px;
+    }
+    
+    .share-modal-footer {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+    
+    .share-modal-footer .share-button {
+        width: 100%;
+        min-height: 48px;
+    }
+    
+    /* Prompt styling */
+    .prompt {
+        font-size: 0.9rem;
+        margin-right: 0.4rem;
+    }
+    
+    /* Prevent text selection on buttons for better touch */
+    .share-button,
+    .submit-button {
+        -webkit-tap-highlight-color: rgba(0, 255, 0, 0.2);
+        -webkit-touch-callout: none;
+        user-select: none;
+    }
+    
+    /* Better scrolling */
+    .terminal-output {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+}

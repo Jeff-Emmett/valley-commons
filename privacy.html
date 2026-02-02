@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="alternate icon" href="icon.svg">
+    <title>Privacy & Open Source - Valley of the Commons</title>
+    <link rel="stylesheet" href="game.css">
+    <style>
+        /* Override body styles for privacy page to allow scrolling */
+        html {
+            overflow: auto !important;
+            height: auto !important;
+        }
+        
+        body {
+            overflow: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
+            display: block !important;
+            align-items: unset !important;
+            justify-content: unset !important;
+            position: relative !important;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+        
+        /* Override terminal styles that might interfere */
+        .terminal {
+            display: none !important;
+        }
+        
+        .privacy-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 4rem; /* Space for top links if they exist */
+            color: #00ff00;
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        
+        /* Mobile responsive padding */
+        @media (max-width: 768px) {
+            .privacy-container {
+                padding: 1rem;
+                padding-top: 3.5rem; /* Space for top links */
+            }
+            
+            .privacy-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .privacy-section h2 {
+                font-size: 1.1rem;
+            }
+            
+            .privacy-section h3 {
+                font-size: 0.95rem;
+            }
+        }
+        
+        .privacy-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 1rem;
+        }
+        
+        .privacy-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .privacy-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .privacy-section {
+            margin-bottom: 2rem;
+        }
+        
+        .privacy-section h2 {
+            font-size: 1.2rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+            border-left: 2px solid #00ff00;
+            padding-left: 1rem;
+        }
+        
+        .privacy-section h3 {
+            font-size: 1rem;
+            color: #fff;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .privacy-section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .privacy-section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .privacy-section li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+        
+        .privacy-section code {
+            background: #111;
+            padding: 0.2rem 0.4rem;
+            border: 1px solid #333;
+            color: #00ff00;
+            font-size: 0.9em;
+        }
+        
+        .privacy-section a {
+            color: #00ff00;
+            text-decoration: underline;
+        }
+        
+        .privacy-section a:hover {
+            text-decoration: none;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .back-link:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .highlight {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #ffaa00;
+        }
+    </style>
+</head>
+<body>
+    <div class="privacy-container">
+        <div class="privacy-header">
+            <h1>Privacy & Open Source FAQ</h1>
+            <p>Valley of the Commons - Transparency & Open Commons Best Practices</p>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>Model Choice & AI Infrastructure</h2>
+            
+            <h3>Current Model: Mistral Devstral-2</h3>
+            <p>
+                We use <span class="highlight">Mistral Devstral-2</span> via 
+                <a href="https://vercel.com/docs/ai/ai-gateway" target="_blank" rel="noopener">Vercel AI Gateway</a>.
+                This is a cost-effective model suitable for MVP testing.
+            </p>
+            
+            <h3>Why This Model?</h3>
+            <ul>
+                <li><strong>Free tier:</strong> Available on Vercel AI Gateway free tier</li>
+                <li><strong>Fast response times:</strong> Optimized for real-time dialogue</li>
+                <li><strong>Open-source roadmap:</strong> We're committed to migrating to open-weights or self-hosted models</li>
+            </ul>
+            
+            <h3>Long-term Vision</h3>
+            <p>
+                <span class="warning">Note:</span> Some models used in MVP are proprietary APIs. 
+                Our long-term roadmap includes migration to <strong>open-weights or self-hosted models</strong> 
+                to align with open commons principles.
+            </p>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>Data Tracking & Privacy</h2>
+            
+            <h3>What We Track</h3>
+            <ul>
+                <li><strong>Server logs:</strong> Basic request metadata (method, timestamp, message count) for debugging and monitoring</li>
+                <li><strong>Shared ideas:</strong> If you choose to share an idea or conversation to GitHub, it becomes part of the public repository</li>
+            </ul>
+            
+            <h3>What We Do NOT Save</h3>
+            <ul>
+                <li><strong>We do NOT save conversations:</strong> Your dialogue with the game master is processed temporarily to generate responses, but we do not store conversations in any database or persistent storage</li>
+                <li><strong>We do NOT track conversations:</strong> Conversations exist only in your browser session and are not saved by us</li>
+            </ul>
+            
+            <h3>AI Provider Tracking</h3>
+            <p>
+                <span class="warning">Important:</span> While <strong>we do not save your conversations</strong>, the AI provider 
+                (Mistral via Vercel AI Gateway) may track conversations according to their own privacy policy. 
+                We have no control over their data collection practices. For details, see 
+                <a href="https://mistral.ai/legal/privacy-policy/" target="_blank" rel="noopener">Mistral's Privacy Policy</a> 
+                and <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">Vercel's Privacy Policy</a>.
+            </p>
+            
+            <h3>What We Do NOT Track</h3>
+            <ul>
+                <li><strong>No user accounts:</strong> No registration, no login, no personal profiles</li>
+                <li><strong>No cookies:</strong> No tracking cookies, no analytics cookies, no advertising trackers</li>
+                <li><strong>No IP logging:</strong> IP addresses are not stored or logged</li>
+                <li><strong>No third-party analytics:</strong> No Google Analytics, no Facebook Pixel, no tracking scripts</li>
+                <li><strong>No email collection:</strong> The game interface does not collect email addresses</li>
+            </ul>
+            
+            <h3>Conversation Handling</h3>
+            <p>
+                <strong>We do not save conversations.</strong> Conversations exist only in your browser session. 
+                Messages are sent to the server for AI processing but are <strong>not stored persistently by us</strong>. 
+                Each conversation is ephemeral and exists only during your active session. When you close your browser, 
+                the conversation is gone from our systems.
+            </p>
+            
+            <h3>When Conversations Are Saved</h3>
+            <p>
+                Conversations are <strong>only saved</strong> when you explicitly choose to share them to GitHub using 
+                the "Share to GitHub" feature. This is an opt-in action that you control. Once shared, the conversation 
+                becomes part of the public repository at <code>build_game/conversations/</code>.
+            </p>
+            
+            <h3>Server-Side Processing</h3>
+            <p>
+                Messages are processed through Vercel serverless functions. Our server logs may contain:
+            </p>
+            <ul>
+                <li>Request metadata (timestamp, method)</li>
+                <li>Message count and length (for debugging)</li>
+                <li>First/last message previews (first 100 characters, for debugging only)</li>
+            </ul>
+            <p>
+                These logs are <strong>not publicly accessible</strong> and are used only for system monitoring and debugging. 
+                They do not contain full conversation content and are automatically rotated by Vercel.
+            </p>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>What Is Verifiable on GitHub</h2>
+            
+            <h3>Open Source Repository</h3>
+            <p>
+                Our entire codebase is open source and available at 
+                <a href="https://github.com/understories/votc" target="_blank" rel="noopener">github.com/understories/votc</a>.
+            </p>
+            
+            <h3>You Can Verify:</h3>
+            <ul>
+                <li><strong>All client-side code:</strong> HTML, CSS, JavaScript - everything runs in your browser</li>
+                <li><strong>Serverless function code:</strong> All API endpoints are open source and auditable</li>
+                <li><strong>No hidden tracking:</strong> Review the code yourself - no analytics, no trackers, no data collection</li>
+                <li><strong>Data handling logic:</strong> See exactly how messages are processed, sanitized, and sent to AI</li>
+                <li><strong>Security measures:</strong> Input sanitization, role whitelisting, turn limits - all visible in code</li>
+                <li><strong>Shared ideas:</strong> Ideas shared to GitHub are publicly visible in <code>build_game/ideas/</code></li>
+            </ul>
+            
+            <h3>What's Not in the Repository</h3>
+            <ul>
+                <li><strong>API keys:</strong> Stored securely in Vercel environment variables (never in code)</li>
+                <li><strong>Internal thoughts:</strong> Game design notes are in the repo but don't contain user data</li>
+                <li><strong>Server logs:</strong> Not committed to the repository</li>
+            </ul>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>Open Source & Open Commons Best Practices</h2>
+            
+            <h3>Our Commitment</h3>
+            <p>
+                Valley of the Commons follows <strong>open commons</strong> principles:
+            </p>
+            <ul>
+                <li><strong>Transparency:</strong> All code is open source and auditable</li>
+                <li><strong>No vendor lock-in:</strong> Using open standards and protocols</li>
+                <li><strong>Community ownership:</strong> Ideas shared become part of the public commons</li>
+                <li><strong>Minimal data collection:</strong> Only what's necessary for functionality</li>
+                <li><strong>User control:</strong> You choose what to share, when to share it</li>
+            </ul>
+            
+            <h3>Open Source License</h3>
+            <p>
+                The codebase is open source. Check the repository for the specific license terms.
+            </p>
+            
+            <h3>Contributing</h3>
+            <p>
+                Contributions, improvements, and audits are welcome. The repository is public and open for 
+                community participation.
+            </p>
+            
+            <h3>Future Improvements</h3>
+            <ul>
+                <li>Migration to self-hosted or open-weights models</li>
+                <li>Enhanced privacy controls</li>
+                <li>Optional conversation export (user-controlled)</li>
+                <li>Local-first architecture where possible</li>
+            </ul>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>Security Measures</h2>
+            
+            <h3>Input Sanitization</h3>
+            <ul>
+                <li>Message content is limited to 500 characters per message</li>
+                <li>Only 'user' and 'assistant' roles are allowed (prevents system prompt injection)</li>
+                <li>Empty messages are filtered out</li>
+            </ul>
+            
+            <h3>Rate Limiting</h3>
+            <ul>
+                <li>Maximum 12 user turns per conversation</li>
+                <li>Server-side turn counting (prevents client-side manipulation)</li>
+            </ul>
+            
+            <h3>API Security</h3>
+            <ul>
+                <li>API keys stored in environment variables (never exposed to client)</li>
+                <li>Serverless functions handle all sensitive operations</li>
+                <li>No CORS for game chat (same-origin only)</li>
+            </ul>
+        </div>
+        
+        <div class="privacy-section">
+            <h2>Your Rights & Control</h2>
+            
+            <h3>You Control:</h3>
+            <ul>
+                <li><strong>What you share:</strong> Only share ideas you want to make public</li>
+                <li><strong>When you share:</strong> Sharing is opt-in, not automatic</li>
+                <li><strong>Your conversation:</strong> Conversations are ephemeral - close the browser to end the session</li>
+            </ul>
+            
+            <h3>No Account Required</h3>
+            <p>
+                You can use the game interface without creating an account, providing an email, or any personal information.
+            </p>
+            
+            <h3>Questions or Concerns?</h3>
+            <p>
+                If you have questions about privacy, data handling, or want to report a concern, 
+                please open an issue on <a href="https://github.com/understories/votc" target="_blank" rel="noopener">GitHub</a> 
+                or contact the project maintainers.
+            </p>
+        </div>
+        
+        <a href="game.html" class="back-link">← Back to Game</a>
+    </div>
+</body>
+</html>
+

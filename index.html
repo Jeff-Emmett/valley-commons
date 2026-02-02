@@ -3,36 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valley of the Commons</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="alternate icon" href="icon.svg">
+    <title>Valley of the Commons | Commons Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="waitlist.js" defer></script>
+    <script src="speakers.js" defer></script>
+    <script src="community-partners.js" defer></script>
 </head>
-<body>
-    <div class="container">
-        <header>
+<body id="top">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <button id="skip-loading" class="skip-loading-button">Skip</button>
+        <div class="loading-image-container">
+            <video id="loading-video" class="loading-image" autoplay muted playsinline preload="auto" poster="photos/shortintro-poster.png">
+                <source src="photos/shortintro.mov" type="video/quicktime">
+                <source src="photos/shortintro.mov" type="video/mp4">
+            </video>
+        </div>
+        <div class="loading-title">
             <h1>Valley of the Commons</h1>
-            <p class="tagline">Coming Soon</p>
-        </header>
-
-        <main>
-            <p class="description">
-                A space for collaborative stewardship and shared abundance.
-            </p>
-
-            <div class="signup">
-                <p>Stay updated on our progress:</p>
-                <form class="email-form" action="#" method="post">
-                    <input type="email" placeholder="your@email.com" required>
-                    <button type="submit">Notify Me</button>
-                </form>
-            </div>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 Valley of the Commons</p>
-        </footer>
+        </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingVideo = document.getElementById('loading-video');
+            if (loadingVideo) {
+                loadingVideo.playbackRate = 0.6;
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="commonshublogo.svg" alt="Commons Hub">
+            </div>
+            <nav class="nav">
+                <a href="#top">Home</a>
+                <a href="#schedule">Schedule</a>
+                <a href="#collaborators" class="nav-speakers">
+                    <span class="nav-speakers-full">Collaborators</span>
+                    <span class="nav-speakers-short">Collaborators</span>
+                </a>
+                <a href="#explore">Explore the Valley</a>
+                <a href="#waitlist" class="nav-get-involved">Get involved</a>
+                <a href="game.html" target="_blank" rel="noopener noreferrer" class="nav-rabbit">🐰</a>
+                <a href="https://blocksurvey.io/valley-of-the-commons-application-form-NVCeexCKTBunKj8xOlLJ_g?v=o" target="_blank" rel="noopener noreferrer" class="nav-cta-button">APPLY NOW</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-image">
+            <img src="valley.webp" alt="Valley of the Commons">
+        </div>
+        <div class="hero-content">
+            <h1>Valley of the Commons</h1>
+            <p class="hero-tagline">a village built on common ground</p>
+            <p class="hero-subtitle">Valley of the Commons is a four-week pop-up village by a nascent network society envisioning life beyond extractive systems.</p>
+            <p class="hero-subtitle">Rooted at <a href="https://www.commons-hub.at/" target="_blank" rel="noopener noreferrer">commons hub</a> and held by the forests, mountains, and open skies of the Austrian Alps, this gathering is a living commons shared in work and study, in making and care, in governance and everyday life.</p>
+            <p class="hero-subtitle">Together, we lay the foundations for permanence by exploring housing, production, decision-making and ownership in community.</p>
+        </div>
+    </section>
+
+    <!-- Event Dates Banner -->
+    <section class="event-dates-banner">
+        <div class="event-dates-content">
+            <h2 class="event-title">Pop-Up Event to Seed the Valley</h2>
+            <p class="event-dates">24 August 2026 – 20 September 2026</p>
+        </div>
+        <a href="https://blocksurvey.io/valley-of-the-commons-application-form-NVCeexCKTBunKj8xOlLJ_g?v=o" target="_blank" rel="noopener noreferrer" class="cta-button">APPLY NOW</a>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- What — A Popup Building Toward Permanence -->
+        <section class="section">
+            <!--What — A popup building toward permanence</h2>-->
+            <p>Valley of the Commons emerges from years of hands-on experimentation with long-format community events. From co-organizing Zu-villages and Invisible Gardens to bootstrapping the commons hub, our team has ample experience in prototyping early nodes of future societies.</p>
+            <p>Over the last few years, popups have evolved into a cultural phenomenon: distributed communities gathering for multiple weeks to test new forms of living, governance, and collective purpose. These experiments have produced invaluable insights into technical innovations, governance mechanisms and financial tools enabling future network societies.</p>
+            <p>Building on that momentum, we believe it's time to shift gears - to make the social, productive, and infrastructural commons as tangible as the tech stack beneath.</p>
+            <p>The Popup is designed as a practice-oriented phase of preparation toward our own permanence. Over four weeks, participants will actively explore central aspects of a future settlement in theory and practice, while building relationships, clarifying shared priorities, and co-shaping the first real building blocks of the commons-centric network society waiting to be born.</p>
+            <p>The program will revolve around three guiding themes, positioned in the context of current global transformations and the renewed relevance of the commons:</p>
+            <ul class="feature-list">
+                <li>Cosmo-local production & open value accounting</li>
+                <li>Nomad-friendly communal life in housing co-ops</li>
+                <li>Horizontal governance & funding mechanisms</li>
+            </ul>
+            <p>Beyond these core tracks, participants are invited to introduce complementary topics they see relevant, and explore how their individual projects might integrate with the perspectives we weave as a community.</p>
+            <p>This popup is not a simulation. It is a real co-living community taking steps toward valley transformation. At the same time, its outcomes feed back into the broader conversation on transitioning network societies from temporary concentrations of talent into durable, regenerative forms of collective life.</p>
+        </section>
+
+        <img src="photos/hubfront.jpg" alt="Commons Hub Front" class="schedule-photo">
+        
+        <!-- The Return of the Commons -->
+        <section class="section">
+            <h2>The Return of the Commons</h2>
+            <p>Across Europe and beyond, digital workers, post-corporate professionals, and remote-friendly entrepreneurs seek grounded, cooperative ways of living, beyond the isolation of the metropolis and the fragility of atomized nomadism.</p>
+            <p>This turn toward intentional communities is a structural process enabled by remote work, motivated by a longing for connection and nature, and driven by the need to hedge against rising volatility from climate shocks, fragile supply chains, precarious employment, and social or environmental degradation.</p>
+            <p>As corporate capitalism fails harder and harder, the urgent need for socio-technical systems, resilient enough to endure the coming decades, becomes apparent. The concepts are here, but we need real places, shared practices, and long-term structures to anchor them in daily life. This is why we build the Valley of the Commons.</p>
+        </section>
+
+        <!-- Why Here -->
+        <section class="section">
+            <!-- <h2>Why here</h2> -->
+            <h3>Venue: <a href="https://www.commons-hub.at/" target="_blank" rel="noopener noreferrer">Commons Hub</a></h3>
+            <p>As an experimental playground for regenerative systems design, the commons hub explores the liberatory potential of emerging technologies and social techniques that facilitate horizontal communities.</p>
+            <p>Drawing on years of experience in managing creative chaos, it provides the stability and freedom to let emerging communities bloom. Its facilities – versatile event spaces, a fablab, atelier, and outdoor gym – are complemented by self-organizing practices, gently guiding creative energy into productive flows.</p>
+            <p>In short, this village does not start from zero. It sprouts from a living, breathing center of the commons movement that offers an economic engine, a platform for entrepreneurship, and a beacon for metamodern thought and praxis.</p>
+            
+            <img src="photos/campfire.png" alt="Campfire at Commons Hub" class="schedule-photo">
+
+            <h3>Location: Höllental</h3>
+            <p>Just an hour south of Vienna, Höllental closes the gentle Danube basin with a dramatic landscape of high peaks, steep cliffs, and cold rushing streams framed by dense forests. It feels remote, almost untouched, yet remains remarkably accessible: nearly 10 million people live within a three-hour drive, and Vienna’s international airport is under two hours away by rail.</p>
+            <p>Formerly a famed imperial summer retreat and wood-industry hub, the valley spent the last century dormant, its villages slowly decaying.</p>
+            <p>Recent signs of reversal point to a shift toward outdoor tourism, as hotels renovate and factories close for good. And yet, real estate remains affordable, with many houses and villas still awaiting new purpose.</p>
+            <p>Adding to its beauty and accessibility, the opportunities on the ground make this valley ideal for building for permanence.</p>
+            <p><a href="#explore" class="explore-link">Explore the Valley →</a></p>
+        </section>
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="section schedule-section">
+            <h2>Schedule</h2>
+            <div class="schedule-intro">
+                <p>The four-week popup follows a simple rhythm: mornings are structured learning paths, afternoons host workshops, field visits, and working groups, and evenings are reserved for shared life, reflection, and communal time.</p>
+                <p>Weekends remain open for exploration and connection with local initiatives. Life happens in between: shared meals, scenic hikes, river plunges, mushroom foraging, fire circles, late-night conversations under alpine stars, and much more.</p>
+                <p>We create these moments together, each contributing their own skills, energy, and quirks to the village.</p>
+            </div>
+            <img src="photos/gardenfront.jpg" alt="Gardenfront at Commons Hub" class="schedule-photo">
+            
+            <div class="schedule-weeks">
+                <div class="schedule-week">
+                    <a href="#" class="read-more-link" onclick="event.preventDefault(); this.closest('.schedule-week').classList.toggle('expanded'); this.textContent = this.closest('.schedule-week').classList.contains('expanded') ? 'click to collapse' : 'READ MORE v'; return false;">READ MORE v</a>
+                    <h3>Week 1</h3><p class="week-theme">Return of the Commons</p>
+                    <p class="week-dates">24 – 30 August 2026</p>
+                    <p class="week-description">
+                        <span class="week-description-preview">To set the scene, we begin with a five‑day course led by Michel Bauwens and Adam Arvidsson, two of the most insightful and engaging contemporary thinkers on the commons. Expect a wild ride through history, economic and sociological theory, peppered with anecdotes, examples, and insights.</span>
+                        <span class="week-description-full">Bauwens, founder of the P2P Foundation, brings a visionary lens, exploring the transformative potential of commons-based systems and their central role in post-capitalist collaboration. Arvidsson’s work instead turns the focus to how commons emerge in everyday production and social life where capitalism fails. Together, their perspectives offer both inspiration and grounded insight: a visionary account of the commons’ civilizational potential, and a practical, historically informed view of how commons-based social and productive forms can arise as capitalism’s reach and allure contract. Afternoons provide a practical counterpart: workshops, small-group exercises, and working sessions allow participants to translate theory into practice, exploring how commons ideas can be operationalized in daily life, collaborative projects, and the emerging Valley of the Commons.</span>
+                    </p>
+                </div>
+                
+                <div class="schedule-week">
+                    <a href="#" class="read-more-link" onclick="event.preventDefault(); this.closest('.schedule-week').classList.toggle('expanded'); this.textContent = this.closest('.schedule-week').classList.contains('expanded') ? 'click to collapse' : 'READ MORE v'; return false;">READ MORE v</a>
+                    <h3>Week 2</h3><p class="week-theme">Cosmo-local Production & Open Value Accounting (OVA)</p>
+                    <p class="week-dates">31 August – 6 September 2026</p>
+                    <p class="week-description">
+                        <span class="week-description-preview">In the second week, we shift from macro-narratives to the mechanics of how a village economy could actually function. Through a mix of theory sessions and hands-on workshops, participants explore how global knowledge commons and local production capacities can sustain livelihoods, small-scale industry, and community resilience.</span>
+                        <span class="week-description-full">We look at business models for cosmo-local manufacturing, mutual credit and community currencies, distributed supply chains, and the workflows that make small-scale fabrication viable. Alongside the economic layer, we dive into open value accounting: reviewing existing models, examining where they succeed (or fail), and collectively selecting a pragmatic framework that we can begin testing immediately. The emphasis throughout the week is on feasibility rather than perfection, focusing on economic structures that real people can actually use. Afternoons extend these concepts into practice: prototyping small production workflows, mapping local resources, drafting economic scenarios, and experimenting with simple Open Value Accounting tools that could underpin the emerging Valley of the Commons. This week is where abstract ideas meet tangible economic strategy.</span>
+                    </p>
+                </div>
+                
+                <div class="schedule-week">
+                    <a href="#" class="read-more-link" onclick="event.preventDefault(); this.closest('.schedule-week').classList.toggle('expanded'); this.textContent = this.closest('.schedule-week').classList.contains('expanded') ? 'click to collapse' : 'READ MORE v'; return false;">READ MORE v</a>
+                    <h3>Week 3</h3><p class="week-theme">Future Living</p>
+                    <p class="week-dates">7 – 13 September 2026</p>
+                    <p class="week-description">
+                        <span class="week-description-preview">Week three turns toward how we might actually live together – architecturally, legally, ecologically, and socially. We explore cooperative housing concepts, map local resources and unused buildings, and examine the ecological potentials of the valley as a site for long-term habitation.</span>
+                        <span class="week-description-full">Sessions cover sustainable renovation techniques, cooperative ownership structures (from co-housing to time-share to hybrid models), and governance frameworks for housing clusters grounded in subsidiarity and shared stewardship. The week’s aim is to converge on minimal, resilient living systems suited to the 21st century: homes that are affordable, adaptable, energy-efficient, and embedded in community. Afternoons translate ideas into grounded work: from site visits to sketches and spatial planning, we will develop early drafts of what a first housing cluster could look like. This is where speculative idealism meets architectural, legal, and economic reality.</span>
+                    </p>
+                </div>
+                
+                <div class="schedule-week">
+                    <a href="#" class="read-more-link" onclick="event.preventDefault(); this.closest('.schedule-week').classList.toggle('expanded'); this.textContent = this.closest('.schedule-week').classList.contains('expanded') ? 'click to collapse' : 'READ MORE v'; return false;">READ MORE v</a>
+                    <h3>Week 4</h3><p class="week-theme">Governance & Funding Models</p>
+                    <p class="week-dates">14 – 20 September 2026</p>
+                    <p class="week-description">
+                        <span class="week-description-preview">The fourth week brings everything into the domain of stewardship: how we organize, decide, invest, and protect what we build together. We explore participatory governance frameworks, cooperative legal structures, long-term investment models, and mechanisms for holding shared assets in trust.</span>
+                        <span class="week-description-full">Drawing on lessons from ecovillages, DAOs, co-ops, and community land trusts, participants map what actually works, and where idealistic models tend to fail in practice. Afternoons shift into applied design: drafting governance charters, testing decision-making protocols, sketching legal wrappers, and evaluating funding pathways that balance autonomy, flexibility, and long-term resilience. The week culminates in a coherent set of next steps: populating the Valley of the Commons association, defining its initial governance and funding architecture, and - potentially - outlining the first concrete co-living project. This final stretch lays the groundwork for the governance of a future permanent village.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section class="section">
+            <div class="explore-embed">
+                <iframe src="https://www.youtube.com/embed/r0-6Ch_Z09s" width="100%" height="450" style="border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+
+        <!-- Collaborators Section -->
+        <section id="collaborators" class="section speakers-section">
+            <h2>Collaborators</h2>
+            <div id="speakers-container" class="speakers-container">
+                <!-- Speakers will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Community Partners Section -->
+        <section id="community-partners" class="section community-partners-section">
+            <h2>Community Partners</h2>
+            <div id="partners-container" class="partners-container">
+                <!-- Partners will be dynamically loaded here -->
+            </div>
+            <p style="text-align: center; margin-top: var(--spacing-md);">
+                <a href="#waitlist" class="explore-link">Get involved →</a>
+            </p>
+        </section>
+
+        <!-- Explore the Valley Section -->
+        <section id="explore" class="section explore-section">
+            <h2>Explore the Valley</h2>
+            <div class="explore-embed">
+                <iframe src="https://www.google.com/maps/embed?pb=!4v1766310431171!6m8!1m7!1sr9uQoPJ34gG31yhEHcHduA!2m2!1d47.70606088305691!2d15.80986228902277!3f308.96847808225624!4f4.7715382336231045!5f0.7820865974627469" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section id="waitlist" class="section cta-section">
+            <div class="cta-content">
+                <h2>Get involved</h2>
+                <p>Join as a partner, theme curator, or sponsor.</p>
+                
+                <!-- Waitlist Form -->
+                <form id="waitlist-form" class="waitlist-form">
+                    <div class="form-group">
+                        <input 
+                            type="email" 
+                            id="waitlist-email" 
+                            name="email" 
+                            placeholder="Enter your email" 
+                            required
+                            aria-label="Email address"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input 
+                            type="text" 
+                            id="waitlist-name" 
+                            name="name" 
+                            placeholder="Your name" 
+                            required
+                            aria-label="Your name"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <textarea 
+                            id="waitlist-involvement" 
+                            name="involvement" 
+                            placeholder="Describe your desired involvement." 
+                            required
+                            aria-label="Describe your desired involvement"
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="waitlist-submit">Submit</button>
+                    <div id="waitlist-message" class="waitlist-message" role="status" aria-live="polite"></div>
+                </form>
+
+                <p class="cta-final">Together, we can turn vision into reality.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+                <p>&copy; 2026 Commons Hub. <a href="https://www.commons-hub.at" target="_blank" rel="noopener noreferrer">commons-hub.at</a></p>
+        </div>
+    </footer>
 </body>
 </html>
+

@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black background -->
+  <rect width="32" height="32" fill="#000000"/>
+  
+  <!-- Light gray circle -->
+  <circle cx="16" cy="16" r="14" fill="#B0B0B0"/>
+  
+  <!-- Dark gray mountain shape - exact path from understories, scaled to fit in circle -->
+  <g transform="translate(4, 6) scale(0.9)">
+    <path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z" fill="#4A4A4A"/>
+  </g>
+</svg>

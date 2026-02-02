@@ -1,0 +1,1 @@
+Felix Fritsch, Co-Founder of the Commons Hub and Crypto Commons Association, combines expertise in political and economic theory with a passion for community organizing. Completed his PhD on The Emergence of the Crypto Commons.

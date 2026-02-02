@@ -1,11 +1,14 @@
 services:
-  valley-commons:
+  votc:
     build: .
+    container_name: votc
     restart: unless-stopped
+    env_file:
+      - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.valley-commons.rule=Host(`valleyofthecommons.org`) || Host(`www.valleyofthecommons.org`)"
-      - "traefik.http.services.valley-commons.loadbalancer.server.port=80"
+      - "traefik.http.routers.votc.rule=Host(`votc.jeffemmett.com`)"
+      - "traefik.http.services.votc.loadbalancer.server.port=3000"
     networks:
       - traefik-public
 

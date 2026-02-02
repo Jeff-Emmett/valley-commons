@@ -1,25 +1,44 @@
-# Dependencies
-node_modules/
+refs/
 
-# Build output
-dist/
-build/
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# IDE
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS
-.DS_Store
-Thumbs.db
+*~
 
 # Logs
 *.log
 npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Internal planning and research
+refs/
+
+# Google service account credentials (NEVER commit these!)
+*-service-account*.json
+service-account*.json
+google-credentials*.json
+credentials.json
+
+# Environment variables for local testing
+.env
+.env.local
+.env.*.local
+# But allow .env.example to be committed
+!.env.example
+
+.vercel
+.env*.local

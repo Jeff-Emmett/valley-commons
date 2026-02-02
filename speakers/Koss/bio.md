@@ -1,0 +1,1 @@
+ Koss is the Lead Gardener at Invisible Garden and runs Ecosystem & Community Growth at Swarm. With a mixed background across the arts, grassroots activism, policy/gov relations, Koss is generally curious about our expansion as a multi-planetary civilization and a long time supporter of the Commons Hub.
