@@ -19,7 +19,6 @@ services:
       - "traefik.http.services.votc.loadbalancer.server.port=3000"
     networks:
       - traefik-public
-      - votc-internal
 
   votc-db:
     image: postgres:16-alpine
@@ -38,7 +37,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - votc-internal
+      - traefik-public
 
 volumes:
   votc-postgres-data:
@@ -46,8 +45,3 @@ volumes:
 networks:
   traefik-public:
     external: true
-  votc-internal:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.29.0.0/24
