@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS email_log (
     recipient_name VARCHAR(255),
     email_type VARCHAR(100) NOT NULL,  -- application_confirmation, waitlist_welcome, status_update, etc
     subject VARCHAR(500),
-    resend_id VARCHAR(255),  -- Resend API message ID
+    message_id VARCHAR(255),  -- SMTP message ID
     status VARCHAR(50) DEFAULT 'sent',  -- sent, delivered, bounced, failed
     sent_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     metadata JSONB

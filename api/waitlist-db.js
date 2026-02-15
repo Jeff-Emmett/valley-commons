@@ -65,12 +65,12 @@ const welcomeEmail = (signup) => ({
   `
 });
 
-async function logEmail(recipientEmail, recipientName, emailType, subject, resendId, metadata = {}) {
+async function logEmail(recipientEmail, recipientName, emailType, subject, messageId, metadata = {}) {
   try {
     await pool.query(
-      `INSERT INTO email_log (recipient_email, recipient_name, email_type, subject, resend_id, metadata)
+      `INSERT INTO email_log (recipient_email, recipient_name, email_type, subject, message_id, metadata)
        VALUES ($1, $2, $3, $4, $5, $6)`,
-      [recipientEmail, recipientName, emailType, subject, resendId, JSON.stringify(metadata)]
+      [recipientEmail, recipientName, emailType, subject, messageId, JSON.stringify(metadata)]
     );
   } catch (error) {
     console.error('Failed to log email:', error);
