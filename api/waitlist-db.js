@@ -1,8 +1,8 @@
 // Waitlist API endpoint using PostgreSQL
-// Simple interest signups with email confirmation via Resend
+// Simple interest signups with email confirmation via Mailcow SMTP
 
 const { Pool } = require('pg');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -10,8 +10,16 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize SMTP transport (Mailcow)
+const smtp = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'mx.jeffemmett.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER || 'noreply@jeffemmett.com',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
 
 const welcomeEmail = (signup) => ({
   subject: 'Welcome to Valley of the Commons',
@@ -137,16 +145,16 @@ module.exports = async function handler(req, res) {
     };
 
     // Send welcome email
-    if (process.env.RESEND_API_KEY) {
+    if (process.env.SMTP_PASS) {
       try {
         const email = welcomeEmail(signup);
-        const { data: emailData } = await resend.emails.send({
+        const info = await smtp.sendMail({
           from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
           to: signup.email,
           subject: email.subject,
-          html: email.html
+          html: email.html,
         });
-        await logEmail(signup.email, signup.name, 'waitlist_welcome', email.subject, emailData?.id);
+        await logEmail(signup.email, signup.name, 'waitlist_welcome', email.subject, info.messageId);
       } catch (emailError) {
         console.error('Failed to send welcome email:', emailError);
         // Don't fail the request if email fails

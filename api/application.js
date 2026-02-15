@@ -1,8 +1,8 @@
 // Application form API endpoint
-// Handles full event applications with PostgreSQL storage and Resend emails
+// Handles full event applications with PostgreSQL storage and Mailcow SMTP emails
 
 const { Pool } = require('pg');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -10,8 +10,16 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize SMTP transport (Mailcow)
+const smtp = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'mx.jeffemmett.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER || 'noreply@jeffemmett.com',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
 
 // Email templates
 const confirmationEmail = (application) => ({
@@ -238,17 +246,17 @@ module.exports = async function handler(req, res) {
       };
 
       // Send confirmation email to applicant
-      if (process.env.RESEND_API_KEY) {
+      if (process.env.SMTP_PASS) {
         try {
           const confirmEmail = confirmationEmail(application);
-          const { data: emailData } = await resend.emails.send({
+          const info = await smtp.sendMail({
             from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
             to: application.email,
             subject: confirmEmail.subject,
-            html: confirmEmail.html
+            html: confirmEmail.html,
           });
           await logEmail(application.email, `${application.first_name} ${application.last_name}`,
-            'application_confirmation', confirmEmail.subject, emailData?.id, { applicationId: application.id });
+            'application_confirmation', confirmEmail.subject, info.messageId, { applicationId: application.id });
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);
         }
@@ -257,14 +265,14 @@ module.exports = async function handler(req, res) {
         try {
           const adminEmail = adminNotificationEmail(application);
           const adminRecipients = (process.env.ADMIN_EMAILS || 'jeff@jeffemmett.com').split(',');
-          const { data: emailData } = await resend.emails.send({
+          const info = await smtp.sendMail({
             from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
-            to: adminRecipients,
+            to: adminRecipients.join(', '),
             subject: adminEmail.subject,
-            html: adminEmail.html
+            html: adminEmail.html,
           });
           await logEmail(adminRecipients[0], 'Admin', 'admin_notification',
-            adminEmail.subject, emailData?.id, { applicationId: application.id });
+            adminEmail.subject, info.messageId, { applicationId: application.id });
         } catch (emailError) {
           console.error('Failed to send admin notification:', emailError);
         }
