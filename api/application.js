@@ -19,6 +19,7 @@ const smtp = nodemailer.createTransport({
     user: process.env.SMTP_USER || 'noreply@jeffemmett.com',
     pass: process.env.SMTP_PASS || '',
   },
+  tls: { rejectUnauthorized: false },
 });
 
 // Email templates
