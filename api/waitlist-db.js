@@ -12,7 +12,7 @@ const pool = new Pool({
 
 // Initialize SMTP transport (Mailcow)
 const smtp = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'mx.jeffemmett.com',
+  host: process.env.SMTP_HOST || 'mail.rmail.online',
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
