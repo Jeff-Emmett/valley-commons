@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgresql://votc:votc_password@votc-db:5432/votc
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
+      - SMTP_HOST=mx.jeffemmett.com
+      - SMTP_PORT=587
+      - SMTP_USER=noreply@jeffemmett.com
       - SMTP_PASS=${SMTP_PASS}
       - EMAIL_FROM=Valley of the Commons <noreply@jeffemmett.com>
       - ADMIN_API_KEY=${ADMIN_API_KEY}
