@@ -3,11 +3,13 @@
 
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
+const { syncApplication } = require('./google-sheets');
+const { createPayment } = require('./mollie');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
 
 // Initialize SMTP transport (Mailcow)
@@ -239,12 +241,22 @@ module.exports = async function handler(req, res) {
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
+        phone: data.phone,
         city: data.city,
         country: data.country,
         attendance_type: data.attendance_type,
         scholarship_needed: data.scholarship_needed,
-        motivation: data.motivation
+        scholarship_reason: data.scholarship_reason,
+        motivation: data.motivation,
+        contribution: data.contribution,
+        how_heard: data.how_heard,
+        referral_name: data.referral_name,
+        arrival_date: data.arrival_date,
+        departure_date: data.departure_date,
       };
+
+      // Sync to Google Sheets (fire-and-forget backup)
+      syncApplication(application);
 
       // Send confirmation email to applicant
       if (process.env.SMTP_PASS) {
@@ -279,10 +291,32 @@ module.exports = async function handler(req, res) {
         }
       }
 
+      // Create Mollie payment if ticket was selected and Mollie is configured
+      let checkoutUrl = null;
+      if (data.contribution_amount && process.env.MOLLIE_API_KEY) {
+        try {
+          const weeksCount = Array.isArray(data.weeks) ? data.weeks.length : 1;
+          const paymentResult = await createPayment(
+            application.id,
+            data.contribution_amount,
+            weeksCount,
+            application.email,
+            application.first_name,
+            application.last_name
+          );
+          checkoutUrl = paymentResult.checkoutUrl;
+          console.log(`Mollie payment created: ${paymentResult.paymentId} (${paymentResult.amount} EUR)`);
+        } catch (paymentError) {
+          console.error('Failed to create Mollie payment:', paymentError);
+          // Don't fail the application - payment can be retried
+        }
+      }
+
       return res.status(201).json({
         success: true,
         message: 'Application submitted successfully',
-        applicationId: application.id
+        applicationId: application.id,
+        checkoutUrl,
       });
 
     } catch (error) {
