@@ -88,13 +88,13 @@ function syncWaitlistSignup({ email, name, involvement }) {
 }
 
 /**
- * Sync an application to the "Applications" sheet tab.
+ * Sync an application to the "Registrations" sheet tab.
  * Columns: Timestamp | App ID | Status | First Name | Last Name | Email | Phone |
  *          Country | City | Attendance | Motivation | Contribution | How Heard |
  *          Referral | Scholarship | Scholarship Reason | Weeks/Dates
  */
 function syncApplication(app) {
-  appendRow('Applications', [
+  appendRow('Registrations', [
     new Date().toISOString(),
     app.id || '',
     'pending',
