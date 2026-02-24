@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Status - Valley of the Commons</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-light: #4a7c23;
+            --cream: #faf8f5;
+            --sand: #f5f5f0;
+            --charcoal: #2c2c2c;
+            --error: #c53030;
+            --warning: #d69e2e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--forest);
+        }
+
+        .header a { color: var(--forest); text-decoration: none; }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .status-icon svg { width: 35px; height: 35px; stroke: white; }
+
+        .status-icon.success { background: var(--forest); }
+        .status-icon.pending { background: var(--warning); }
+        .status-icon.failed { background: var(--error); }
+        .status-icon.loading { background: #999; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            color: var(--forest);
+            margin-bottom: 1rem;
+        }
+
+        .details {
+            background: var(--sand);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .details p {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        .details strong { color: var(--charcoal); }
+
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary { background: var(--forest); color: white; }
+        .btn-primary:hover { background: var(--forest-light); }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .footer a { color: var(--forest); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1><a href="/">Valley of the Commons</a></h1>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="status-card" id="status-card">
+            <div class="status-icon loading" id="status-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+            </div>
+            <h2 id="status-title">Checking payment status...</h2>
+            <p id="status-message">Please wait while we confirm your payment.</p>
+            <div class="details" id="payment-details" style="display: none;">
+                <p><span>Ticket:</span> <strong id="detail-ticket"></strong></p>
+                <p><span>Amount:</span> <strong id="detail-amount"></strong></p>
+            </div>
+            <a href="/" class="btn btn-primary" id="action-btn" style="display: none;">Return to Homepage</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Valley of the Commons &middot; <a href="https://www.commons-hub.at/">Commons Hub</a> &middot; <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const applicationId = params.get('id');
+
+        function showStatus(type, title, message, showDetails) {
+            const icon = document.getElementById('status-icon');
+            icon.className = 'status-icon ' + type;
+
+            const iconSvgs = {
+                success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
+                pending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+                failed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+            };
+
+            icon.innerHTML = iconSvgs[type] || iconSvgs.pending;
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+
+            if (showDetails) {
+                document.getElementById('payment-details').style.display = 'block';
+            }
+
+            document.getElementById('action-btn').style.display = 'inline-block';
+        }
+
+        async function checkPaymentStatus() {
+            if (!applicationId) {
+                showStatus('failed', 'Invalid Link', 'No application ID found. Please check the link in your email.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/mollie/status?id=${applicationId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showStatus('failed', 'Error', data.error || 'Could not check payment status.');
+                    return;
+                }
+
+                // Fill in details
+                if (data.ticketLabel) {
+                    document.getElementById('detail-ticket').textContent = data.ticketLabel;
+                }
+                if (data.paymentAmount) {
+                    document.getElementById('detail-amount').textContent = '\u20AC' + parseFloat(data.paymentAmount).toFixed(2);
+                }
+
+                switch (data.paymentStatus) {
+                    case 'paid':
+                        showStatus('success', 'Payment Confirmed!',
+                            'Your payment has been received. We\'ll review your application and get back to you within 2-3 weeks.', true);
+                        break;
+                    case 'pending':
+                    case 'open':
+                        showStatus('pending', 'Payment Processing',
+                            'Your payment is being processed. This page will update automatically.', true);
+                        // Poll again in 5 seconds
+                        setTimeout(checkPaymentStatus, 5000);
+                        break;
+                    case 'failed':
+                        showStatus('failed', 'Payment Failed',
+                            'Your payment could not be processed. Your application has been saved. Please contact us for assistance.', true);
+                        break;
+                    case 'canceled':
+                        showStatus('failed', 'Payment Canceled',
+                            'Your payment was canceled. Your application has been saved. You can contact us to arrange payment.', true);
+                        break;
+                    case 'expired':
+                        showStatus('failed', 'Payment Expired',
+                            'Your payment session has expired. Your application has been saved. Please contact us to arrange payment.', true);
+                        break;
+                    case 'unpaid':
+                        showStatus('pending', 'Awaiting Payment',
+                            'No payment has been recorded yet. If you were redirected here, please allow a moment for processing.', false);
+                        setTimeout(checkPaymentStatus, 3000);
+                        break;
+                    default:
+                        showStatus('pending', 'Status: ' + data.paymentStatus,
+                            'Your payment status is being updated. Please check back shortly.', false);
+                        setTimeout(checkPaymentStatus, 5000);
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+                showStatus('failed', 'Connection Error', 'Could not reach the server. Please try refreshing the page.');
+            }
+        }
+
+        checkPaymentStatus();
+    </script>
+</body>
+</html>

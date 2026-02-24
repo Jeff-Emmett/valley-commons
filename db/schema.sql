@@ -85,6 +85,12 @@ CREATE TABLE IF NOT EXISTS applications (
     scholarship_reason TEXT,
     contribution_amount VARCHAR(50),  -- sliding scale selection
 
+    -- Payment (Mollie)
+    mollie_payment_id VARCHAR(255),
+    payment_status VARCHAR(50) DEFAULT 'unpaid',  -- unpaid, pending, open, paid, failed, canceled, expired
+    payment_amount DECIMAL(10, 2),
+    payment_paid_at TIMESTAMP WITH TIME ZONE,
+
     -- Admin notes
     admin_notes TEXT,
 
@@ -98,6 +104,8 @@ CREATE TABLE IF NOT EXISTS applications (
 CREATE INDEX idx_applications_email ON applications(email);
 CREATE INDEX idx_applications_status ON applications(status);
 CREATE INDEX idx_applications_submitted ON applications(submitted_at);
+CREATE INDEX idx_applications_mollie_id ON applications(mollie_payment_id);
+CREATE INDEX idx_applications_payment_status ON applications(payment_status);
 
 -- Email log table (track all sent emails)
 CREATE TABLE IF NOT EXISTS email_log (

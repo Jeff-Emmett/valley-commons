@@ -940,6 +940,13 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
+                    // Redirect to Mollie checkout if payment URL was returned
+                    if (result.checkoutUrl) {
+                        window.location.href = result.checkoutUrl;
+                        return;
+                    }
+
+                    // No payment needed - show success directly
                     document.getElementById('confirm-email').textContent = data.email;
                     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
                     document.querySelector('.form-section[data-step="success"]').style.display = 'block';
