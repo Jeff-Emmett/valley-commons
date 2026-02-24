@@ -201,9 +201,9 @@ async function handleWebhook(req, res) {
     // Update application payment status
     await pool.query(
       `UPDATE applications
-       SET payment_status = $1,
-           payment_paid_at = CASE WHEN $1 = 'paid' THEN CURRENT_TIMESTAMP ELSE payment_paid_at END
-       WHERE mollie_payment_id = $2`,
+       SET payment_status = $1::varchar,
+           payment_paid_at = CASE WHEN $1::varchar = 'paid' THEN CURRENT_TIMESTAMP ELSE payment_paid_at END
+       WHERE mollie_payment_id = $2::varchar`,
       [paymentStatus, paymentId]
     );
 
