@@ -4,7 +4,7 @@
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncApplication } = require('./google-sheets');
-const { createPayment } = require('./mollie');
+const { createPayment, TICKET_LABELS, calculateAmount } = require('./mollie');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -24,10 +24,23 @@ const smtp = nodemailer.createTransport({
   tls: { rejectUnauthorized: false },
 });
 
+// Week labels for email display
+const WEEK_LABELS = {
+  week1: 'Week 1: Return to the Commons (Aug 24-30)',
+  week2: 'Week 2: Post-Capitalist Production (Aug 31-Sep 6)',
+  week3: 'Week 3: Future Living (Sep 7-13)',
+  week4: 'Week 4: Governance & Funding Models (Sep 14-20)',
+};
+
 // Email templates
-const confirmationEmail = (application) => ({
-  subject: 'Application Received - Valley of the Commons',
-  html: `
+const confirmationEmail = (application) => {
+  const ticketLabel = TICKET_LABELS[application.contribution_amount] || application.contribution_amount || 'Not selected';
+  const amount = application.contribution_amount ? calculateAmount(application.contribution_amount, (application.weeks || []).length) : null;
+  const weeksHtml = (application.weeks || []).map(w => `<li>${WEEK_LABELS[w] || w}</li>`).join('');
+
+  return {
+    subject: 'Application Received - Valley of the Commons',
+    html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h1 style="color: #2d5016; margin-bottom: 24px;">Thank You for Applying!</h1>
 
@@ -36,8 +49,28 @@ const confirmationEmail = (application) => ({
       <p>We've received your application to join <strong>Valley of the Commons</strong> (August 24 - September 20, 2026).</p>
 
       <div style="background: #f5f5f0; padding: 20px; border-radius: 8px; margin: 24px 0;">
+        <h3 style="margin-top: 0; color: #2d5016;">Your Booking Summary</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Ticket:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${ticketLabel}</td>
+          </tr>
+          ${amount ? `<tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Amount:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${amount}</td>
+          </tr>` : ''}
+          <tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Attendance:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${application.attendance_type === 'full' ? 'Full 4 weeks' : 'Partial'}</td>
+          </tr>
+        </table>
+        ${weeksHtml ? `<p style="margin-top: 12px; margin-bottom: 0;"><strong>Weeks selected:</strong></p><ul style="margin-top: 4px; margin-bottom: 0;">${weeksHtml}</ul>` : ''}
+      </div>
+
+      <div style="background: #f5f5f0; padding: 20px; border-radius: 8px; margin: 24px 0;">
         <h3 style="margin-top: 0; color: #2d5016;">What happens next?</h3>
         <ol style="margin-bottom: 0;">
+          <li>Complete your payment (if you haven't already)</li>
           <li>Our team will review your application</li>
           <li>We may reach out with follow-up questions</li>
           <li>You'll receive a decision within 2-3 weeks</li>
@@ -64,7 +97,8 @@ const confirmationEmail = (application) => ({
       </p>
     </div>
   `
-});
+  };
+};
 
 const adminNotificationEmail = (application) => ({
   subject: `New Application: ${application.first_name} ${application.last_name}`,
@@ -235,6 +269,7 @@ module.exports = async function handler(req, res) {
         ]
       );
 
+      const weeksSelected = Array.isArray(data.weeks) ? data.weeks : [];
       const application = {
         id: result.rows[0].id,
         submitted_at: result.rows[0].submitted_at,
@@ -253,6 +288,8 @@ module.exports = async function handler(req, res) {
         referral_name: data.referral_name,
         arrival_date: data.arrival_date,
         departure_date: data.departure_date,
+        weeks: weeksSelected,
+        contribution_amount: data.contribution_amount,
       };
 
       // Sync to Google Sheets (fire-and-forget backup)
