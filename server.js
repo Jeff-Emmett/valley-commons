@@ -75,6 +75,17 @@ async function runMigrations() {
     `);
     await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_mollie_id ON applications(mollie_payment_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_payment_status ON applications(payment_status)');
+
+    // Rename resend_id → message_id in email_log (legacy column name)
+    const colCheck = await pool.query(`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'email_log' AND column_name = 'resend_id'
+    `);
+    if (colCheck.rows.length > 0) {
+      await pool.query('ALTER TABLE email_log RENAME COLUMN resend_id TO message_id');
+      console.log('Renamed email_log.resend_id → message_id');
+    }
+
     console.log('Database migrations complete');
   } catch (err) {
     console.error('Migration error:', err.message);
