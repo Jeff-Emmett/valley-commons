@@ -68,7 +68,7 @@ async function createPayment(applicationId, ticketType, weeksCount, email, first
     throw new Error(`Invalid ticket type: ${ticketType}`);
   }
 
-  const baseUrl = process.env.BASE_URL || 'https://votc.jeffemmett.com';
+  const baseUrl = process.env.BASE_URL || 'https://valleyofthecommons.com';
   const description = `Valley of the Commons - ${TICKET_LABELS[ticketType] || ticketType}`;
 
   const payment = await mollieClient.payments.create({

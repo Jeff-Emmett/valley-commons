@@ -47,7 +47,7 @@ const confirmationEmail = (application) => ({
       <p>In the meantime, feel free to explore more about the Commons Hub and our community:</p>
       <ul>
         <li><a href="https://www.commons-hub.at/">Commons Hub Website</a></li>
-        <li><a href="https://votc.jeffemmett.com/">Valley of the Commons</a></li>
+        <li><a href="https://valleyofthecommons.com/">Valley of the Commons</a></li>
       </ul>
 
       <p>If you have any questions, reply to this email and we'll get back to you.</p>
@@ -101,7 +101,7 @@ const adminNotificationEmail = (application) => ({
       </div>
 
       <p>
-        <a href="https://votc.jeffemmett.com/admin.html" style="display: inline-block; background: #2d5016; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
+        <a href="https://valleyofthecommons.com/admin.html" style="display: inline-block; background: #2d5016; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
           Review Application
         </a>
       </p>

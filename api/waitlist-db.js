@@ -3,6 +3,7 @@
 
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
+const { syncWaitlistSignup } = require('./google-sheets');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -47,7 +48,7 @@ const welcomeEmail = (signup) => ({
       ` : ''}
 
       <p>
-        <a href="https://votc.jeffemmett.com/apply.html" style="display: inline-block; background: #2d5016; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
+        <a href="https://valleyofthecommons.com/apply.html" style="display: inline-block; background: #2d5016; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
           Apply Now
         </a>
       </p>
@@ -59,8 +60,8 @@ const welcomeEmail = (signup) => ({
 
       <hr style="border: none; border-top: 1px solid #ddd; margin: 32px 0;">
       <p style="font-size: 12px; color: #666;">
-        You received this email because you signed up at votc.jeffemmett.com.<br>
-        <a href="https://votc.jeffemmett.com/unsubscribe?email=${encodeURIComponent(signup.email)}">Unsubscribe</a>
+        You received this email because you signed up at valleyofthecommons.com.<br>
+        <a href="https://valleyofthecommons.com/unsubscribe?email=${encodeURIComponent(signup.email)}">Unsubscribe</a>
       </p>
     </div>
   `
@@ -144,6 +145,9 @@ module.exports = async function handler(req, res) {
       name: nameTrimmed,
       involvement: involvementTrimmed
     };
+
+    // Sync to Google Sheets (fire-and-forget backup)
+    syncWaitlistSignup(signup);
 
     // Send welcome email
     if (process.env.SMTP_PASS) {

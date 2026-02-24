@@ -16,7 +16,7 @@ services:
       - GOOGLE_SHEET_ID=1uZy21IjIwAES92ki6K33CtiTfEzGoUlxQ8jk3IzA0qI
       - GOOGLE_SERVICE_ACCOUNT_FILE=/run/secrets/google-service-account.json
       - MOLLIE_API_KEY=${MOLLIE_API_KEY}
-      - BASE_URL=https://votc.jeffemmett.com
+      - BASE_URL=https://valleyofthecommons.com
     volumes:
       - ./google-service-account.json:/run/secrets/google-service-account.json:ro
     depends_on:
@@ -24,7 +24,7 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.votc.rule=Host(`votc.jeffemmett.com`)"
+      - "traefik.http.routers.votc.rule=Host(`valleyofthecommons.com`) || Host(`www.valleyofthecommons.com`) || Host(`votc.jeffemmett.com`)"
       - "traefik.http.services.votc.loadbalancer.server.port=3000"
     networks:
       - traefik-public
