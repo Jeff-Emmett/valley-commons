@@ -58,6 +58,33 @@ app.get('*', (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Valley of the Commons server running on port ${PORT}`);
+// Run database migrations on startup
+async function runMigrations() {
+  const { Pool } = require('pg');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
+  });
+  try {
+    await pool.query(`
+      ALTER TABLE applications
+        ADD COLUMN IF NOT EXISTS mollie_payment_id VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50) DEFAULT 'unpaid',
+        ADD COLUMN IF NOT EXISTS payment_amount DECIMAL(10, 2),
+        ADD COLUMN IF NOT EXISTS payment_paid_at TIMESTAMP WITH TIME ZONE
+    `);
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_mollie_id ON applications(mollie_payment_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_payment_status ON applications(payment_status)');
+    console.log('Database migrations complete');
+  } catch (err) {
+    console.error('Migration error:', err.message);
+  } finally {
+    await pool.end();
+  }
+}
+
+runMigrations().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Valley of the Commons server running on port ${PORT}`);
+  });
 });
