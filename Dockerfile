@@ -14,8 +14,13 @@ RUN npm install express
 # Copy application files
 COPY . .
 
+# Add Infisical entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose port
 EXPOSE 3000
 
 # Start server
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "server.js"]
