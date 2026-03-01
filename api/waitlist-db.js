@@ -4,6 +4,7 @@
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncWaitlistSignup } = require('./google-sheets');
+const { addToListmonk } = require('./listmonk');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -17,38 +18,57 @@ const smtp = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'newsletter@valleyofthecommons.com',
+    user: process.env.SMTP_USER || 'contact@valleyofthecommons.com',
     pass: process.env.SMTP_PASS || '',
   },
   tls: { rejectUnauthorized: false },
 });
 
 const welcomeEmail = (signup) => ({
-  subject: 'Welcome to Valley of the Commons',
+  subject: 'Welcome to the Valley — A Village Built on Common Ground',
   html: `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1 style="color: #2d5016; margin-bottom: 24px;">Welcome to the Valley!</h1>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+      <h1 style="color: #2d5016; margin-bottom: 8px;">Welcome to the Valley!</h1>
+      <p style="font-size: 15px; color: #5a7a3a; margin-top: 0; margin-bottom: 28px; font-style: italic;">A village built on common ground</p>
 
       <p>Dear ${signup.name},</p>
 
-      <p>Thank you for your interest in <strong>Valley of the Commons</strong> - a four-week pop-up village in the Austrian Alps (August 24 - September 20, 2026).</p>
+      <p>Thank you for stepping toward something different. <strong>Valley of the Commons</strong> is a four-week pop-up village in Austria's Höllental Valley (August 24 – September 20, 2026) — a living commons shared in work and study, in making and care, in governance and everyday life.</p>
 
-      <p>You've been added to our community list. We'll keep you updated on:</p>
-      <ul>
-        <li>Application opening and deadlines</li>
-        <li>Event announcements and updates</li>
-        <li>Ways to get involved</li>
-      </ul>
+      <p>For four weeks, we'll come together to lay the foundations for life beyond extractive systems. Each week explores a different dimension of what a commons-based society can look like:</p>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="border-bottom: 1px solid #e8e8e0;">
+          <td style="padding: 10px 12px; font-weight: bold; color: #2d5016; white-space: nowrap;">Week 1</td>
+          <td style="padding: 10px 12px;">Return of the Commons</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e8e8e0; background: #fafaf5;">
+          <td style="padding: 10px 12px; font-weight: bold; color: #2d5016; white-space: nowrap;">Week 2</td>
+          <td style="padding: 10px 12px;">Cosmo-local Production & Open Value Accounting</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e8e8e0;">
+          <td style="padding: 10px 12px; font-weight: bold; color: #2d5016; white-space: nowrap;">Week 3</td>
+          <td style="padding: 10px 12px;">Future Living</td>
+        </tr>
+        <tr style="background: #fafaf5;">
+          <td style="padding: 10px 12px; font-weight: bold; color: #2d5016; white-space: nowrap;">Week 4</td>
+          <td style="padding: 10px 12px;">Governance & Funding</td>
+        </tr>
+      </table>
+
+      <p>Mornings are structured learning paths. Afternoons host workshops, field visits, and working groups. And in between — shared meals, hikes into the Alps, river swimming, mushroom foraging, fire circles, and the kind of conversations that only happen when people live and build together.</p>
 
       ${signup.involvement ? `
-      <div style="background: #f5f5f0; padding: 16px; border-radius: 8px; margin: 24px 0;">
-        <strong>Your interests:</strong>
-        <p style="margin-bottom: 0;">${signup.involvement}</p>
+      <div style="background: #f5f5f0; padding: 16px; border-radius: 8px; margin: 24px 0; border-left: 3px solid #2d5016;">
+        <strong style="color: #2d5016;">What you're bringing:</strong>
+        <p style="margin-bottom: 0; margin-top: 8px;">${signup.involvement}</p>
       </div>
       ` : ''}
 
-      <p>
-        <a href="https://valleyofthecommons.com/apply.html" style="display: inline-block; background: #2d5016; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
+      <p>We'll be in touch with application details, event updates, and ways to get involved as the village takes shape.</p>
+
+      <p style="text-align: center; margin: 28px 0;">
+        <a href="https://valleyofthecommons.com/apply.html" style="display: inline-block; background: #2d5016; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 16px;">
           Apply Now
         </a>
       </p>
@@ -149,12 +169,18 @@ module.exports = async function handler(req, res) {
     // Sync to Google Sheets (fire-and-forget backup)
     syncWaitlistSignup(signup);
 
+    // Add to Listmonk newsletter
+    addToListmonk(signup.email, signup.name, {
+      involvement: signup.involvement,
+      source: 'waitlist',
+    }).catch(err => console.error('[Listmonk] Waitlist sync failed:', err.message));
+
     // Send welcome email
     if (process.env.SMTP_PASS) {
       try {
         const email = welcomeEmail(signup);
         const info = await smtp.sendMail({
-          from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
+          from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
           to: signup.email,
           subject: email.subject,
           html: email.html,

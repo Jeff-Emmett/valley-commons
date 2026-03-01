@@ -5,6 +5,7 @@ const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncApplication } = require('./google-sheets');
 const { createPayment, TICKET_LABELS, calculateAmount } = require('./mollie');
+const { addToListmonk } = require('./listmonk');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -18,7 +19,7 @@ const smtp = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'newsletter@valleyofthecommons.com',
+    user: process.env.SMTP_USER || 'contact@valleyofthecommons.com',
     pass: process.env.SMTP_PASS || '',
   },
   tls: { rejectUnauthorized: false },
@@ -295,12 +296,19 @@ module.exports = async function handler(req, res) {
       // Sync to Google Sheets (fire-and-forget backup)
       syncApplication(application);
 
+      // Add to Listmonk newsletter
+      addToListmonk(application.email, `${application.first_name} ${application.last_name}`, {
+        source: 'application',
+        weeks: weeksSelected,
+        contributionAmount: data.contribution_amount,
+      }).catch(err => console.error('[Listmonk] Application sync failed:', err.message));
+
       // Send confirmation email to applicant
       if (process.env.SMTP_PASS) {
         try {
           const confirmEmail = confirmationEmail(application);
           const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
+            from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
             to: application.email,
             subject: confirmEmail.subject,
             html: confirmEmail.html,
@@ -316,7 +324,7 @@ module.exports = async function handler(req, res) {
           const adminEmail = adminNotificationEmail(application);
           const adminRecipients = (process.env.ADMIN_EMAILS || 'jeff@jeffemmett.com').split(',');
           const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
+            from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
             to: adminRecipients.join(', '),
             subject: adminEmail.subject,
             html: adminEmail.html,

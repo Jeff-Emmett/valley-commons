@@ -7,6 +7,12 @@ services:
       - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID}
       - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET}
       - INFISICAL_PROJECT_SLUG=valley-commons
+      - LISTMONK_DB_HOST=listmonk-db
+      - LISTMONK_DB_PORT=5432
+      - LISTMONK_DB_NAME=listmonk
+      - LISTMONK_DB_USER=listmonk
+      - LISTMONK_DB_PASS=${LISTMONK_DB_PASS:-listmonk_secure_2025}
+      - LISTMONK_LIST_ID=24
     depends_on:
       votc-db:
         condition: service_healthy
@@ -16,6 +22,7 @@ services:
       - "traefik.http.services.votc.loadbalancer.server.port=3000"
     networks:
       - traefik-public
+      - listmonk-internal
 
   votc-db:
     image: postgres:16-alpine
@@ -42,3 +49,6 @@ volumes:
 networks:
   traefik-public:
     external: true
+  listmonk-internal:
+    external:
+      name: listmonk_listmonk-internal
