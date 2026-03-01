@@ -17,7 +17,7 @@ const smtp = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'noreply@jeffemmett.com',
+    user: process.env.SMTP_USER || 'newsletter@valleyofthecommons.com',
     pass: process.env.SMTP_PASS || '',
   },
   tls: { rejectUnauthorized: false },
@@ -154,7 +154,7 @@ module.exports = async function handler(req, res) {
       try {
         const email = welcomeEmail(signup);
         const info = await smtp.sendMail({
-          from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
+          from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
           to: signup.email,
           subject: email.subject,
           html: email.html,

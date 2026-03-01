@@ -18,7 +18,7 @@ const smtp = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'noreply@jeffemmett.com',
+    user: process.env.SMTP_USER || 'newsletter@valleyofthecommons.com',
     pass: process.env.SMTP_PASS || '',
   },
   tls: { rejectUnauthorized: false },
@@ -300,7 +300,7 @@ module.exports = async function handler(req, res) {
         try {
           const confirmEmail = confirmationEmail(application);
           const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
+            from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
             to: application.email,
             subject: confirmEmail.subject,
             html: confirmEmail.html,
@@ -316,7 +316,7 @@ module.exports = async function handler(req, res) {
           const adminEmail = adminNotificationEmail(application);
           const adminRecipients = (process.env.ADMIN_EMAILS || 'jeff@jeffemmett.com').split(',');
           const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <noreply@jeffemmett.com>',
+            from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
             to: adminRecipients.join(', '),
             subject: adminEmail.subject,
             html: adminEmail.html,
