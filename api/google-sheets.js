@@ -90,8 +90,8 @@ function syncWaitlistSignup({ email, name, involvement }) {
 /**
  * Sync an application to the "Registrations" sheet tab.
  * Columns: Timestamp | App ID | Status | First Name | Last Name | Email | Phone |
- *          Country | City | Attendance | Motivation | Contribution | How Heard |
- *          Referral | Scholarship | Scholarship Reason | Weeks/Dates
+ *          Country | City | Attendance | Weeks | Accommodation | Accom Pref | Food |
+ *          Motivation | Contribution | How Heard | Referral | Scholarship | Scholarship Reason
  */
 function syncApplication(app) {
   appendRow('Registrations', [
@@ -105,15 +105,16 @@ function syncApplication(app) {
     app.country || '',
     app.city || '',
     app.attendance_type || '',
+    (app.weeks || []).join(', '),
+    app.need_accommodation ? 'Yes' : 'No',
+    app.accommodation_preference || '',
+    app.want_food ? 'Yes' : 'No',
     app.motivation || '',
     app.contribution || '',
     app.how_heard || '',
     app.referral_name || '',
     app.scholarship_needed ? 'Yes' : 'No',
     app.scholarship_reason || '',
-    app.arrival_date && app.departure_date
-      ? `${app.arrival_date} to ${app.departure_date}`
-      : '',
   ]);
 }
 

@@ -4,7 +4,7 @@
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncApplication } = require('./google-sheets');
-const { createPayment, TICKET_LABELS, calculateAmount } = require('./mollie');
+const { createPayment, TICKET_LABELS, PRICE_PER_WEEK, calculateAmount } = require('./mollie');
 const { addToListmonk } = require('./listmonk');
 
 // Initialize PostgreSQL connection pool
@@ -35,9 +35,19 @@ const WEEK_LABELS = {
 
 // Email templates
 const confirmationEmail = (application) => {
-  const ticketLabel = TICKET_LABELS[application.contribution_amount] || application.contribution_amount || 'Not selected';
-  const amount = application.contribution_amount ? calculateAmount(application.contribution_amount, (application.weeks || []).length) : null;
+  const weeksCount = (application.weeks || []).length;
+  const amount = calculateAmount('registration', weeksCount);
   const weeksHtml = (application.weeks || []).map(w => `<li>${WEEK_LABELS[w] || w}</li>`).join('');
+
+  const addOns = [];
+  if (application.need_accommodation) {
+    const prefLabel = application.accommodation_preference ? ` (preference: ${application.accommodation_preference})` : '';
+    addOns.push(`Accommodation${prefLabel}`);
+  }
+  if (application.want_food) addOns.push('Food included');
+  const addOnsHtml = addOns.length > 0
+    ? `<tr><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Add-ons:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${addOns.join(', ')} <em>(invoiced separately)</em></td></tr>`
+    : '';
 
   return {
     subject: 'Application Received - Valley of the Commons',
@@ -53,17 +63,14 @@ const confirmationEmail = (application) => {
         <h3 style="margin-top: 0; color: #2d5016;">Your Booking Summary</h3>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Ticket:</strong></td>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${ticketLabel}</td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Registration:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${PRICE_PER_WEEK}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${amount}</td>
           </tr>
-          ${amount ? `<tr>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Amount:</strong></td>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${amount}</td>
-          </tr>` : ''}
           <tr>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Attendance:</strong></td>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${application.attendance_type === 'full' ? 'Full 4 weeks' : 'Partial'}</td>
           </tr>
+          ${addOnsHtml}
         </table>
         ${weeksHtml ? `<p style="margin-top: 12px; margin-bottom: 0;"><strong>Weeks selected:</strong></p><ul style="margin-top: 4px; margin-bottom: 0;">${weeksHtml}</ul>` : ''}
       </div>
@@ -71,10 +78,11 @@ const confirmationEmail = (application) => {
       <div style="background: #f5f5f0; padding: 20px; border-radius: 8px; margin: 24px 0;">
         <h3 style="margin-top: 0; color: #2d5016;">What happens next?</h3>
         <ol style="margin-bottom: 0;">
-          <li>Complete your payment (if you haven't already)</li>
+          <li>Complete your registration payment (if you haven't already)</li>
           <li>Our team will review your application</li>
           <li>We may reach out with follow-up questions</li>
           <li>You'll receive a decision within 2-3 weeks</li>
+          ${addOns.length > 0 ? '<li>Accommodation and food costs will be invoiced separately after acceptance</li>' : ''}
         </ol>
       </div>
 
@@ -123,6 +131,14 @@ const adminNotificationEmail = (application) => ({
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Attendance:</strong></td>
           <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.attendance_type === 'full' ? 'Full 4 weeks' : 'Partial'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Accommodation:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.need_accommodation ? `Yes${application.accommodation_preference ? ' (' + application.accommodation_preference + ')' : ''}` : 'No'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Food:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.want_food ? 'Yes' : 'No'}</td>
         </tr>
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Scholarship:</strong></td>
@@ -219,11 +235,11 @@ module.exports = async function handler(req, res) {
           how_heard, referral_name, previous_events, emergency_name, emergency_phone,
           emergency_relationship, code_of_conduct_accepted, privacy_policy_accepted,
           photo_consent, scholarship_needed, scholarship_reason, contribution_amount,
-          ip_address, user_agent
+          ip_address, user_agent, need_accommodation, want_food
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
           $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32,
-          $33, $34, $35, $36, $37, $38, $39, $40, $41
+          $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43
         ) RETURNING id, submitted_at`,
         [
           data.first_name?.trim(),
@@ -264,9 +280,11 @@ module.exports = async function handler(req, res) {
           data.photo_consent || false,
           data.scholarship_needed || false,
           data.scholarship_reason?.trim() || null,
-          data.contribution_amount || null,
+          'registration',
           req.headers['x-forwarded-for'] || req.connection?.remoteAddress || null,
-          req.headers['user-agent'] || null
+          req.headers['user-agent'] || null,
+          data.need_accommodation || false,
+          data.want_food || false
         ]
       );
 
@@ -290,7 +308,10 @@ module.exports = async function handler(req, res) {
         arrival_date: data.arrival_date,
         departure_date: data.departure_date,
         weeks: weeksSelected,
-        contribution_amount: data.contribution_amount,
+        need_accommodation: data.need_accommodation || false,
+        accommodation_preference: data.accommodation_preference || null,
+        want_food: data.want_food || false,
+        contribution_amount: 'registration',
       };
 
       // Sync to Google Sheets (fire-and-forget backup)
@@ -336,15 +357,14 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      // Create Mollie payment if ticket was selected and Mollie is configured
+      // Create Mollie payment for registration fee (€300/week)
       let checkoutUrl = null;
-      if (data.contribution_amount && process.env.MOLLIE_API_KEY) {
+      if (weeksSelected.length > 0 && process.env.MOLLIE_API_KEY) {
         try {
-          const weeksCount = Array.isArray(data.weeks) ? data.weeks.length : 1;
           const paymentResult = await createPayment(
             application.id,
-            data.contribution_amount,
-            weeksCount,
+            'registration',
+            weeksSelected.length,
             application.email,
             application.first_name,
             application.last_name

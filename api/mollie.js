@@ -22,23 +22,16 @@ const smtp = nodemailer.createTransport({
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'newsletter@valleyofthecommons.com',
+    user: process.env.SMTP_USER || 'contact@valleyofthecommons.com',
     pass: process.env.SMTP_PASS || '',
   },
   tls: { rejectUnauthorized: false },
 });
 
-// Ticket price mapping (in EUR)
-const TICKET_PRICES = {
-  'full-dorm': 1500.00,
-  'full-shared': 1800.00,
-  'full-single': 3200.00,
-  'week-dorm': 425.00,
-  'week-shared': 500.00,
-  'week-single': 850.00,
-  'no-accom': 300.00, // per week
-};
+// Base registration price per week (EUR)
+const PRICE_PER_WEEK = 300.00;
 
+// Legacy ticket labels (kept for backward-compat with existing DB records)
 const TICKET_LABELS = {
   'full-dorm': 'Full Resident - Dorm (4-6 people)',
   'full-shared': 'Full Resident - Shared Double',
@@ -47,18 +40,12 @@ const TICKET_LABELS = {
   'week-shared': '1-Week Visitor - Shared Double',
   'week-single': '1-Week Visitor - Single (deluxe apartment)',
   'no-accom': 'Non-Accommodation Pass',
+  'registration': 'Event Registration',
 };
 
 function calculateAmount(ticketType, weeksCount) {
-  const basePrice = TICKET_PRICES[ticketType];
-  if (!basePrice) return null;
-
-  // no-accom is priced per week
-  if (ticketType === 'no-accom') {
-    return (basePrice * (weeksCount || 1)).toFixed(2);
-  }
-
-  return basePrice.toFixed(2);
+  // New pricing: flat €300/week
+  return (PRICE_PER_WEEK * (weeksCount || 1)).toFixed(2);
 }
 
 // Create a Mollie payment for an application
@@ -69,7 +56,7 @@ async function createPayment(applicationId, ticketType, weeksCount, email, first
   }
 
   const baseUrl = process.env.BASE_URL || 'https://valleyofthecommons.com';
-  const description = `Valley of the Commons - ${TICKET_LABELS[ticketType] || ticketType}`;
+  const description = `Valley of the Commons - Registration (${weeksCount} week${weeksCount > 1 ? 's' : ''})`;
 
   const payment = await mollieClient.payments.create({
     amount: {
@@ -118,8 +105,8 @@ const paymentConfirmationEmail = (application) => ({
         <h3 style="margin-top: 0; color: #2d5016;">Payment Details</h3>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="padding: 4px 0;"><strong>Ticket:</strong></td>
-            <td style="padding: 4px 0;">${TICKET_LABELS[application.contribution_amount] || application.contribution_amount}</td>
+            <td style="padding: 4px 0;"><strong>Type:</strong></td>
+            <td style="padding: 4px 0;">Event Registration</td>
           </tr>
           <tr>
             <td style="padding: 4px 0;"><strong>Amount:</strong></td>
@@ -221,7 +208,7 @@ async function handleWebhook(req, res) {
           const application = appResult.rows[0];
           const confirmEmail = paymentConfirmationEmail(application);
           const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <newsletter@valleyofthecommons.com>',
+            from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
             to: application.email,
             subject: confirmEmail.subject,
             html: confirmEmail.html,
@@ -281,4 +268,4 @@ async function getPaymentStatus(req, res) {
   }
 }
 
-module.exports = { createPayment, handleWebhook, getPaymentStatus, TICKET_PRICES, TICKET_LABELS, calculateAmount };
+module.exports = { createPayment, handleWebhook, getPaymentStatus, PRICE_PER_WEEK, TICKET_LABELS, calculateAmount };

@@ -83,7 +83,11 @@ CREATE TABLE IF NOT EXISTS applications (
     -- Financial
     scholarship_needed BOOLEAN DEFAULT FALSE,
     scholarship_reason TEXT,
-    contribution_amount VARCHAR(50),  -- sliding scale selection
+    contribution_amount VARCHAR(50),  -- 'registration' (base fee) or legacy ticket type
+
+    -- Add-ons (invoiced separately after acceptance)
+    need_accommodation BOOLEAN DEFAULT FALSE,
+    want_food BOOLEAN DEFAULT FALSE,
 
     -- Payment (Mollie)
     mollie_payment_id VARCHAR(255),

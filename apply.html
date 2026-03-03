@@ -238,29 +238,14 @@
         .week-card .dates { font-size: 0.8rem; color: #666; margin-bottom: 0.5rem; }
         .week-card .desc { font-size: 0.85rem; color: #555; }
 
-        /* Ticket options */
-        .ticket-section { margin-bottom: 1.5rem; }
-        .ticket-section h4 { font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--charcoal); }
-
-        .ticket-options { display: flex; flex-direction: column; gap: 0.5rem; }
-
-        .ticket-card {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 0.875rem 1rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
+        /* Select-all card */
+        .select-all-card {
+            border-style: dashed;
+            background: var(--sand);
         }
-
-        .ticket-card:hover { border-color: var(--forest-light); }
-        .ticket-card.selected { border-color: var(--forest); background: rgba(45, 80, 22, 0.05); }
-        .ticket-card input { display: none; }
-
-        .ticket-name { font-size: 0.9rem; }
-        .ticket-price { font-weight: 600; color: var(--forest); }
+        .select-all-card.selected {
+            border-style: solid;
+        }
 
         .ticket-note {
             font-size: 0.8rem;
@@ -369,7 +354,7 @@
         <form id="application-form">
             <!-- Q1: Contact Information -->
             <div class="form-section active" data-step="1">
-                <div class="question-number">Question 1 of 13</div>
+                <div class="question-number">Question 1 of 12</div>
                 <h2>Contact Information</h2>
 
                 <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -406,7 +391,7 @@
 
             <!-- Q2: How did you hear -->
             <div class="form-section" data-step="2">
-                <div class="question-number">Question 2 of 13</div>
+                <div class="question-number">Question 2 of 12</div>
                 <h2>How did you hear about Valley of the Commons? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -421,7 +406,7 @@
 
             <!-- Q3: Referral names -->
             <div class="form-section" data-step="3">
-                <div class="question-number">Question 3 of 13</div>
+                <div class="question-number">Question 3 of 12</div>
                 <h2>Referral name(s) <span class="optional">(optional)</span></h2>
                 <p class="hint">Who can vouch for you?</p>
 
@@ -437,7 +422,7 @@
 
             <!-- Q4: Affiliations -->
             <div class="form-section" data-step="4">
-                <div class="question-number">Question 4 of 13</div>
+                <div class="question-number">Question 4 of 12</div>
                 <h2>What are your affiliations? <span class="required">*</span></h2>
                 <p class="hint">What projects or groups are you affiliated with?</p>
 
@@ -453,7 +438,7 @@
 
             <!-- Q5: Why join -->
             <div class="form-section" data-step="5">
-                <div class="question-number">Question 5 of 13</div>
+                <div class="question-number">Question 5 of 12</div>
                 <h2>Why would you like to join Valley of the Commons, and why are you a good fit? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -468,7 +453,7 @@
 
             <!-- Q6: Current work -->
             <div class="form-section" data-step="6">
-                <div class="question-number">Question 6 of 13</div>
+                <div class="question-number">Question 6 of 12</div>
                 <h2>What are you currently building, researching, or working on? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -483,7 +468,7 @@
 
             <!-- Q7: How contribute -->
             <div class="form-section" data-step="7">
-                <div class="question-number">Question 7 of 13</div>
+                <div class="question-number">Question 7 of 12</div>
                 <h2>How will you contribute to Valley of the Commons? <span class="required">*</span></h2>
                 <p class="hint">Villagers co-create their experience. You can start an interest club, lead a discussion or workshop, teach a cooking class, or more.</p>
 
@@ -499,7 +484,7 @@
 
             <!-- Q8: Rank themes -->
             <div class="form-section" data-step="8">
-                <div class="question-number">Question 8 of 13</div>
+                <div class="question-number">Question 8 of 12</div>
                 <h2>Please rank your interest in our themes <span class="required">*</span></h2>
                 <p class="hint">Drag to reorder from most interested (top) to least interested (bottom).</p>
 
@@ -564,7 +549,7 @@
 
             <!-- Q9: Theme familiarity -->
             <div class="form-section" data-step="9">
-                <div class="question-number">Question 9 of 13</div>
+                <div class="question-number">Question 9 of 12</div>
                 <h2>Please explain your familiarity and interest in our themes and event overall <span class="required">*</span></h2>
                 <p class="hint">🏞️ Valley Future · 🌐 Cosmo-localism · 🪙 Funding & Token Engineering · 👾 Fablabs · 🌌 Future Living · 🧑‍⚖️ Network Governance · ⛲️ Commons · 👤 Privacy · 🌏 d/acc · 💭 (Meta)rationality</p>
 
@@ -580,7 +565,7 @@
 
             <!-- Q10: Belief update -->
             <div class="form-section" data-step="10">
-                <div class="question-number">Question 10 of 13</div>
+                <div class="question-number">Question 10 of 12</div>
                 <h2>Describe a belief you have updated within the last 1-2 years <span class="required">*</span></h2>
                 <p class="hint">What was the belief and why did it change?</p>
 
@@ -594,12 +579,19 @@
                 </div>
             </div>
 
-            <!-- Q11: Which weeks -->
+            <!-- Q11: Weeks & Options -->
             <div class="form-section" data-step="11">
-                <div class="question-number">Question 11 of 13</div>
+                <div class="question-number">Question 11 of 12</div>
                 <h2>Which week(s) would you like to attend? <span class="required">*</span></h2>
+                <p class="hint">Select the weeks you'd like to join. Base registration is €300 per week.</p>
 
                 <div class="week-cards">
+                    <label class="week-card select-all-card" onclick="toggleAllWeeks(this)">
+                        <input type="checkbox" id="select-all-weeks">
+                        <h4>Select all 4 weeks</h4>
+                        <div class="desc">Full residency: August 24 – September 20, 2026</div>
+                    </label>
+
                     <label class="week-card" onclick="toggleWeek(this)">
                         <input type="checkbox" name="weeks" value="week1">
                         <h4>Week 1: Return to the Commons</h4>
@@ -629,86 +621,49 @@
                     </label>
                 </div>
 
+                <!-- Add-ons -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem;">Optional Add-ons</h3>
+                    <p class="hint" style="margin-bottom: 1rem;">These can be arranged and paid separately after acceptance.</p>
+
+                    <label class="week-card" onclick="toggleAddon(this, 'accommodation')" style="margin-bottom: 0.75rem;">
+                        <input type="checkbox" id="need_accommodation">
+                        <h4>I need accommodation</h4>
+                        <div class="desc">On-site housing for the duration of your stay. Pricing depends on room type.</div>
+                    </label>
+
+                    <div id="accommodation-preference" style="display: none; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+                        <label for="accom_type" style="font-size: 0.85rem;">Preferred room type <span class="optional">(non-binding)</span></label>
+                        <select id="accom_type" name="accom_type" style="margin-top: 0.25rem;">
+                            <option value="">-- Select preference --</option>
+                            <option value="dorm">Dorm (4-6 people)</option>
+                            <option value="shared">Shared Double</option>
+                            <option value="single">Single (deluxe apartment)</option>
+                        </select>
+                    </div>
+
+                    <label class="week-card" onclick="toggleAddon(this, 'food')">
+                        <input type="checkbox" id="want_food">
+                        <h4>I want food included</h4>
+                        <div class="desc">Communal meals during your stay (~€10/day). Can be arranged and paid after acceptance.</div>
+                    </label>
+                </div>
+
+                <!-- Price summary -->
+                <div id="price-summary" class="ticket-note" style="margin-top: 1.5rem;">
+                    <strong>Registration fee:</strong> <span id="price-calc">Select at least one week</span><br>
+                    <span style="font-size: 0.75rem; color: #888;">Accommodation and food costs will be invoiced separately after acceptance.</span>
+                </div>
+
                 <div class="form-nav">
                     <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
                     <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
                 </div>
             </div>
 
-            <!-- Q12: Ticket option -->
+            <!-- Q12: Anything else -->
             <div class="form-section" data-step="12">
-                <div class="question-number">Question 12 of 13</div>
-                <h2>Which ticket option would you prefer? <span class="required">*</span></h2>
-                <p class="hint">Prices and options subject to change.</p>
-
-                <div class="ticket-section">
-                    <h4>🏡 Full Resident (4 weeks)</h4>
-                    <div class="ticket-options">
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="full-dorm" required>
-                            <span class="ticket-name">Dorm (4-6 people)</span>
-                            <span class="ticket-price">€1,500</span>
-                        </label>
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="full-shared">
-                            <span class="ticket-name">Shared Double</span>
-                            <span class="ticket-price">€1,800</span>
-                        </label>
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="full-single">
-                            <span class="ticket-name">Single (deluxe apartment)</span>
-                            <span class="ticket-price">€3,200</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="ticket-section">
-                    <h4>🗓 1-Week Visitor (max 20 per week)</h4>
-                    <div class="ticket-options">
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="week-dorm">
-                            <span class="ticket-name">Dorm (4-6 people)</span>
-                            <span class="ticket-price">€425</span>
-                        </label>
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="week-shared">
-                            <span class="ticket-name">Shared Double</span>
-                            <span class="ticket-price">€500</span>
-                        </label>
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="week-single">
-                            <span class="ticket-name">Single (deluxe apartment)</span>
-                            <span class="ticket-price">€850</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="ticket-section">
-                    <h4>🎟 Non-Accommodation Pass</h4>
-                    <div class="ticket-options">
-                        <label class="ticket-card" onclick="selectTicket(this)">
-                            <input type="radio" name="ticket" value="no-accom">
-                            <span class="ticket-name">Event access only</span>
-                            <span class="ticket-price">€300/week</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="ticket-note">
-                    <strong>Included:</strong> Accommodation (if applicable), venue access, event ticket<br>
-                    <strong>Not included:</strong> Food (~€10/day)<br>
-                    <strong>Note:</strong> +10% after June 1 (goes to event org costs)
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q13: Anything else -->
-            <div class="form-section" data-step="13">
-                <div class="question-number">Question 13 of 13</div>
+                <div class="question-number">Question 12 of 12</div>
                 <h2>Anything else you'd like to add? <span class="optional">(optional)</span></h2>
 
                 <div class="form-group">
@@ -756,7 +711,8 @@
 
     <script>
         let currentStep = 1;
-        const totalSteps = 13;
+        const totalSteps = 12;
+        const PRICE_PER_WEEK = 300;
 
         function updateProgress() {
             const percent = Math.round(((currentStep - 1) / totalSteps) * 100);
@@ -827,12 +783,51 @@
             const cb = card.querySelector('input');
             cb.checked = !cb.checked;
             card.classList.toggle('selected', cb.checked);
+            syncSelectAll();
+            updatePriceSummary();
         }
 
-        function selectTicket(card) {
-            document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            card.querySelector('input').checked = true;
+        function toggleAllWeeks(card) {
+            const selectAllCb = card.querySelector('input');
+            selectAllCb.checked = !selectAllCb.checked;
+            card.classList.toggle('selected', selectAllCb.checked);
+
+            const weekCbs = document.querySelectorAll('input[name="weeks"]');
+            weekCbs.forEach(cb => {
+                cb.checked = selectAllCb.checked;
+                cb.closest('.week-card').classList.toggle('selected', selectAllCb.checked);
+            });
+            updatePriceSummary();
+        }
+
+        function syncSelectAll() {
+            const weekCbs = document.querySelectorAll('input[name="weeks"]');
+            const allChecked = Array.from(weekCbs).every(cb => cb.checked);
+            const selectAllCb = document.getElementById('select-all-weeks');
+            const selectAllCard = selectAllCb.closest('.week-card');
+            selectAllCb.checked = allChecked;
+            selectAllCard.classList.toggle('selected', allChecked);
+        }
+
+        function toggleAddon(card, type) {
+            const cb = card.querySelector('input');
+            cb.checked = !cb.checked;
+            card.classList.toggle('selected', cb.checked);
+
+            if (type === 'accommodation') {
+                document.getElementById('accommodation-preference').style.display = cb.checked ? 'block' : 'none';
+            }
+        }
+
+        function updatePriceSummary() {
+            const weeksCount = document.querySelectorAll('input[name="weeks"]:checked').length;
+            const el = document.getElementById('price-calc');
+            if (weeksCount === 0) {
+                el.textContent = 'Select at least one week';
+            } else {
+                const total = weeksCount * PRICE_PER_WEEK;
+                el.innerHTML = `€${PRICE_PER_WEEK} × ${weeksCount} week${weeksCount > 1 ? 's' : ''} = <strong>€${total.toLocaleString()}</strong>`;
+            }
         }
 
         // Theme ranking drag & drop
@@ -887,6 +882,7 @@
 
         function collectFormData() {
             const form = document.getElementById('application-form');
+            const weeks = getSelectedWeeks();
 
             return {
                 first_name: form.first_name.value.trim(),
@@ -903,9 +899,11 @@
                 theme_ranking: JSON.stringify(getThemeRanking()),
                 theme_familiarity: form.theme_familiarity.value,
                 belief_update: form.belief_update.value,
-                weeks: getSelectedWeeks(),
-                attendance_type: getSelectedWeeks().length === 4 ? 'full' : 'partial',
-                contribution_amount: form.querySelector('input[name="ticket"]:checked')?.value || null,
+                weeks: weeks,
+                attendance_type: weeks.length === 4 ? 'full' : 'partial',
+                need_accommodation: document.getElementById('need_accommodation').checked,
+                accommodation_preference: document.getElementById('accom_type').value || null,
+                want_food: document.getElementById('want_food').checked,
                 anything_else: form.anything_else.value,
                 privacy_policy_accepted: form.privacy_accepted.checked,
                 code_of_conduct_accepted: true

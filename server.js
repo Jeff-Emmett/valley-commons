@@ -76,6 +76,13 @@ async function runMigrations() {
     await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_mollie_id ON applications(mollie_payment_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_applications_payment_status ON applications(payment_status)');
 
+    // Add accommodation/food add-on columns
+    await pool.query(`
+      ALTER TABLE applications
+        ADD COLUMN IF NOT EXISTS need_accommodation BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS want_food BOOLEAN DEFAULT FALSE
+    `);
+
     // Rename resend_id → message_id in email_log (legacy column name)
     const colCheck = await pool.query(`
       SELECT column_name FROM information_schema.columns
