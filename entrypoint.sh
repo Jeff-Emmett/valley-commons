@@ -58,7 +58,9 @@ const get = (path, token) => new Promise((resolve, reject) => {
     if (!secrets.secrets) { console.error('[infisical] No secrets returned'); process.exit(1); }
 
     // Output as shell-safe export statements
+    // Skip vars already set via docker-compose (env vars take precedence over Infisical)
     for (const s of secrets.secrets) {
+      if (process.env[s.secretKey]) continue;
       // Single-quote the value to prevent shell expansion, escape existing single quotes
       const escaped = s.secretValue.replace(/'/g, \"'\\\\''\" );
       console.log('export ' + s.secretKey + \"='\" + escaped + \"'\");
