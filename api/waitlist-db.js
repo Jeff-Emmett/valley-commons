@@ -65,13 +65,30 @@ const welcomeEmail = (signup) => ({
       </div>
       ` : ''}
 
-      <p>We'll be in touch with application details, event updates, and ways to get involved as the village takes shape.</p>
+      <p>We'll be in touch with application details, event updates, and ways to get involved as the village takes shape. In the meantime:</p>
 
       <p style="text-align: center; margin: 28px 0;">
-        <a href="https://valleyofthecommons.com/apply.html" style="display: inline-block; background: #2d5016; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 16px;">
-          Apply Now
+        <a href="https://wikivotc2026.netlify.app/valley/overview" style="display: inline-block; background: #2d5016; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 16px;">
+          Explore the Vision
         </a>
       </p>
+
+      <table style="width: 100%; margin: 0 0 8px 0; border-collapse: collapse;">
+        <tr>
+          <td style="text-align: center; padding: 4px;">
+            <a href="mailto:?subject=${encodeURIComponent('Valley of the Commons — a pop-up village in the Austrian Alps')}&body=${encodeURIComponent('I just signed up for Valley of the Commons, a four-week pop-up village in the Austrian Alps this August. Thought you might be interested: https://valleyofthecommons.com')}" style="color: #2d5016; text-decoration: none; font-weight: 500;">
+              Know someone who'd be a fit? Share this &rarr;
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; padding: 4px;">
+            <a href="https://t.me/valleyofthecommons" style="color: #2d5016; text-decoration: none; font-weight: 500;">
+              Join the community chat &rarr;
+            </a>
+          </td>
+        </tr>
+      </table>
 
       <p style="margin-top: 32px;">
         See you in the valley,<br>
