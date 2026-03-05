@@ -14,6 +14,11 @@ services:
       - LISTMONK_DB_PASS=${LISTMONK_DB_PASS:-listmonk_secure_2025}
       - LISTMONK_LIST_ID=24
       - MOLLIE_API_KEY=${MOLLIE_API_KEY}
+      - SMTP_HOST=mail.rmail.online
+      - SMTP_PORT=587
+      - SMTP_USER=contact@valleyofthecommons.com
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM=Valley of the Commons <contact@valleyofthecommons.com>
     depends_on:
       votc-db:
         condition: service_healthy
