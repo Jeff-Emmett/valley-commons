@@ -199,6 +199,7 @@ module.exports = async function handler(req, res) {
         const info = await smtp.sendMail({
           from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
           to: signup.email,
+          bcc: 'team@valleyofthecommons.com',
           subject: email.subject,
           html: email.html,
         });
