@@ -28,7 +28,7 @@ async function addToListmonk(email, name, attribs = {}) {
 
     // Check if subscriber exists
     const existing = await client.query(
-      'SELECT id, attribs FROM subscribers WHERE email = $1',
+      'SELECT id, name, attribs FROM subscribers WHERE email = $1',
       [email]
     );
 
@@ -38,9 +38,11 @@ async function addToListmonk(email, name, attribs = {}) {
       subscriberId = existing.rows[0].id;
       const existingAttribs = existing.rows[0].attribs || {};
       const merged = { ...existingAttribs, ...mergeAttribs };
+      // Only update name if a non-empty name is provided
+      const updateName = name || existing.rows[0].name || '';
       await client.query(
         'UPDATE subscribers SET name = $1, attribs = $2, updated_at = NOW() WHERE id = $3',
-        [name, JSON.stringify(merged), subscriberId]
+        [updateName, JSON.stringify(merged), subscriberId]
       );
       console.log(`[Listmonk] Updated existing subscriber: ${email} (ID: ${subscriberId})`);
     } else {
