@@ -30,6 +30,17 @@ services:
       - traefik-public
       - listmonk-internal
 
+  votc-sponsorship-staging:
+    build: ./staging/sponsorships
+    container_name: votc-sponsorship-staging
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.votc-sponsorship-staging.rule=Host(`votc-sponsorship-staging.jeffemmett.com`)"
+      - "traefik.http.services.votc-sponsorship-staging.loadbalancer.server.port=80"
+    networks:
+      - traefik-public
+
   votc-db:
     image: postgres:16-alpine
     container_name: votc-db
