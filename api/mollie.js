@@ -4,6 +4,7 @@
 const { createMollieClient } = require('@mollie/api-client');
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
+const { assignBooking } = require('./booking-sheet');
 
 // Initialize PostgreSQL connection pool
 const pool = new Pool({
@@ -31,6 +32,31 @@ const smtp = nodemailer.createTransport({
 // Base registration price per week (EUR)
 const PRICE_PER_WEEK = 300.00;
 
+// Processing fee percentage (added on top of subtotal)
+const PROCESSING_FEE_PERCENT = 0.02;
+
+// Accommodation prices per week (EUR) — same as CCG rates
+const ACCOMMODATION_PRICES = {
+  'ch-multi':           279.30,  // Commons Hub shared room (multi-bed)
+  'ch-double':          356.30,  // Commons Hub double room
+  'hh-single':          665.00,  // Herrnhof single room
+  'hh-double-separate': 420.00,  // Herrnhof double room, separate beds
+  'hh-double-shared':   350.00,  // Herrnhof double room, shared bed
+  'hh-triple':          350.00,  // Herrnhof triple room
+  'hh-daybed':          280.00,  // Herrnhof daybed/extra bed
+};
+
+// Human-readable labels for accommodation types
+const ACCOMMODATION_LABELS = {
+  'ch-multi':           'Commons Hub — Shared Room',
+  'ch-double':          'Commons Hub — Double Room',
+  'hh-single':          'Herrnhof Villa — Single Room',
+  'hh-double-separate': 'Herrnhof Villa — Double Room (separate beds)',
+  'hh-double-shared':   'Herrnhof Villa — Double Room (shared bed)',
+  'hh-triple':          'Herrnhof Villa — Triple Room',
+  'hh-daybed':          'Herrnhof Villa — Daybed / Extra Bed',
+};
+
 // Legacy ticket labels (kept for backward-compat with existing DB records)
 const TICKET_LABELS = {
   'full-dorm': 'Full Resident - Dorm (4-6 people)',
@@ -43,25 +69,43 @@ const TICKET_LABELS = {
   'registration': 'Event Registration',
 };
 
-function calculateAmount(ticketType, weeksCount) {
-  // New pricing: flat €300/week
-  return (PRICE_PER_WEEK * (weeksCount || 1)).toFixed(2);
+function calculateAmount(ticketType, weeksCount, accommodationType) {
+  const weeks = weeksCount || 1;
+  const registration = PRICE_PER_WEEK * weeks;
+  const accommodation = accommodationType && ACCOMMODATION_PRICES[accommodationType]
+    ? ACCOMMODATION_PRICES[accommodationType] * weeks
+    : 0;
+  const subtotal = registration + accommodation;
+  const processingFee = subtotal * PROCESSING_FEE_PERCENT;
+  const total = subtotal + processingFee;
+  return {
+    registration: registration.toFixed(2),
+    accommodation: accommodation.toFixed(2),
+    subtotal: subtotal.toFixed(2),
+    processingFee: processingFee.toFixed(2),
+    total: total.toFixed(2),
+  };
 }
 
 // Create a Mollie payment for an application
-async function createPayment(applicationId, ticketType, weeksCount, email, firstName, lastName) {
-  const amount = calculateAmount(ticketType, weeksCount);
-  if (!amount) {
-    throw new Error(`Invalid ticket type: ${ticketType}`);
-  }
+async function createPayment(applicationId, ticketType, weeksCount, email, firstName, lastName, accommodationType, selectedWeeks) {
+  const pricing = calculateAmount(ticketType, weeksCount, accommodationType);
 
   const baseUrl = process.env.BASE_URL || 'https://valleyofthecommons.com';
-  const description = `Valley of the Commons - Registration (${weeksCount} week${weeksCount > 1 ? 's' : ''})`;
+
+  // Build itemized description
+  const parts = [`Registration (${weeksCount} week${weeksCount > 1 ? 's' : ''})`];
+  if (accommodationType && ACCOMMODATION_PRICES[accommodationType]) {
+    const label = ACCOMMODATION_LABELS[accommodationType] || accommodationType;
+    parts.push(`Accommodation: ${label} (${weeksCount} week${weeksCount > 1 ? 's' : ''})`);
+  }
+  parts.push('incl. 2% processing fee');
+  const description = `Valley of the Commons - ${parts.join(' + ')}`;
 
   const payment = await mollieClient.payments.create({
     amount: {
       currency: 'EUR',
-      value: amount,
+      value: pricing.total,
     },
     description,
     redirectUrl: `${baseUrl}/payment-return.html?id=${applicationId}`,
@@ -70,6 +114,9 @@ async function createPayment(applicationId, ticketType, weeksCount, email, first
       applicationId,
       ticketType,
       weeksCount,
+      accommodationType: accommodationType || null,
+      selectedWeeks: selectedWeeks || [],
+      breakdown: pricing,
     },
   });
 
@@ -80,20 +127,50 @@ async function createPayment(applicationId, ticketType, weeksCount, email, first
          payment_amount = $2,
          payment_status = 'pending'
      WHERE id = $3`,
-    [payment.id, amount, applicationId]
+    [payment.id, pricing.total, applicationId]
   );
 
   return {
     paymentId: payment.id,
     checkoutUrl: payment.getCheckoutUrl(),
-    amount,
+    amount: pricing.total,
+    pricing,
   };
 }
 
 // Payment confirmation email
-const paymentConfirmationEmail = (application) => ({
-  subject: 'Payment Confirmed - Valley of the Commons',
-  html: `
+const paymentConfirmationEmail = (application, bookingResult) => {
+  const accomLabel = application.accommodation_type
+    ? (ACCOMMODATION_LABELS[application.accommodation_type] || application.accommodation_type)
+    : null;
+
+  // Build accommodation row if applicable
+  const accomRow = accomLabel ? `
+          <tr>
+            <td style="padding: 4px 0;"><strong>Accommodation:</strong></td>
+            <td style="padding: 4px 0;">${accomLabel}</td>
+          </tr>` : '';
+
+  // Booking assignment info
+  let bookingHtml = '';
+  if (bookingResult) {
+    if (bookingResult.success) {
+      bookingHtml = `
+      <div style="background: #e8f5e9; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        <h3 style="margin-top: 0; color: #2d5016;">Bed Assignment</h3>
+        <p style="margin-bottom: 0;">You have been assigned to <strong>${bookingResult.venue} — Room ${bookingResult.room}, ${bookingResult.bedType}</strong>.</p>
+      </div>`;
+    } else {
+      bookingHtml = `
+      <div style="background: #fff3e0; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        <p style="margin-bottom: 0;">Your accommodation request has been noted. Our team will follow up with your room assignment shortly.</p>
+      </div>`;
+    }
+  }
+
+  return {
+    subject: 'Payment Confirmed - Valley of the Commons',
+    html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h1 style="color: #2d5016; margin-bottom: 24px;">Payment Confirmed!</h1>
 
@@ -106,8 +183,9 @@ const paymentConfirmationEmail = (application) => ({
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 4px 0;"><strong>Type:</strong></td>
-            <td style="padding: 4px 0;">Event Registration</td>
+            <td style="padding: 4px 0;">Event Registration${accomLabel ? ' + Accommodation' : ''}</td>
           </tr>
+          ${accomRow}
           <tr>
             <td style="padding: 4px 0;"><strong>Amount:</strong></td>
             <td style="padding: 4px 0;">&euro;${application.payment_amount}</td>
@@ -118,6 +196,8 @@ const paymentConfirmationEmail = (application) => ({
           </tr>
         </table>
       </div>
+
+      ${bookingHtml}
 
       <p>Your application is now complete. Our team will review it and get back to you within 2-3 weeks.</p>
 
@@ -134,7 +214,8 @@ const paymentConfirmationEmail = (application) => ({
       </p>
     </div>
   `
-});
+  };
+};
 
 async function logEmail(recipientEmail, recipientName, emailType, subject, messageId, metadata = {}) {
   try {
@@ -196,30 +277,87 @@ async function handleWebhook(req, res) {
 
     console.log(`Payment ${paymentId} for application ${applicationId}: ${paymentStatus}`);
 
-    // Send payment confirmation email if payment succeeded
-    if (paymentStatus === 'paid' && process.env.SMTP_PASS) {
+    // On payment success: assign bed + send confirmation emails
+    if (paymentStatus === 'paid') {
       try {
         const appResult = await pool.query(
-          'SELECT id, first_name, last_name, email, contribution_amount, payment_amount, mollie_payment_id FROM applications WHERE mollie_payment_id = $1',
+          'SELECT id, first_name, last_name, email, contribution_amount, payment_amount, mollie_payment_id, accommodation_type FROM applications WHERE mollie_payment_id = $1',
           [paymentId]
         );
 
         if (appResult.rows.length > 0) {
           const application = appResult.rows[0];
-          const confirmEmail = paymentConfirmationEmail(application);
-          const info = await smtp.sendMail({
-            from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
-            to: application.email,
-            bcc: 'team@valleyofthecommons.com',
-            subject: confirmEmail.subject,
-            html: confirmEmail.html,
-          });
-          await logEmail(application.email, `${application.first_name} ${application.last_name}`,
-            'payment_confirmation', confirmEmail.subject, info.messageId,
-            { applicationId: application.id, paymentId, amount: application.payment_amount });
+          const accommodationType = payment.metadata.accommodationType || application.accommodation_type;
+          const selectedWeeks = payment.metadata.selectedWeeks || [];
+
+          // Attempt bed assignment if accommodation was selected
+          let bookingResult = null;
+          if (accommodationType) {
+            try {
+              const guestName = `${application.first_name} ${application.last_name}`;
+              bookingResult = await assignBooking(guestName, accommodationType, selectedWeeks);
+              console.log(`[Booking] ${guestName}: ${bookingResult.success ? 'Assigned' : 'Failed'} — ${JSON.stringify(bookingResult)}`);
+            } catch (bookingError) {
+              console.error('[Booking] Assignment error:', bookingError);
+              bookingResult = { success: false, reason: bookingError.message };
+            }
+          }
+
+          // Send payment confirmation email
+          if (process.env.SMTP_PASS) {
+            const confirmEmail = paymentConfirmationEmail(application, bookingResult);
+            const info = await smtp.sendMail({
+              from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
+              to: application.email,
+              bcc: 'team@valleyofthecommons.com',
+              subject: confirmEmail.subject,
+              html: confirmEmail.html,
+            });
+            await logEmail(application.email, `${application.first_name} ${application.last_name}`,
+              'payment_confirmation', confirmEmail.subject, info.messageId,
+              { applicationId: application.id, paymentId, amount: application.payment_amount });
+
+            // Send internal booking notification to team
+            if (accommodationType) {
+              const accomLabel = ACCOMMODATION_LABELS[accommodationType] || accommodationType;
+              const bookingStatus = bookingResult?.success
+                ? `Assigned: ${bookingResult.venue} Room ${bookingResult.room} (${bookingResult.bedType})`
+                : `MANUAL ASSIGNMENT NEEDED — ${bookingResult?.reason || 'unknown error'}`;
+
+              const bookingNotification = {
+                subject: `Booking ${bookingResult?.success ? 'Assigned' : 'NEEDS ATTENTION'}: ${application.first_name} ${application.last_name}`,
+                html: `
+                  <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: ${bookingResult?.success ? '#2d5016' : '#c53030'};">
+                      ${bookingResult?.success ? 'Bed Assigned' : 'Manual Assignment Needed'}
+                    </h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Guest:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee;">${application.first_name} ${application.last_name}</td></tr>
+                      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee;">${application.email}</td></tr>
+                      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Accommodation:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee;">${accomLabel}</td></tr>
+                      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Weeks:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee;">${selectedWeeks.join(', ') || 'N/A'}</td></tr>
+                      <tr><td style="padding: 6px 0; border-bottom: 1px solid #eee;"><strong>Status:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #eee;">${bookingStatus}</td></tr>
+                      <tr><td style="padding: 6px 0;"><strong>Payment:</strong></td><td style="padding: 6px 0;">&euro;${application.payment_amount}</td></tr>
+                    </table>
+                  </div>
+                `,
+              };
+
+              try {
+                await smtp.sendMail({
+                  from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
+                  to: 'team@valleyofthecommons.com',
+                  subject: bookingNotification.subject,
+                  html: bookingNotification.html,
+                });
+              } catch (notifyError) {
+                console.error('Failed to send booking notification:', notifyError);
+              }
+            }
+          }
         }
       } catch (emailError) {
-        console.error('Failed to send payment confirmation email:', emailError);
+        console.error('Failed to process paid webhook:', emailError);
       }
     }
 
@@ -269,4 +407,9 @@ async function getPaymentStatus(req, res) {
   }
 }
 
-module.exports = { createPayment, handleWebhook, getPaymentStatus, PRICE_PER_WEEK, TICKET_LABELS, calculateAmount };
+module.exports = {
+  createPayment, handleWebhook, getPaymentStatus,
+  PRICE_PER_WEEK, PROCESSING_FEE_PERCENT,
+  ACCOMMODATION_PRICES, ACCOMMODATION_LABELS,
+  TICKET_LABELS, calculateAmount,
+};

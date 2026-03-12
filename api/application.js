@@ -4,7 +4,7 @@
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncApplication } = require('./google-sheets');
-const { createPayment, TICKET_LABELS, PRICE_PER_WEEK, calculateAmount } = require('./mollie');
+const { createPayment, TICKET_LABELS, PRICE_PER_WEEK, ACCOMMODATION_PRICES, ACCOMMODATION_LABELS, PROCESSING_FEE_PERCENT, calculateAmount } = require('./mollie');
 const { addToListmonk } = require('./listmonk');
 
 // Initialize PostgreSQL connection pool
@@ -36,17 +36,25 @@ const WEEK_LABELS = {
 // Email templates
 const confirmationEmail = (application) => {
   const weeksCount = (application.weeks || []).length;
-  const amount = calculateAmount('registration', weeksCount);
+  const accomType = application.accommodation_type || null;
+  const pricing = calculateAmount('registration', weeksCount, accomType);
   const weeksHtml = (application.weeks || []).map(w => `<li>${WEEK_LABELS[w] || w}</li>`).join('');
 
-  const addOns = [];
-  if (application.need_accommodation) {
-    const prefLabel = application.accommodation_preference ? ` (preference: ${application.accommodation_preference})` : '';
-    addOns.push(`Accommodation${prefLabel}`);
+  // Accommodation row
+  let accomHtml = '';
+  if (accomType && ACCOMMODATION_PRICES[accomType]) {
+    const label = ACCOMMODATION_LABELS[accomType] || accomType;
+    const perWeek = ACCOMMODATION_PRICES[accomType];
+    accomHtml = `
+          <tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Accommodation:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${label}<br>&euro;${perWeek.toFixed(2)}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.accommodation}</td>
+          </tr>`;
   }
-  if (application.want_food) addOns.push('Food included');
-  const addOnsHtml = addOns.length > 0
-    ? `<tr><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Add-ons:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${addOns.join(', ')} <em>(invoiced separately)</em></td></tr>`
+
+  // Food note
+  const foodNote = application.want_food
+    ? '<tr><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Food:</strong></td><td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">Interest registered — we are exploring co-producing meals as a community. More details and costs coming soon.</td></tr>'
     : '';
 
   return {
@@ -64,13 +72,22 @@ const confirmationEmail = (application) => {
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Registration:</strong></td>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${PRICE_PER_WEEK}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${amount}</td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${PRICE_PER_WEEK}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.registration}</td>
+          </tr>
+          ${accomHtml}
+          <tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Processing fee (2%):</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${pricing.processingFee}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Total:</strong></td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>&euro;${pricing.total}</strong></td>
           </tr>
           <tr>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Attendance:</strong></td>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${application.attendance_type === 'full' ? 'Full 4 weeks' : 'Partial'}</td>
           </tr>
-          ${addOnsHtml}
+          ${foodNote}
         </table>
         ${weeksHtml ? `<p style="margin-top: 12px; margin-bottom: 0;"><strong>Weeks selected:</strong></p><ul style="margin-top: 4px; margin-bottom: 0;">${weeksHtml}</ul>` : ''}
       </div>
@@ -82,7 +99,7 @@ const confirmationEmail = (application) => {
           <li>Our team will review your application</li>
           <li>We may reach out with follow-up questions</li>
           <li>You'll receive a decision within 2-3 weeks</li>
-          ${addOns.length > 0 ? '<li>Accommodation and food costs will be invoiced separately after acceptance</li>' : ''}
+          ${accomType ? '<li>Your bed will be assigned automatically once payment is confirmed</li>' : ''}
         </ol>
       </div>
 
@@ -134,11 +151,11 @@ const adminNotificationEmail = (application) => ({
         </tr>
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Accommodation:</strong></td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.need_accommodation ? `Yes${application.accommodation_preference ? ' (' + application.accommodation_preference + ')' : ''}` : 'No'}</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.accommodation_type ? (ACCOMMODATION_LABELS[application.accommodation_type] || application.accommodation_type) : (application.need_accommodation ? 'Yes (no type selected)' : 'No')}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Food:</strong></td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.want_food ? 'Yes' : 'No'}</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Food interest:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${application.want_food ? 'Yes — wants to co-produce meals' : 'No'}</td>
         </tr>
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Scholarship:</strong></td>
@@ -235,11 +252,11 @@ module.exports = async function handler(req, res) {
           how_heard, referral_name, previous_events, emergency_name, emergency_phone,
           emergency_relationship, code_of_conduct_accepted, privacy_policy_accepted,
           photo_consent, scholarship_needed, scholarship_reason, contribution_amount,
-          ip_address, user_agent, need_accommodation, want_food
+          ip_address, user_agent, need_accommodation, want_food, accommodation_type
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
           $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32,
-          $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43
+          $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
         ) RETURNING id, submitted_at`,
         [
           data.first_name?.trim(),
@@ -284,7 +301,8 @@ module.exports = async function handler(req, res) {
           req.headers['x-forwarded-for'] || req.connection?.remoteAddress || null,
           req.headers['user-agent'] || null,
           data.need_accommodation || false,
-          data.want_food || false
+          data.want_food || false,
+          data.accommodation_type || null
         ]
       );
 
@@ -310,6 +328,7 @@ module.exports = async function handler(req, res) {
         weeks: weeksSelected,
         need_accommodation: data.need_accommodation || false,
         accommodation_preference: data.accommodation_preference || null,
+        accommodation_type: data.accommodation_type || null,
         want_food: data.want_food || false,
         contribution_amount: 'registration',
       };
@@ -358,7 +377,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      // Create Mollie payment for registration fee (€300/week)
+      // Create Mollie payment for registration + accommodation fee
       let checkoutUrl = null;
       if (weeksSelected.length > 0 && process.env.MOLLIE_API_KEY) {
         try {
@@ -368,10 +387,12 @@ module.exports = async function handler(req, res) {
             weeksSelected.length,
             application.email,
             application.first_name,
-            application.last_name
+            application.last_name,
+            application.accommodation_type,
+            weeksSelected
           );
           checkoutUrl = paymentResult.checkoutUrl;
-          console.log(`Mollie payment created: ${paymentResult.paymentId} (${paymentResult.amount} EUR)`);
+          console.log(`Mollie payment created: ${paymentResult.paymentId} (€${paymentResult.amount})`);
         } catch (paymentError) {
           console.error('Failed to create Mollie payment:', paymentError);
           // Don't fail the application - payment can be retried

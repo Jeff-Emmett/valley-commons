@@ -621,38 +621,102 @@
                     </label>
                 </div>
 
-                <!-- Add-ons -->
+                <!-- Accommodation -->
                 <div style="margin-top: 2rem;">
-                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem;">Optional Add-ons</h3>
-                    <p class="hint" style="margin-bottom: 1rem;">These can be arranged and paid separately after acceptance.</p>
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem;">Accommodation</h3>
 
                     <label class="week-card" onclick="toggleAddon(this, 'accommodation')" style="margin-bottom: 0.75rem;">
                         <input type="checkbox" id="need_accommodation">
-                        <h4>I need accommodation</h4>
-                        <div class="desc">On-site housing for the duration of your stay. Pricing depends on room type.</div>
+                        <h4>Include accommodation with registration</h4>
+                        <div class="desc">On-site housing paid upfront with your registration fee.</div>
                     </label>
 
-                    <div id="accommodation-preference" style="display: none; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
-                        <label for="accom_type" style="font-size: 0.85rem;">Preferred room type <span class="optional">(non-binding)</span></label>
-                        <select id="accom_type" name="accom_type" style="margin-top: 0.25rem;">
-                            <option value="">-- Select preference --</option>
-                            <option value="dorm">Dorm (4-6 people)</option>
-                            <option value="shared">Shared Double</option>
-                            <option value="single">Single (deluxe apartment)</option>
-                        </select>
+                    <div id="accommodation-options" style="display: none;">
+                        <!-- Venue selection -->
+                        <div style="padding: 0.75rem 0; margin-bottom: 0.5rem;">
+                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Choose your venue</label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectVenue('ch')">
+                                <input type="radio" name="venue" value="ch" style="display:none;">
+                                <h4>Commons Hub</h4>
+                                <div class="desc">Shared community living in the main hub building.</div>
+                            </label>
+
+                            <label class="week-card" style="cursor: pointer;" onclick="selectVenue('hh')">
+                                <input type="radio" name="venue" value="hh" style="display:none;">
+                                <h4>Herrnhof Villa</h4>
+                                <div class="desc">Private villa rooms with more comfort and privacy.</div>
+                            </label>
+                        </div>
+
+                        <!-- Commons Hub room types -->
+                        <div id="ch-rooms" style="display: none; padding: 0.75rem 0;">
+                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Commons Hub</label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('ch-multi')">
+                                <input type="radio" name="room_type" value="ch-multi" style="display:none;">
+                                <h4>Shared Room <span style="float:right; color: var(--forest); font-weight: 600;">€279.30/wk</span></h4>
+                                <div class="desc">Multi-bed room (bunk beds). The most affordable option.</div>
+                            </label>
+
+                            <label class="week-card" style="cursor: pointer;" onclick="selectRoom('ch-double')">
+                                <input type="radio" name="room_type" value="ch-double" style="display:none;">
+                                <h4>Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€356.30/wk</span></h4>
+                                <div class="desc">Shared with one other person.</div>
+                            </label>
+                        </div>
+
+                        <!-- Herrnhof room types -->
+                        <div id="hh-rooms" style="display: none; padding: 0.75rem 0;">
+                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Herrnhof Villa</label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-single')">
+                                <input type="radio" name="room_type" value="hh-single" style="display:none;">
+                                <h4>Single Room <span style="float:right; color: var(--forest); font-weight: 600;">€665.00/wk</span></h4>
+                                <div class="desc">Private room for one person.</div>
+                            </label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-double-separate')">
+                                <input type="radio" name="room_type" value="hh-double-separate" style="display:none;">
+                                <h4>Double Room (separate beds) <span style="float:right; color: var(--forest); font-weight: 600;">€420.00/wk</span></h4>
+                                <div class="desc">Shared room with two separate beds.</div>
+                            </label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-double-shared')">
+                                <input type="radio" name="room_type" value="hh-double-shared" style="display:none;">
+                                <h4>Double Room (shared bed) <span style="float:right; color: var(--forest); font-weight: 600;">€350.00/wk</span></h4>
+                                <div class="desc">Shared double bed for couples or friends.</div>
+                            </label>
+
+                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-triple')">
+                                <input type="radio" name="room_type" value="hh-triple" style="display:none;">
+                                <h4>Triple Room <span style="float:right; color: var(--forest); font-weight: 600;">€350.00/wk</span></h4>
+                                <div class="desc">Room shared between three people.</div>
+                            </label>
+
+                            <label class="week-card" style="cursor: pointer;" onclick="selectRoom('hh-daybed')">
+                                <input type="radio" name="room_type" value="hh-daybed" style="display:none;">
+                                <h4>Daybed / Extra Bed <span style="float:right; color: var(--forest); font-weight: 600;">€280.00/wk</span></h4>
+                                <div class="desc">Flexible sleeping spot (daybed or extra bed).</div>
+                            </label>
+                        </div>
                     </div>
+
+                    <input type="hidden" id="accommodation_type" name="accommodation_type" value="">
+
+                    <!-- Food add-on -->
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem; margin-top: 2rem;">Food</h3>
 
                     <label class="week-card" onclick="toggleAddon(this, 'food')">
                         <input type="checkbox" id="want_food">
-                        <h4>I want food included</h4>
-                        <div class="desc">Communal meals during your stay (~€10/day). Can be arranged and paid after acceptance.</div>
+                        <h4>I would like to include food for the week</h4>
+                        <div class="desc">We are exploring co-producing our own meals as a community. More details and costs will be shared soon — checking this box registers your interest so we can plan accordingly.</div>
                     </label>
                 </div>
 
                 <!-- Price summary -->
                 <div id="price-summary" class="ticket-note" style="margin-top: 1.5rem;">
-                    <strong>Registration fee:</strong> <span id="price-calc">Select at least one week</span><br>
-                    <span style="font-size: 0.75rem; color: #888;">Accommodation and food costs will be invoiced separately after acceptance.</span>
+                    <div id="price-calc">Select at least one week</div>
                 </div>
 
                 <div class="form-nav">
@@ -713,6 +777,28 @@
         let currentStep = 1;
         const totalSteps = 12;
         const PRICE_PER_WEEK = 300;
+        const PROCESSING_FEE_PERCENT = 0.02;
+
+        // Accommodation prices per week (must match api/mollie.js)
+        const ACCOMMODATION_PRICES = {
+            'ch-multi':           279.30,
+            'ch-double':          356.30,
+            'hh-single':          665.00,
+            'hh-double-separate': 420.00,
+            'hh-double-shared':   350.00,
+            'hh-triple':          350.00,
+            'hh-daybed':          280.00,
+        };
+
+        const ACCOMMODATION_LABELS = {
+            'ch-multi':           'Commons Hub — Shared Room',
+            'ch-double':          'Commons Hub — Double Room',
+            'hh-single':          'Herrnhof Villa — Single Room',
+            'hh-double-separate': 'Herrnhof Villa — Double (separate beds)',
+            'hh-double-shared':   'Herrnhof Villa — Double (shared bed)',
+            'hh-triple':          'Herrnhof Villa — Triple Room',
+            'hh-daybed':          'Herrnhof Villa — Daybed / Extra Bed',
+        };
 
         function updateProgress() {
             const percent = Math.round(((currentStep - 1) / totalSteps) * 100);
@@ -815,19 +901,84 @@
             card.classList.toggle('selected', cb.checked);
 
             if (type === 'accommodation') {
-                document.getElementById('accommodation-preference').style.display = cb.checked ? 'block' : 'none';
+                const opts = document.getElementById('accommodation-options');
+                opts.style.display = cb.checked ? 'block' : 'none';
+                if (!cb.checked) {
+                    // Clear accommodation selection
+                    document.getElementById('accommodation_type').value = '';
+                    document.querySelectorAll('input[name="venue"]').forEach(r => { r.checked = false; r.closest('.week-card').classList.remove('selected'); });
+                    document.querySelectorAll('input[name="room_type"]').forEach(r => { r.checked = false; r.closest('.week-card').classList.remove('selected'); });
+                    document.getElementById('ch-rooms').style.display = 'none';
+                    document.getElementById('hh-rooms').style.display = 'none';
+                }
             }
+
+            // Always refresh summary (food toggle also affects it)
+            updatePriceSummary();
+        }
+
+        function selectVenue(venue) {
+            // Update radio + card styling
+            document.querySelectorAll('input[name="venue"]').forEach(r => {
+                r.checked = (r.value === venue);
+                r.closest('.week-card').classList.toggle('selected', r.checked);
+            });
+
+            // Show/hide room type sections
+            document.getElementById('ch-rooms').style.display = venue === 'ch' ? 'block' : 'none';
+            document.getElementById('hh-rooms').style.display = venue === 'hh' ? 'block' : 'none';
+
+            // Clear previous room selection
+            document.querySelectorAll('input[name="room_type"]').forEach(r => {
+                r.checked = false;
+                r.closest('.week-card').classList.remove('selected');
+            });
+            document.getElementById('accommodation_type').value = '';
+            updatePriceSummary();
+        }
+
+        function selectRoom(roomType) {
+            document.querySelectorAll('input[name="room_type"]').forEach(r => {
+                r.checked = (r.value === roomType);
+                r.closest('.week-card').classList.toggle('selected', r.checked);
+            });
+            document.getElementById('accommodation_type').value = roomType;
+            updatePriceSummary();
         }
 
         function updatePriceSummary() {
             const weeksCount = document.querySelectorAll('input[name="weeks"]:checked').length;
             const el = document.getElementById('price-calc');
+
             if (weeksCount === 0) {
                 el.textContent = 'Select at least one week';
-            } else {
-                const total = weeksCount * PRICE_PER_WEEK;
-                el.innerHTML = `€${PRICE_PER_WEEK} × ${weeksCount} week${weeksCount > 1 ? 's' : ''} = <strong>€${total.toLocaleString()}</strong>`;
+                return;
             }
+
+            const registration = PRICE_PER_WEEK * weeksCount;
+            const accomType = document.getElementById('accommodation_type').value;
+            const accomPerWeek = accomType ? (ACCOMMODATION_PRICES[accomType] || 0) : 0;
+            const accommodation = accomPerWeek * weeksCount;
+            const subtotal = registration + accommodation;
+            const fee = subtotal * PROCESSING_FEE_PERCENT;
+            const total = subtotal + fee;
+
+            let html = `<strong>Registration:</strong> €${PRICE_PER_WEEK} × ${weeksCount} wk = €${registration.toFixed(2)}`;
+
+            if (accommodation > 0) {
+                const label = ACCOMMODATION_LABELS[accomType] || accomType;
+                html += `<br><strong>Accommodation:</strong> ${label}<br>&nbsp;&nbsp;€${accomPerWeek.toFixed(2)} × ${weeksCount} wk = €${accommodation.toFixed(2)}`;
+            }
+
+            html += `<br><strong>Processing fee (2%):</strong> €${fee.toFixed(2)}`;
+            html += `<br><strong style="font-size: 1.1em;">Total: €${total.toFixed(2)}</strong>`;
+
+            const wantFood = document.getElementById('want_food').checked;
+            if (wantFood) {
+                html += `<br><span style="font-size: 0.8rem; color: var(--forest);">Food: interest registered — details & costs coming soon.</span>`;
+            }
+
+            el.innerHTML = html;
         }
 
         // Theme ranking drag & drop
@@ -902,7 +1053,8 @@
                 weeks: weeks,
                 attendance_type: weeks.length === 4 ? 'full' : 'partial',
                 need_accommodation: document.getElementById('need_accommodation').checked,
-                accommodation_preference: document.getElementById('accom_type').value || null,
+                accommodation_type: document.getElementById('accommodation_type').value || null,
+                accommodation_preference: document.getElementById('accommodation_type').value || null,
                 want_food: document.getElementById('want_food').checked,
                 anything_else: form.anything_else.value,
                 privacy_policy_accepted: form.privacy_accepted.checked,

@@ -90,10 +90,16 @@ function syncWaitlistSignup({ email, name, involvement }) {
 /**
  * Sync an application to the "Registrations" sheet tab.
  * Columns: Timestamp | App ID | Status | First Name | Last Name | Email | Phone |
- *          Country | City | Attendance | Weeks | Accommodation | Accom Pref | Food |
+ *          Country | City | Attendance | Weeks | Accommodation | Accom Type | Accom Venue | Food |
  *          Motivation | Contribution | How Heard | Referral | Scholarship | Scholarship Reason
  */
 function syncApplication(app) {
+  // Derive venue from accommodation_type prefix
+  const accomType = app.accommodation_type || '';
+  const accomVenue = accomType.startsWith('ch-') ? 'Commons Hub'
+    : accomType.startsWith('hh-') ? 'Herrnhof Villa'
+    : '';
+
   appendRow('Registrations', [
     new Date().toISOString(),
     app.id || '',
@@ -107,7 +113,8 @@ function syncApplication(app) {
     app.attendance_type || '',
     (app.weeks || []).join(', '),
     app.need_accommodation ? 'Yes' : 'No',
-    app.accommodation_preference || '',
+    accomType,
+    accomVenue,
     app.want_food ? 'Yes' : 'No',
     app.motivation || '',
     app.contribution || '',

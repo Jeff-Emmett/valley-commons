@@ -85,9 +85,10 @@ CREATE TABLE IF NOT EXISTS applications (
     scholarship_reason TEXT,
     contribution_amount VARCHAR(50),  -- 'registration' (base fee) or legacy ticket type
 
-    -- Add-ons (invoiced separately after acceptance)
+    -- Add-ons
     need_accommodation BOOLEAN DEFAULT FALSE,
     want_food BOOLEAN DEFAULT FALSE,
+    accommodation_type VARCHAR(50),  -- CCG-style: ch-multi, ch-double, hh-single, etc.
 
     -- Payment (Mollie)
     mollie_payment_id VARCHAR(255),

@@ -82,7 +82,8 @@ async function runMigrations() {
     await pool.query(`
       ALTER TABLE applications
         ADD COLUMN IF NOT EXISTS need_accommodation BOOLEAN DEFAULT FALSE,
-        ADD COLUMN IF NOT EXISTS want_food BOOLEAN DEFAULT FALSE
+        ADD COLUMN IF NOT EXISTS want_food BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS accommodation_type VARCHAR(50)
     `);
 
     // Rename resend_id → message_id in email_log (legacy column name)
