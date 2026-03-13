@@ -4,7 +4,7 @@
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const { syncApplication } = require('./google-sheets');
-const { createPayment, TICKET_LABELS, PRICE_PER_WEEK, ACCOMMODATION_PRICES, ACCOMMODATION_LABELS, PROCESSING_FEE_PERCENT, calculateAmount } = require('./mollie');
+const { createPayment, TICKET_LABELS, REGISTRATION_PRICING, ACCOMMODATION_PRICES, ACCOMMODATION_LABELS, PROCESSING_FEE_PERCENT, calculateAmount, getPricingTier } = require('./mollie');
 const { addToListmonk } = require('./listmonk');
 
 // Initialize PostgreSQL connection pool
@@ -44,11 +44,14 @@ const confirmationEmail = (application) => {
   let accomHtml = '';
   if (accomType && ACCOMMODATION_PRICES[accomType]) {
     const label = ACCOMMODATION_LABELS[accomType] || accomType;
-    const perWeek = ACCOMMODATION_PRICES[accomType];
+    const accomPrices = ACCOMMODATION_PRICES[accomType];
+    const accomDisplay = weeksCount === 4
+      ? `${label} — &euro;${accomPrices.perMonth} (full month)`
+      : `${label} — &euro;${accomPrices.perWeek}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.accommodation}`;
     accomHtml = `
           <tr>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Accommodation:</strong></td>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${label}<br>&euro;${perWeek.toFixed(2)}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.accommodation}</td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${accomDisplay}</td>
           </tr>`;
   }
 
@@ -72,7 +75,7 @@ const confirmationEmail = (application) => {
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;"><strong>Registration:</strong></td>
-            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">&euro;${PRICE_PER_WEEK}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.registration}</td>
+            <td style="padding: 6px 0; border-bottom: 1px solid #e0e0e0;">${weeksCount === 4 ? `&euro;${pricing.registration} (full month)` : `&euro;${REGISTRATION_PRICING[pricing.tier].perWeek}/week &times; ${weeksCount} week${weeksCount > 1 ? 's' : ''} = &euro;${pricing.registration}`} (${pricing.tier === 'early' ? 'Early Bird' : pricing.tier === 'standard' ? 'Standard' : 'Last Minute'} rate)</td>
           </tr>
           ${accomHtml}
           <tr>

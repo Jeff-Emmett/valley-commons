@@ -22,7 +22,7 @@
 | **Expected Attendance** | 60–100 participants |
 | **Format** | Four-week structured pop-up village |
 | **Organizers** | Commons Hub |
-| **Pass Value** | €300/week (€1,200 for full 4 weeks) |
+| **Pass Value** | €120–240/week depending on tier (€300–600 for full 4 weeks) |
 
 ---
 
@@ -111,7 +111,7 @@ Four weeks of co-living creates relationships that last. Sponsors become part of
 - Logo on participant materials and signage
 
 **Engagement**
-- **4 complimentary full passes** (4 weeks each — €4,800 value)
+- **4 complimentary full passes** (4 weeks each — €2,400 value)
 - Dedicated 60-minute sponsored session slot
 - Private dinner with organizers and community leaders
 - First access to participant list (with consent) for networking
@@ -133,7 +133,7 @@ Four weeks of co-living creates relationships that last. Sponsors become part of
 - Acknowledgment at ceremonies
 
 **Engagement**
-- **2 complimentary full passes** (€2,400 value)
+- **2 complimentary full passes** (€1,200 value)
 - 30-minute workshop or presentation slot
 - Access to participant introductions (with consent)
 
@@ -152,7 +152,7 @@ Four weeks of co-living creates relationships that last. Sponsors become part of
 - Social media mention
 
 **Engagement**
-- **1 complimentary full pass** (€1,200 value)
+- **1 complimentary full pass** (€600 value)
 - Priority registration access
 
 **Content & Media**
@@ -168,7 +168,7 @@ Four weeks of co-living creates relationships that last. Sponsors become part of
 - Social media thank-you post
 
 **Engagement**
-- **1 discounted pass** (50% off — €600 value)
+- **1 discounted pass** (50% off — €300 value)
 
 ---
 
@@ -267,8 +267,8 @@ We'd love to discuss how a partnership could work for your organization.
 | Date | Milestone |
 |------|-----------|
 | **Now** | Sponsorship discussions open |
-| **May 31, 2026** | Early bird registration closes |
-| **July 31, 2026** | Regular registration closes |
+| **May 15, 2026** | Early bird registration closes |
+| **July 15, 2026** | Standard registration closes |
 | **August 1, 2026** | Final sponsor deliverables due |
 | **Aug 24 – Sep 20, 2026** | Valley of the Commons 2026 |
 | **October 2026** | Post-event report and media shared |
