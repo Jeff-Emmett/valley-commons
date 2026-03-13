@@ -16,25 +16,25 @@ const ACCOMMODATION_CRITERIA = {
     venue: 'Commons Hub',
     bedTypes: ['Double'],
   },
-  'hh-single': {
+  'hh-living': {
     venue: 'Herrnhof Villa',
-    bedTypes: ['Single'],
-  },
-  'hh-double-separate': {
-    venue: 'Herrnhof Villa',
-    bedTypes: ['Double (separate)', 'Twin'],
-  },
-  'hh-double-shared': {
-    venue: 'Herrnhof Villa',
-    bedTypes: ['Double (shared)', 'Double'],
+    bedTypes: ['Living room', 'Sofa bed', 'Daybed'],
   },
   'hh-triple': {
     venue: 'Herrnhof Villa',
     bedTypes: ['Triple'],
   },
-  'hh-daybed': {
+  'hh-twin': {
     venue: 'Herrnhof Villa',
-    bedTypes: ['Daybed', 'Extra bed', 'Sofa bed'],
+    bedTypes: ['Twin', 'Double (separate)'],
+  },
+  'hh-single': {
+    venue: 'Herrnhof Villa',
+    bedTypes: ['Single'],
+  },
+  'hh-couple': {
+    venue: 'Herrnhof Villa',
+    bedTypes: ['Double (shared)', 'Double', 'Couple'],
   },
 };
 
