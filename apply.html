@@ -522,13 +522,13 @@
 
                             <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('ch-multi')">
                                 <input type="radio" name="room_type" value="ch-multi" style="display:none;">
-                                <h4>Bed in Multi-Room <span style="float:right; color: var(--forest); font-weight: 600;">€475/wk</span></h4>
+                                <h4>Bed in Multi-Room <span style="float:right; color: var(--forest); font-weight: 600;">€275/wk</span></h4>
                                 <div class="desc">Bed in a shared multi-bed room. The most affordable option.</div>
                             </label>
 
                             <label class="week-card" style="cursor: pointer;" onclick="selectRoom('ch-double')">
                                 <input type="radio" name="room_type" value="ch-double" style="display:none;">
-                                <h4>Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€550/wk</span></h4>
+                                <h4>Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
                                 <div class="desc">Shared with one other person.</div>
                             </label>
                         </div>
@@ -539,31 +539,31 @@
 
                             <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-living')">
                                 <input type="radio" name="room_type" value="hh-living" style="display:none;">
-                                <h4>Bed in Living Room <span style="float:right; color: var(--forest); font-weight: 600;">€515/wk</span></h4>
+                                <h4>Bed in Living Room <span style="float:right; color: var(--forest); font-weight: 600;">€315/wk</span></h4>
                                 <div class="desc">Shared living space with flexible sleeping arrangement.</div>
                             </label>
 
                             <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-triple')">
                                 <input type="radio" name="room_type" value="hh-triple" style="display:none;">
-                                <h4>Bed in Triple Room <span style="float:right; color: var(--forest); font-weight: 600;">€550/wk</span></h4>
+                                <h4>Bed in Triple Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
                                 <div class="desc">Room shared between three people.</div>
                             </label>
 
                             <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-twin')">
                                 <input type="radio" name="room_type" value="hh-twin" style="display:none;">
-                                <h4>Bed in Twin Room <span style="float:right; color: var(--forest); font-weight: 600;">€620/wk</span></h4>
-                                <div class="desc">Room shared with one other person, separate beds.</div>
+                                <h4>Single Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€420/wk</span></h4>
+                                <div class="desc">Your own bed in a room shared with one other person.</div>
                             </label>
 
                             <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-single')">
                                 <input type="radio" name="room_type" value="hh-single" style="display:none;">
-                                <h4>Single Room <span style="float:right; color: var(--forest); font-weight: 600;">€865/wk</span></h4>
+                                <h4>Single Room <span style="float:right; color: var(--forest); font-weight: 600;">€665/wk</span></h4>
                                 <div class="desc">Private room for one person.</div>
                             </label>
 
                             <label class="week-card" style="cursor: pointer;" onclick="selectRoom('hh-couple')">
                                 <input type="radio" name="room_type" value="hh-couple" style="display:none;">
-                                <h4>Couple Room <span style="float:right; color: var(--forest); font-weight: 600;">€1,100/wk</span></h4>
+                                <h4>Couple Room <span style="float:right; color: var(--forest); font-weight: 600;">€700/wk</span></h4>
                                 <div class="desc">Private room with double bed for couples.<br><em style="color: #666; font-size: 0.85em;">(Your partner should book without accommodation)</em></div>
                             </label>
                         </div>
@@ -643,21 +643,35 @@
     <script>
         let currentStep = 1;
         const totalSteps = 9;
-        const PRICE_PER_WEEK = 300;
         const PROCESSING_FEE_PERCENT = 0.02;
 
-        // Current pricing tier (must match api/mollie.js)
-        const CURRENT_PRICING_TIER = 'standard';
+        // Tiered registration pricing (must match api/mollie.js)
+        const REGISTRATION_PRICING = {
+            early:    { perWeek: 120, perMonth: 300 },
+            standard: { perWeek: 200, perMonth: 500 },
+            lastMin:  { perWeek: 240, perMonth: 600 },
+        };
 
-        // Accommodation prices — tiered by duration and booking window (must match api/mollie.js)
+        function getPricingTier() {
+            const now = new Date();
+            if (now < new Date('2026-05-15')) return 'early';
+            if (now < new Date('2026-07-15')) return 'standard';
+            return 'lastMin';
+        }
+
+        const currentTier = getPricingTier();
+        const tierPricing = REGISTRATION_PRICING[currentTier];
+        const TIER_LABELS = { early: 'Early Bird', standard: 'Standard', lastMin: 'Last Minute' };
+
+        // Accommodation prices — flat rates (must match api/mollie.js)
         const ACCOMMODATION_PRICES = {
-            'ch-multi':  { '1week': { early: 395, standard: 475, lastMin: 515 },  '4week': { early: 1400, standard: 1600, lastMin: 1700 } },
-            'ch-double': { '1week': { early: 470, standard: 550, lastMin: 590 },  '4week': { early: 1700, standard: 1900, lastMin: 2000 } },
-            'hh-living': { '1week': { early: 435, standard: 515, lastMin: 555 },  '4week': { early: 1560, standard: 1760, lastMin: 1860 } },
-            'hh-triple': { '1week': { early: 470, standard: 550, lastMin: 590 },  '4week': { early: 1700, standard: 1900, lastMin: 2000 } },
-            'hh-twin':   { '1week': { early: 540, standard: 620, lastMin: 660 },  '4week': { early: 1980, standard: 2180, lastMin: 2280 } },
-            'hh-single': { '1week': { early: 785, standard: 865, lastMin: 905 },  '4week': { early: 2960, standard: 3160, lastMin: 3260 } },
-            'hh-couple': { '1week': { early: 940, standard: 1100, lastMin: 1180 }, '4week': { early: 3400, standard: 3800, lastMin: 4000 } },
+            'ch-multi':  { perWeek: 275,  perMonth: 1100 },
+            'ch-double': { perWeek: 350,  perMonth: 1400 },
+            'hh-living': { perWeek: 315,  perMonth: 1260 },
+            'hh-triple': { perWeek: 350,  perMonth: 1400 },
+            'hh-twin':   { perWeek: 420,  perMonth: 1680 },
+            'hh-single': { perWeek: 665,  perMonth: 2660 },
+            'hh-couple': { perWeek: 700,  perMonth: 2800 },
         };
 
         const ACCOMMODATION_LABELS = {
@@ -665,7 +679,7 @@
             'ch-double': 'Commons Hub — Bed in Double Room',
             'hh-living': 'Herrnhof Villa — Bed in Living Room',
             'hh-triple': 'Herrnhof Villa — Bed in Triple Room',
-            'hh-twin':   'Herrnhof Villa — Bed in Twin Room',
+            'hh-twin':   'Herrnhof Villa — Single Bed in Double Room',
             'hh-single': 'Herrnhof Villa — Single Room',
             'hh-couple': 'Herrnhof Villa — Couple Room',
         };
@@ -673,9 +687,8 @@
         function getAccommodationPrice(accomType, weeksCount) {
             if (!accomType || !ACCOMMODATION_PRICES[accomType]) return 0;
             const prices = ACCOMMODATION_PRICES[accomType];
-            const tier = CURRENT_PRICING_TIER;
-            if (weeksCount === 4) return prices['4week'][tier];
-            return prices['1week'][tier] * weeksCount;
+            if (weeksCount === 4) return prices.perMonth;
+            return prices.perWeek * weeksCount;
         }
 
         function updateProgress() {
@@ -833,23 +846,25 @@
                 return;
             }
 
-            const registration = PRICE_PER_WEEK * weeksCount;
+            const registration = weeksCount === 4 ? tierPricing.perMonth : tierPricing.perWeek * weeksCount;
             const accomType = document.getElementById('accommodation_type').value;
             const accommodation = getAccommodationPrice(accomType, weeksCount);
             const subtotal = registration + accommodation;
             const fee = subtotal * PROCESSING_FEE_PERCENT;
             const total = subtotal + fee;
 
-            const tierLabel = { early: 'Early Bird', standard: 'Standard', lastMin: 'Last Minute' }[CURRENT_PRICING_TIER];
-            let html = `<strong>Registration:</strong> €${PRICE_PER_WEEK} × ${weeksCount} wk = €${registration.toFixed(2)}`;
+            const tierLabel = TIER_LABELS[currentTier];
+            let html = weeksCount === 4
+                ? `<strong>Registration:</strong> €${tierPricing.perMonth} (full month, ${tierLabel})`
+                : `<strong>Registration:</strong> €${tierPricing.perWeek} × ${weeksCount} wk = €${registration.toFixed(2)} (${tierLabel})`;
 
             if (accommodation > 0) {
                 const label = ACCOMMODATION_LABELS[accomType] || accomType;
+                const prices = ACCOMMODATION_PRICES[accomType];
                 if (weeksCount === 4) {
-                    html += `<br><strong>Accommodation:</strong> ${label}<br>&nbsp;&nbsp;4-week ${tierLabel} rate = €${accommodation.toFixed(2)}`;
+                    html += `<br><strong>Accommodation:</strong> ${label}<br>&nbsp;&nbsp;€${prices.perMonth} (full month)`;
                 } else {
-                    const perWeek = ACCOMMODATION_PRICES[accomType]['1week'][CURRENT_PRICING_TIER];
-                    html += `<br><strong>Accommodation:</strong> ${label}<br>&nbsp;&nbsp;€${perWeek.toFixed(2)} × ${weeksCount} wk (${tierLabel}) = €${accommodation.toFixed(2)}`;
+                    html += `<br><strong>Accommodation:</strong> ${label}<br>&nbsp;&nbsp;€${prices.perWeek} × ${weeksCount} wk = €${accommodation.toFixed(2)}`;
                 }
             }
 

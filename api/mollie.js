@@ -29,41 +29,39 @@ const smtp = nodemailer.createTransport({
   tls: { rejectUnauthorized: false },
 });
 
-// Base registration price per week (EUR)
-const PRICE_PER_WEEK = 300.00;
+// Tiered registration pricing (EUR)
+// Early Bird: before May 15 | Standard: before July 15 | Last Minute: after July 15
+const REGISTRATION_PRICING = {
+  early:    { perWeek: 120, perMonth: 300 },
+  standard: { perWeek: 200, perMonth: 500 },
+  lastMin:  { perWeek: 240, perMonth: 600 },
+};
 
 // Processing fee percentage (added on top of subtotal)
 const PROCESSING_FEE_PERCENT = 0.02;
 
-// Pricing tier — override with a fixed tier, or set to null to use date-based logic
-const CURRENT_PRICING_TIER = 'standard';
-
-// Date-based tier cutoffs (used when CURRENT_PRICING_TIER is null)
-// Set ISO date strings, e.g. '2026-05-01'
+// Date-based tier cutoffs
 const PRICING_TIER_DATES = {
-  earlyEnd: null,    // before this date → 'early'
-  standardEnd: null, // before this date → 'standard'; after → 'lastMin'
+  earlyEnd:    '2026-05-15',  // before this date → 'early'
+  standardEnd: '2026-07-15',  // before this date → 'standard'; after → 'lastMin'
 };
 
 function getPricingTier() {
-  if (CURRENT_PRICING_TIER) return CURRENT_PRICING_TIER;
   const now = new Date();
-  if (PRICING_TIER_DATES.earlyEnd && now < new Date(PRICING_TIER_DATES.earlyEnd)) return 'early';
-  if (PRICING_TIER_DATES.standardEnd && now < new Date(PRICING_TIER_DATES.standardEnd)) return 'standard';
+  if (now < new Date(PRICING_TIER_DATES.earlyEnd)) return 'early';
+  if (now < new Date(PRICING_TIER_DATES.standardEnd)) return 'standard';
   return 'lastMin';
 }
 
-// Accommodation prices (EUR) — tiered by duration and booking window
-// 1week = per-week rate (multiply by weeks for 1–3 week stays)
-// 4week = flat total for a full 4-week stay
+// Accommodation prices (EUR) — flat rates (per week and per month/4-week)
 const ACCOMMODATION_PRICES = {
-  'ch-multi':  { '1week': { early: 395, standard: 475, lastMin: 515 },  '4week': { early: 1400, standard: 1600, lastMin: 1700 } },
-  'ch-double': { '1week': { early: 470, standard: 550, lastMin: 590 },  '4week': { early: 1700, standard: 1900, lastMin: 2000 } },
-  'hh-living': { '1week': { early: 435, standard: 515, lastMin: 555 },  '4week': { early: 1560, standard: 1760, lastMin: 1860 } },
-  'hh-triple': { '1week': { early: 470, standard: 550, lastMin: 590 },  '4week': { early: 1700, standard: 1900, lastMin: 2000 } },
-  'hh-twin':   { '1week': { early: 540, standard: 620, lastMin: 660 },  '4week': { early: 1980, standard: 2180, lastMin: 2280 } },
-  'hh-single': { '1week': { early: 785, standard: 865, lastMin: 905 },  '4week': { early: 2960, standard: 3160, lastMin: 3260 } },
-  'hh-couple': { '1week': { early: 940, standard: 1100, lastMin: 1180 }, '4week': { early: 3400, standard: 3800, lastMin: 4000 } },
+  'ch-multi':  { perWeek: 275,  perMonth: 1100 },
+  'ch-double': { perWeek: 350,  perMonth: 1400 },
+  'hh-living': { perWeek: 315,  perMonth: 1260 },
+  'hh-triple': { perWeek: 350,  perMonth: 1400 },
+  'hh-twin':   { perWeek: 420,  perMonth: 1680 },
+  'hh-single': { perWeek: 665,  perMonth: 2660 },
+  'hh-couple': { perWeek: 700,  perMonth: 2800 },
 };
 
 // Human-readable labels for accommodation types
@@ -72,7 +70,7 @@ const ACCOMMODATION_LABELS = {
   'ch-double': 'Commons Hub — Bed in Double Room',
   'hh-living': 'Herrnhof Villa — Bed in Living Room',
   'hh-triple': 'Herrnhof Villa — Bed in Triple Room',
-  'hh-twin':   'Herrnhof Villa — Bed in Twin Room',
+  'hh-twin':   'Herrnhof Villa — Single Bed in Double Room',
   'hh-single': 'Herrnhof Villa — Single Room',
   'hh-couple': 'Herrnhof Villa — Couple Room',
 };
@@ -92,16 +90,15 @@ const TICKET_LABELS = {
 function calculateAmount(ticketType, weeksCount, accommodationType) {
   const weeks = weeksCount || 1;
   const tier = getPricingTier();
-  const registration = PRICE_PER_WEEK * weeks;
+  const regPricing = REGISTRATION_PRICING[tier];
+
+  // Full month (4 weeks) gets the month rate; otherwise per-week
+  const registration = weeks === 4 ? regPricing.perMonth : regPricing.perWeek * weeks;
 
   let accommodation = 0;
   if (accommodationType && ACCOMMODATION_PRICES[accommodationType]) {
     const prices = ACCOMMODATION_PRICES[accommodationType];
-    if (weeks === 4) {
-      accommodation = prices['4week'][tier];
-    } else {
-      accommodation = prices['1week'][tier] * weeks;
-    }
+    accommodation = weeks === 4 ? prices.perMonth : prices.perWeek * weeks;
   }
 
   const subtotal = registration + accommodation;
@@ -503,7 +500,7 @@ async function resumePayment(req, res) {
 
 module.exports = {
   createPayment, handleWebhook, getPaymentStatus, resumePayment,
-  PRICE_PER_WEEK, PROCESSING_FEE_PERCENT,
+  REGISTRATION_PRICING, PROCESSING_FEE_PERCENT,
   ACCOMMODATION_PRICES, ACCOMMODATION_LABELS,
   TICKET_LABELS, calculateAmount, getPricingTier,
 };
