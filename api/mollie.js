@@ -434,8 +434,72 @@ async function getPaymentStatus(req, res) {
   }
 }
 
+// Resume payment — re-creates a Mollie payment for unpaid applications and redirects to checkout
+async function resumePayment(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  try {
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ error: 'Missing application id' });
+    }
+
+    const result = await pool.query(
+      `SELECT id, first_name, last_name, email, payment_status, payment_amount,
+              accommodation_type, contribution_amount
+       FROM applications WHERE id = $1`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const app = result.rows[0];
+
+    // Already paid — redirect to status page
+    if (app.payment_status === 'paid') {
+      return res.redirect(`/payment-return.html?id=${app.id}`);
+    }
+
+    // Look up the original Mollie payment to get metadata (weeks, ticket type)
+    let weeksCount = 1;
+    let selectedWeeks = [];
+    const existingPayment = await pool.query(
+      'SELECT mollie_payment_id FROM applications WHERE id = $1 AND mollie_payment_id IS NOT NULL',
+      [id]
+    );
+    if (existingPayment.rows.length > 0 && existingPayment.rows[0].mollie_payment_id) {
+      try {
+        const oldPayment = await mollieClient.payments.get(existingPayment.rows[0].mollie_payment_id);
+        weeksCount = oldPayment.metadata.weeksCount || 1;
+        selectedWeeks = oldPayment.metadata.selectedWeeks || [];
+      } catch (e) {
+        console.error('Failed to fetch old payment metadata:', e.message);
+      }
+    }
+
+    // Create a fresh Mollie payment
+    const paymentResult = await createPayment(
+      app.id,
+      app.contribution_amount || 'registration',
+      weeksCount,
+      app.email,
+      app.first_name,
+      app.last_name,
+      app.accommodation_type,
+      selectedWeeks
+    );
+
+    return res.redirect(paymentResult.checkoutUrl);
+  } catch (error) {
+    console.error('Resume payment error:', error);
+    return res.status(500).json({ error: 'Failed to resume payment. Please contact team@valleyofthecommons.com' });
+  }
+}
+
 module.exports = {
-  createPayment, handleWebhook, getPaymentStatus,
+  createPayment, handleWebhook, getPaymentStatus, resumePayment,
   REGISTRATION_PRICING, PROCESSING_FEE_PERCENT,
   ACCOMMODATION_PRICES, ACCOMMODATION_LABELS,
   TICKET_LABELS, calculateAmount, getPricingTier,

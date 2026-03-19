@@ -183,42 +183,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Theme ranking */
-        .theme-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .theme-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem 1rem;
-            background: var(--sand);
-            border-radius: 8px;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .theme-item:active { cursor: grabbing; }
-
-        .theme-item .emoji { font-size: 1.25rem; }
-        .theme-item .text { flex: 1; font-size: 0.9rem; }
-
-        .theme-item .rank {
-            width: 24px;
-            height: 24px;
-            background: var(--forest);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
         /* Week cards */
         .week-cards { display: flex; flex-direction: column; gap: 0.75rem; }
 
@@ -354,7 +318,7 @@
         <form id="application-form">
             <!-- Q1: Contact Information -->
             <div class="form-section active" data-step="1">
-                <div class="question-number">Question 1 of 12</div>
+                <div class="question-number">Question 1 of 9</div>
                 <h2>Contact Information</h2>
 
                 <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -391,7 +355,7 @@
 
             <!-- Q2: How did you hear -->
             <div class="form-section" data-step="2">
-                <div class="question-number">Question 2 of 12</div>
+                <div class="question-number">Question 2 of 9</div>
                 <h2>How did you hear about Valley of the Commons? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -406,7 +370,7 @@
 
             <!-- Q3: Referral names -->
             <div class="form-section" data-step="3">
-                <div class="question-number">Question 3 of 12</div>
+                <div class="question-number">Question 3 of 9</div>
                 <h2>Referral name(s) <span class="optional">(optional)</span></h2>
                 <p class="hint">Who can vouch for you?</p>
 
@@ -422,7 +386,7 @@
 
             <!-- Q4: Affiliations -->
             <div class="form-section" data-step="4">
-                <div class="question-number">Question 4 of 12</div>
+                <div class="question-number">Question 4 of 9</div>
                 <h2>What are your affiliations? <span class="required">*</span></h2>
                 <p class="hint">What projects or groups are you affiliated with?</p>
 
@@ -438,7 +402,7 @@
 
             <!-- Q5: Why join -->
             <div class="form-section" data-step="5">
-                <div class="question-number">Question 5 of 12</div>
+                <div class="question-number">Question 5 of 9</div>
                 <h2>Why would you like to join Valley of the Commons, and why are you a good fit? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -453,7 +417,7 @@
 
             <!-- Q6: Current work -->
             <div class="form-section" data-step="6">
-                <div class="question-number">Question 6 of 12</div>
+                <div class="question-number">Question 6 of 9</div>
                 <h2>What are you currently building, researching, or working on? <span class="required">*</span></h2>
 
                 <div class="form-group">
@@ -468,7 +432,7 @@
 
             <!-- Q7: How contribute -->
             <div class="form-section" data-step="7">
-                <div class="question-number">Question 7 of 12</div>
+                <div class="question-number">Question 7 of 9</div>
                 <h2>How will you contribute to Valley of the Commons? <span class="required">*</span></h2>
                 <p class="hint">Villagers co-create their experience. You can start an interest club, lead a discussion or workshop, teach a cooking class, or more.</p>
 
@@ -482,108 +446,11 @@
                 </div>
             </div>
 
-            <!-- Q8: Rank themes -->
+            <!-- Q8: Weeks & Options -->
             <div class="form-section" data-step="8">
-                <div class="question-number">Question 8 of 12</div>
-                <h2>Please rank your interest in our themes <span class="required">*</span></h2>
-                <p class="hint">Drag to reorder from most interested (top) to least interested (bottom).</p>
-
-                <div class="theme-list" id="theme-list">
-                    <div class="theme-item" data-theme="valley-future">
-                        <span class="rank">1</span>
-                        <span class="emoji">🏞️</span>
-                        <span class="text">Developing the Future of the Valley</span>
-                    </div>
-                    <div class="theme-item" data-theme="cosmo-localism">
-                        <span class="rank">2</span>
-                        <span class="emoji">🌐</span>
-                        <span class="text">Cosmo-localism</span>
-                    </div>
-                    <div class="theme-item" data-theme="funding-token">
-                        <span class="rank">3</span>
-                        <span class="emoji">🪙</span>
-                        <span class="text">Funding Models & Token Engineering</span>
-                    </div>
-                    <div class="theme-item" data-theme="fablabs">
-                        <span class="rank">4</span>
-                        <span class="emoji">👾</span>
-                        <span class="text">Fablabs & Hackerspaces</span>
-                    </div>
-                    <div class="theme-item" data-theme="future-living">
-                        <span class="rank">5</span>
-                        <span class="emoji">🌌</span>
-                        <span class="text">Future Living Design & Development</span>
-                    </div>
-                    <div class="theme-item" data-theme="network-governance">
-                        <span class="rank">6</span>
-                        <span class="emoji">🧑‍⚖️</span>
-                        <span class="text">Network Societies & Decentralized Governance</span>
-                    </div>
-                    <div class="theme-item" data-theme="commons-theory">
-                        <span class="rank">7</span>
-                        <span class="emoji">⛲️</span>
-                        <span class="text">Commons Theory & Practice</span>
-                    </div>
-                    <div class="theme-item" data-theme="privacy">
-                        <span class="rank">8</span>
-                        <span class="emoji">👤</span>
-                        <span class="text">Privacy & Digital Sovereignty</span>
-                    </div>
-                    <div class="theme-item" data-theme="dacc">
-                        <span class="rank">9</span>
-                        <span class="emoji">🌏</span>
-                        <span class="text">d/acc: defensive accelerationism</span>
-                    </div>
-                    <div class="theme-item" data-theme="rationality">
-                        <span class="rank">10</span>
-                        <span class="emoji">💭</span>
-                        <span class="text">(Meta)rationality & Cognitive Sovereignty</span>
-                    </div>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q9: Theme familiarity -->
-            <div class="form-section" data-step="9">
-                <div class="question-number">Question 9 of 12</div>
-                <h2>Please explain your familiarity and interest in our themes and event overall <span class="required">*</span></h2>
-                <p class="hint">🏞️ Valley Future · 🌐 Cosmo-localism · 🪙 Funding & Token Engineering · 👾 Fablabs · 🌌 Future Living · 🧑‍⚖️ Network Governance · ⛲️ Commons · 👤 Privacy · 🌏 d/acc · 💭 (Meta)rationality</p>
-
-                <div class="form-group">
-                    <textarea id="theme_familiarity" name="theme_familiarity" required placeholder="Share your experience, learning journey, or curiosity about any of these themes..."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q10: Belief update -->
-            <div class="form-section" data-step="10">
-                <div class="question-number">Question 10 of 12</div>
-                <h2>Describe a belief you have updated within the last 1-2 years <span class="required">*</span></h2>
-                <p class="hint">What was the belief and why did it change?</p>
-
-                <div class="form-group">
-                    <textarea id="belief_update" name="belief_update" required placeholder="We value intellectual humility. Share how your thinking has evolved..."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q11: Weeks & Options -->
-            <div class="form-section" data-step="11">
-                <div class="question-number">Question 11 of 12</div>
+                <div class="question-number">Question 8 of 9</div>
                 <h2>Which week(s) would you like to attend? <span class="required">*</span></h2>
-                <p class="hint">Select the weeks you'd like to join. Base registration is €300 per week.</p>
+                <p class="hint">Select the weeks you'd like to join.</p>
 
                 <div class="week-cards">
                     <label class="week-card select-all-card" onclick="toggleAllWeeks(this)">
@@ -697,7 +564,7 @@
                             <label class="week-card" style="cursor: pointer;" onclick="selectRoom('hh-couple')">
                                 <input type="radio" name="room_type" value="hh-couple" style="display:none;">
                                 <h4>Couple Room <span style="float:right; color: var(--forest); font-weight: 600;">€700/wk</span></h4>
-                                <div class="desc">Private room with double bed for couples.</div>
+                                <div class="desc">Private room with double bed for couples.<br><em style="color: #666; font-size: 0.85em;">(Your partner should book without accommodation)</em></div>
                             </label>
                         </div>
                     </div>
@@ -725,9 +592,9 @@
                 </div>
             </div>
 
-            <!-- Q12: Anything else -->
-            <div class="form-section" data-step="12">
-                <div class="question-number">Question 12 of 12</div>
+            <!-- Q9: Anything else -->
+            <div class="form-section" data-step="9">
+                <div class="question-number">Question 9 of 9</div>
                 <h2>Anything else you'd like to add? <span class="optional">(optional)</span></h2>
 
                 <div class="form-group">
@@ -775,7 +642,7 @@
 
     <script>
         let currentStep = 1;
-        const totalSteps = 12;
+        const totalSteps = 9;
         const PROCESSING_FEE_PERCENT = 0.02;
 
         // Tiered registration pricing (must match api/mollie.js)
@@ -862,8 +729,8 @@
                 emailField.style.borderColor = 'var(--error)';
             }
 
-            // Week selection (step 11)
-            if (step === 11) {
+            // Week selection (step 8)
+            if (step === 8) {
                 const checked = document.querySelectorAll('input[name="weeks"]:checked');
                 if (checked.length === 0) {
                     valid = false;
@@ -1012,52 +879,6 @@
             el.innerHTML = html;
         }
 
-        // Theme ranking drag & drop
-        const themeList = document.getElementById('theme-list');
-        let draggedItem = null;
-
-        themeList.addEventListener('dragstart', e => {
-            draggedItem = e.target.closest('.theme-item');
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        themeList.addEventListener('dragover', e => {
-            e.preventDefault();
-            const target = e.target.closest('.theme-item');
-            if (target && target !== draggedItem) {
-                const rect = target.getBoundingClientRect();
-                const mid = rect.top + rect.height / 2;
-                if (e.clientY < mid) {
-                    themeList.insertBefore(draggedItem, target);
-                } else {
-                    themeList.insertBefore(draggedItem, target.nextSibling);
-                }
-            }
-        });
-
-        themeList.addEventListener('dragend', () => {
-            updateRanks();
-            draggedItem = null;
-        });
-
-        // Make items draggable
-        document.querySelectorAll('.theme-item').forEach(item => {
-            item.draggable = true;
-        });
-
-        function updateRanks() {
-            document.querySelectorAll('.theme-item').forEach((item, i) => {
-                item.querySelector('.rank').textContent = i + 1;
-            });
-        }
-
-        function getThemeRanking() {
-            return Array.from(document.querySelectorAll('.theme-item')).map((item, i) => ({
-                theme: item.dataset.theme,
-                rank: i + 1
-            }));
-        }
-
         function getSelectedWeeks() {
             return Array.from(document.querySelectorAll('input[name="weeks"]:checked')).map(cb => cb.value);
         }
@@ -1078,9 +899,6 @@
                 motivation: form.why_join.value,
                 current_work: form.current_work.value,
                 contribution: form.contribution.value,
-                theme_ranking: JSON.stringify(getThemeRanking()),
-                theme_familiarity: form.theme_familiarity.value,
-                belief_update: form.belief_update.value,
                 weeks: weeks,
                 attendance_type: weeks.length === 4 ? 'full' : 'partial',
                 need_accommodation: document.getElementById('need_accommodation').checked,

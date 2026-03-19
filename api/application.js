@@ -98,7 +98,7 @@ const confirmationEmail = (application) => {
       <div style="background: #f5f5f0; padding: 20px; border-radius: 8px; margin: 24px 0;">
         <h3 style="margin-top: 0; color: #2d5016;">What happens next?</h3>
         <ol style="margin-bottom: 0;">
-          <li>Complete your registration payment (if you haven't already)</li>
+          <li><a href="${process.env.BASE_URL || 'https://valleyofthecommons.com'}/api/mollie/resume?id=${application.id}" style="color: #2d5016; font-weight: 600;">Complete your registration payment</a> (if you haven't already)</li>
           <li>Our team will review your application</li>
           <li>We may reach out with follow-up questions</li>
           <li>You'll receive a decision within 2-3 weeks</li>
