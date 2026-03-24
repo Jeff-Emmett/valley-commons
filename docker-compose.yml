@@ -4,6 +4,7 @@ services:
     container_name: votc
     restart: unless-stopped
     environment:
+      - DATABASE_URL=postgresql://votc:${POSTGRES_PASSWORD}@votc-db:5432/votc
       - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID}
       - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET}
       - INFISICAL_PROJECT_SLUG=valley-commons
