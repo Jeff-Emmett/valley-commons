@@ -61,14 +61,12 @@ const confirmationEmail = (application) => {
     : '';
 
   return {
-    subject: 'Application Received - Valley of the Commons',
+    subject: 'Welcome to the Process - Valley of the Commons',
     html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1 style="color: #2d5016; margin-bottom: 24px;">Thank You for Applying!</h1>
+      <h1 style="color: #2d5016; margin-bottom: 24px;">We're glad you're here, ${application.first_name}!</h1>
 
-      <p>Dear ${application.first_name},</p>
-
-      <p>We've received your application to join <strong>Valley of the Commons</strong> (August 24 - September 20, 2026).</p>
+      <p>Your application to <strong>Valley of the Commons</strong> (August 24 – September 20, 2026) has been received. We're excited to read about what you'll bring to the village.</p>
 
       <div style="background: #f5f5f0; padding: 20px; border-radius: 8px; margin: 24px 0;">
         <h3 style="margin-top: 0; color: #2d5016;">Your Booking Summary</h3>
@@ -99,10 +97,9 @@ const confirmationEmail = (application) => {
         <h3 style="margin-top: 0; color: #2d5016;">What happens next?</h3>
         <ol style="margin-bottom: 0;">
           <li><a href="${process.env.BASE_URL || 'https://valleyofthecommons.com'}/api/mollie/resume?id=${application.id}" style="color: #2d5016; font-weight: 600;">Complete your registration payment</a> (if you haven't already)</li>
-          <li>Our team will review your application</li>
+          <li>Our team will review your application within <strong>1 week</strong></li>
           <li>We may reach out with follow-up questions</li>
-          <li>You'll receive a decision within 2-3 weeks</li>
-          ${accomType ? '<li>Your bed will be assigned automatically once payment is confirmed</li>' : ''}
+          ${accomType ? '<li>Your accommodation will be allocated and details sent to you shortly after payment is confirmed</li>' : ''}
         </ol>
       </div>
 
@@ -112,7 +109,7 @@ const confirmationEmail = (application) => {
         <li><a href="https://valleyofthecommons.com/">Valley of the Commons</a></li>
       </ul>
 
-      <p>If you have any questions, reply to this email and we'll get back to you.</p>
+      <p>If you have any questions, just reply to this email — we'd love to hear from you.</p>
 
       <p style="margin-top: 32px;">
         With warmth,<br>
@@ -212,7 +209,7 @@ module.exports = async function handler(req, res) {
       const data = req.body;
 
       // Validate required fields
-      const required = ['first_name', 'last_name', 'email', 'motivation', 'code_of_conduct_accepted', 'privacy_policy_accepted'];
+      const required = ['first_name', 'last_name', 'email', 'motivation', 'belief_update', 'privacy_policy_accepted'];
       for (const field of required) {
         if (!data[field]) {
           return res.status(400).json({ error: `Missing required field: ${field}` });
@@ -244,6 +241,10 @@ module.exports = async function handler(req, res) {
       const governance = Array.isArray(data.governance_interest) ? data.governance_interest : (data.governance_interest ? [data.governance_interest] : null);
       const previousEvents = Array.isArray(data.previous_events) ? data.previous_events : (data.previous_events ? [data.previous_events] : null);
 
+      // Prepare new array fields
+      const selectedWeeks = Array.isArray(data.weeks) ? data.weeks : (data.weeks ? [data.weeks] : []);
+      const topThemes = Array.isArray(data.top_themes) ? data.top_themes : (data.top_themes ? [data.top_themes] : null);
+
       // Insert application
       const result = await pool.query(
         `INSERT INTO applications (
@@ -255,11 +256,14 @@ module.exports = async function handler(req, res) {
           how_heard, referral_name, previous_events, emergency_name, emergency_phone,
           emergency_relationship, code_of_conduct_accepted, privacy_policy_accepted,
           photo_consent, scholarship_needed, scholarship_reason, contribution_amount,
-          ip_address, user_agent, need_accommodation, want_food, accommodation_type
+          ip_address, user_agent, need_accommodation, want_food, accommodation_type,
+          selected_weeks, top_themes, belief_update, volunteer_interest, coupon_code,
+          food_preference, accessibility_needs
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
           $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32,
-          $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
+          $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44,
+          $45, $46, $47, $48, $49, $50, $51
         ) RETURNING id, submitted_at`,
         [
           data.first_name?.trim(),
@@ -305,11 +309,17 @@ module.exports = async function handler(req, res) {
           req.headers['user-agent'] || null,
           data.need_accommodation || false,
           data.want_food || false,
-          data.accommodation_type || null
+          data.accommodation_type || null,
+          selectedWeeks.length > 0 ? selectedWeeks : null,
+          topThemes,
+          data.belief_update?.trim() || null,
+          data.volunteer_interest || false,
+          data.coupon_code?.trim() || null,
+          data.food_preference?.trim() || null,
+          data.accessibility_needs?.trim() || null
         ]
       );
 
-      const weeksSelected = Array.isArray(data.weeks) ? data.weeks : [];
       const application = {
         id: result.rows[0].id,
         submitted_at: result.rows[0].submitted_at,
@@ -328,7 +338,7 @@ module.exports = async function handler(req, res) {
         referral_name: data.referral_name,
         arrival_date: data.arrival_date,
         departure_date: data.departure_date,
-        weeks: weeksSelected,
+        weeks: selectedWeeks,
         need_accommodation: data.need_accommodation || false,
         accommodation_preference: data.accommodation_preference || null,
         accommodation_type: data.accommodation_type || null,
@@ -342,7 +352,7 @@ module.exports = async function handler(req, res) {
       // Add to Listmonk newsletter
       addToListmonk(application.email, `${application.first_name} ${application.last_name}`, {
         source: 'application',
-        weeks: weeksSelected,
+        weeks: selectedWeeks,
         contributionAmount: data.contribution_amount,
       }).catch(err => console.error('[Listmonk] Application sync failed:', err.message));
 
@@ -382,17 +392,17 @@ module.exports = async function handler(req, res) {
 
       // Create Mollie payment for registration + accommodation fee
       let checkoutUrl = null;
-      if (weeksSelected.length > 0 && process.env.MOLLIE_API_KEY) {
+      if (selectedWeeks.length > 0 && process.env.MOLLIE_API_KEY) {
         try {
           const paymentResult = await createPayment(
             application.id,
             'registration',
-            weeksSelected.length,
+            selectedWeeks.length,
             application.email,
             application.first_name,
             application.last_name,
             application.accommodation_type,
-            weeksSelected
+            selectedWeeks
           );
           checkoutUrl = paymentResult.checkoutUrl;
           console.log(`Mollie payment created: ${paymentResult.paymentId} (€${paymentResult.amount})`);

@@ -226,7 +226,7 @@ const paymentConfirmationEmail = (application, bookingResult) => {
 
       ${bookingHtml}
 
-      <p>Your application is now complete. Our team will review it and get back to you within 2-3 weeks.</p>
+      <p>Your application is now complete. Our team will review it and get back to you within 1 week.</p>
 
       <p>If you have any questions, reply to this email and we'll get back to you.</p>
 

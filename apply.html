@@ -58,36 +58,10 @@
             padding: 2rem;
         }
 
-        .intro {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-        }
-
-        .intro h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.25rem;
-            color: var(--forest);
-            margin-bottom: 1rem;
-        }
-
-        .intro p { color: #666; font-size: 0.95rem; }
-
-        .event-badge {
-            display: inline-block;
-            background: var(--forest);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }
-
         /* Progress */
         .progress-container {
             margin-bottom: 2rem;
+            display: none;
         }
 
         .progress-bar {
@@ -196,7 +170,8 @@
 
         .week-card:hover { border-color: var(--forest-light); }
         .week-card.selected { border-color: var(--forest); background: rgba(45, 80, 22, 0.05); }
-        .week-card input { display: none; }
+        .week-card input[type="checkbox"],
+        .week-card input[type="radio"] { display: none; }
 
         .week-card h4 { font-size: 0.95rem; color: var(--forest); margin-bottom: 0.25rem; }
         .week-card .dates { font-size: 0.8rem; color: #666; margin-bottom: 0.5rem; }
@@ -244,29 +219,6 @@
         .btn-secondary:hover { background: #eee; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Success */
-        .success-message { text-align: center; padding: 2rem; }
-
-        .success-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--forest);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-        }
-
-        .success-icon svg { width: 35px; height: 35px; stroke: white; }
-
-        .success-message h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.75rem;
-            color: var(--forest);
-            margin-bottom: 1rem;
-        }
-
         /* Error */
         .error-message {
             background: #fef2f2;
@@ -289,9 +241,270 @@
 
         .footer a { color: var(--forest); }
 
+        /* ===== Landing screen ===== */
+        .landing {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .landing h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.25rem;
+            color: var(--forest);
+            margin-bottom: 1rem;
+        }
+
+        .landing .event-badge {
+            display: inline-block;
+            background: var(--forest);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .landing .overview-text {
+            color: #666;
+            font-size: 0.95rem;
+            max-width: 550px;
+            margin: 0 auto 2rem;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .pricing-card {
+            background: var(--sand);
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1rem;
+            color: var(--forest);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price-range {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-card .price-note {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .time-estimate {
+            background: var(--sand);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .resume-notice {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #2d5016;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* ===== Theme picker ===== */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .theme-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .theme-option:hover { border-color: var(--forest-light); }
+        .theme-option.selected { border-color: var(--forest); background: rgba(45, 80, 22, 0.05); }
+        .theme-option.disabled-theme { opacity: 0.4; cursor: not-allowed; }
+
+        .theme-option h4 {
+            font-size: 0.9rem;
+            color: var(--forest);
+            margin-bottom: 0.25rem;
+        }
+
+        .theme-counter {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.75rem;
+        }
+
+        /* ===== Food radio group ===== */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--forest);
+        }
+
+        /* ===== Review step ===== */
+        .review-section {
+            background: var(--sand);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-section-header h3 {
+            font-size: 1rem;
+            color: var(--forest);
+        }
+
+        .review-edit-link {
+            font-size: 0.85rem;
+            color: var(--forest);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .review-field {
+            margin-bottom: 0.5rem;
+        }
+
+        .review-field .review-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .review-field .review-value {
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .review-price-summary {
+            background: white;
+            border: 2px solid var(--forest);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .review-price-summary h3 {
+            font-size: 1.1rem;
+            color: var(--forest);
+            margin-bottom: 0.75rem;
+        }
+
+        .price-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        .price-line.total {
+            border-top: 1px solid #ddd;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* ===== Success state ===== */
+        .success-card {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: linear-gradient(135deg, #f0f7eb 0%, #e8f5e9 50%, #f5f5f0 100%);
+            border-radius: 12px;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--forest);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon svg { width: 35px; height: 35px; stroke: white; }
+
+        .success-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            color: var(--forest);
+            margin-bottom: 1rem;
+        }
+
+        .next-steps-box {
+            background: white;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1.5rem auto;
+            max-width: 420px;
+            text-align: left;
+        }
+
+        .next-steps-box h3 {
+            font-size: 0.95rem;
+            color: var(--forest);
+            margin-bottom: 0.75rem;
+        }
+
+        .next-steps-box ol {
+            padding-left: 1.25rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .next-steps-box li { margin-bottom: 0.5rem; }
+
         @media (max-width: 600px) {
             .container { padding: 1rem; }
-            .form-section { padding: 1.5rem; }
+            .form-section, .landing { padding: 1.5rem; }
+            .pricing-cards { grid-template-columns: 1fr; }
+            .theme-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -304,153 +517,46 @@
     </header>
 
     <div class="container">
-        <div class="intro">
+        <!-- Landing Screen -->
+        <div class="landing" id="landing-screen">
             <span class="event-badge">August 24 – September 20, 2026</span>
             <h1>Application Form</h1>
-            <p>Valley of the Commons is a four-week pop-up village exploring housing, production, decision-making and ownership in community. We ask that you be thoughtful in your answers to help us understand if you are the right fit. We will not penalize you for unfamiliarity with any topic; please be honest.</p>
+            <p class="overview-text">Valley of the Commons is a four-week pop-up village exploring housing, production, decision-making and ownership in community. Each week has a different theme — attend one week or all four.</p>
+
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Registration</h3>
+                    <div class="price-range" id="landing-reg-price"></div>
+                    <div class="price-note">per week, depending on timing</div>
+                </div>
+                <div class="pricing-card">
+                    <h3>Accommodation</h3>
+                    <div class="price-range">&euro;275 – &euro;700/wk</div>
+                    <div class="price-note">optional, multiple room types</div>
+                </div>
+            </div>
+
+            <div class="time-estimate">This application takes approximately 15–20 minutes to complete.</div>
+
+            <div id="resume-notice" class="resume-notice" style="display: none;">
+                You have saved progress from a previous session.
+                <a href="#" onclick="startForm(true); return false;" style="color: var(--forest); font-weight: 600;">Resume where you left off</a>
+            </div>
+
+            <button class="btn btn-primary" onclick="startForm(false)" style="font-size: 1.1rem; padding: 1rem 3rem;">Begin Application</button>
         </div>
 
-        <div class="progress-container">
+        <div class="progress-container" id="progress-container">
             <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-            <div class="progress-text"><span id="progress-percent">0</span>% complete</div>
+            <div class="progress-text">Step <span id="progress-step">1</span> of 10 — <span id="progress-percent">10</span>%</div>
         </div>
 
-        <form id="application-form">
-            <!-- Q1: Contact Information -->
-            <div class="form-section active" data-step="1">
-                <div class="question-number">Question 1 of 9</div>
-                <h2>Contact Information</h2>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label for="first_name">First Name <span class="required">*</span></label>
-                        <input type="text" id="first_name" name="first_name" required placeholder="First name">
-                    </div>
-                    <div>
-                        <label for="last_name">Last Name <span class="required">*</span></label>
-                        <input type="text" id="last_name" name="last_name" required placeholder="Last name">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="social_media">Social Media Handles <span class="optional">(optional)</span></label>
-                    <input type="text" id="social_media" name="social_media" placeholder="@handle (please specify which platforms)">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_other">Anything else? <span class="optional">(optional)</span></label>
-                    <textarea id="contact_other" name="contact_other" rows="2" placeholder="Phone, website, etc."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <div></div>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q2: How did you hear -->
-            <div class="form-section" data-step="2">
-                <div class="question-number">Question 2 of 9</div>
-                <h2>How did you hear about Valley of the Commons? <span class="required">*</span></h2>
-
-                <div class="form-group">
-                    <textarea id="how_heard" name="how_heard" required placeholder="Social media, friend referral, newsletter, event..."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q3: Referral names -->
-            <div class="form-section" data-step="3">
-                <div class="question-number">Question 3 of 9</div>
-                <h2>Referral name(s) <span class="optional">(optional)</span></h2>
-                <p class="hint">Who can vouch for you?</p>
-
-                <div class="form-group">
-                    <textarea id="referral_names" name="referral_names" placeholder="Names of people who know you or referred you"></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q4: Affiliations -->
-            <div class="form-section" data-step="4">
-                <div class="question-number">Question 4 of 9</div>
-                <h2>What are your affiliations? <span class="required">*</span></h2>
-                <p class="hint">What projects or groups are you affiliated with?</p>
-
-                <div class="form-group">
-                    <textarea id="affiliations" name="affiliations" required placeholder="Organizations, DAOs, cooperatives, communities, projects..."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q5: Why join -->
-            <div class="form-section" data-step="5">
-                <div class="question-number">Question 5 of 9</div>
-                <h2>Why would you like to join Valley of the Commons, and why are you a good fit? <span class="required">*</span></h2>
-
-                <div class="form-group">
-                    <textarea id="why_join" name="why_join" required placeholder="What draws you to this gathering? Why are you a good fit for this community?"></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q6: Current work -->
-            <div class="form-section" data-step="6">
-                <div class="question-number">Question 6 of 9</div>
-                <h2>What are you currently building, researching, or working on? <span class="required">*</span></h2>
-
-                <div class="form-group">
-                    <textarea id="current_work" name="current_work" required placeholder="Tell us about your current projects, research, or focus areas..."></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q7: How contribute -->
-            <div class="form-section" data-step="7">
-                <div class="question-number">Question 7 of 9</div>
-                <h2>How will you contribute to Valley of the Commons? <span class="required">*</span></h2>
-                <p class="hint">Villagers co-create their experience. You can start an interest club, lead a discussion or workshop, teach a cooking class, or more.</p>
-
-                <div class="form-group">
-                    <textarea id="contribution" name="contribution" required placeholder="What skills, energy, workshops, or perspectives will you bring?"></textarea>
-                </div>
-
-                <div class="form-nav">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Q8: Weeks & Options -->
-            <div class="form-section" data-step="8">
-                <div class="question-number">Question 8 of 9</div>
+        <form id="application-form" style="display: none;">
+            <!-- Step 1: Which weeks + price calculator -->
+            <div class="form-section" data-step="1">
+                <div class="question-number">Step 1 of 10</div>
                 <h2>Which week(s) would you like to attend? <span class="required">*</span></h2>
-                <p class="hint">Select the weeks you'd like to join.</p>
+                <p class="hint">Select the weeks you'd like to join. Prices update as you choose.</p>
 
                 <div class="week-cards">
                     <label class="week-card select-all-card" onclick="toggleAllWeeks(this)">
@@ -488,102 +594,51 @@
                     </label>
                 </div>
 
-                <!-- Accommodation -->
-                <div style="margin-top: 2rem;">
-                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem;">Accommodation</h3>
-
-                    <label class="week-card" onclick="toggleAddon(this, 'accommodation')" style="margin-bottom: 0.75rem;">
-                        <input type="checkbox" id="need_accommodation">
-                        <h4>Include accommodation with registration</h4>
-                        <div class="desc">On-site housing paid upfront with your registration fee.</div>
-                    </label>
-
-                    <div id="accommodation-options" style="display: none;">
-                        <!-- Venue selection -->
-                        <div style="padding: 0.75rem 0; margin-bottom: 0.5rem;">
-                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Choose your venue</label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectVenue('ch')">
-                                <input type="radio" name="venue" value="ch" style="display:none;">
-                                <h4>Commons Hub</h4>
-                                <div class="desc">Shared community living in the main hub building.</div>
-                            </label>
-
-                            <label class="week-card" style="cursor: pointer;" onclick="selectVenue('hh')">
-                                <input type="radio" name="venue" value="hh" style="display:none;">
-                                <h4>Herrnhof Villa</h4>
-                                <div class="desc">Private villa rooms with more comfort and privacy.</div>
-                            </label>
-                        </div>
-
-                        <!-- Commons Hub room types -->
-                        <div id="ch-rooms" style="display: none; padding: 0.75rem 0;">
-                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Commons Hub</label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('ch-multi')">
-                                <input type="radio" name="room_type" value="ch-multi" style="display:none;">
-                                <h4>Bed in Multi-Room <span style="float:right; color: var(--forest); font-weight: 600;">€275/wk</span></h4>
-                                <div class="desc">Bed in a shared multi-bed room. The most affordable option.</div>
-                            </label>
-
-                            <label class="week-card" style="cursor: pointer;" onclick="selectRoom('ch-double')">
-                                <input type="radio" name="room_type" value="ch-double" style="display:none;">
-                                <h4>Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
-                                <div class="desc">Shared with one other person.</div>
-                            </label>
-                        </div>
-
-                        <!-- Herrnhof room types -->
-                        <div id="hh-rooms" style="display: none; padding: 0.75rem 0;">
-                            <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Herrnhof Villa</label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-living')">
-                                <input type="radio" name="room_type" value="hh-living" style="display:none;">
-                                <h4>Bed in Living Room <span style="float:right; color: var(--forest); font-weight: 600;">€315/wk</span></h4>
-                                <div class="desc">Shared living space with flexible sleeping arrangement.</div>
-                            </label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-triple')">
-                                <input type="radio" name="room_type" value="hh-triple" style="display:none;">
-                                <h4>Bed in Triple Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
-                                <div class="desc">Room shared between three people.</div>
-                            </label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-twin')">
-                                <input type="radio" name="room_type" value="hh-twin" style="display:none;">
-                                <h4>Single Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€420/wk</span></h4>
-                                <div class="desc">Your own bed in a room shared with one other person.</div>
-                            </label>
-
-                            <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-single')">
-                                <input type="radio" name="room_type" value="hh-single" style="display:none;">
-                                <h4>Single Room <span style="float:right; color: var(--forest); font-weight: 600;">€665/wk</span></h4>
-                                <div class="desc">Private room for one person.</div>
-                            </label>
-
-                            <label class="week-card" style="cursor: pointer;" onclick="selectRoom('hh-couple')">
-                                <input type="radio" name="room_type" value="hh-couple" style="display:none;">
-                                <h4>Couple Room <span style="float:right; color: var(--forest); font-weight: 600;">€700/wk</span></h4>
-                                <div class="desc">Private room with double bed for couples.<br><em style="color: #666; font-size: 0.85em;">(Your partner should book without accommodation)</em></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <input type="hidden" id="accommodation_type" name="accommodation_type" value="">
-
-                    <!-- Food add-on -->
-                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem; margin-top: 2rem;">Food</h3>
-
-                    <label class="week-card" onclick="toggleAddon(this, 'food')">
-                        <input type="checkbox" id="want_food">
-                        <h4>I would like to include food for the week</h4>
-                        <div class="desc">We are exploring co-producing our own meals as a community. More details and costs will be shared soon — checking this box registers your interest so we can plan accordingly.</div>
-                    </label>
-                </div>
-
                 <!-- Price summary -->
                 <div id="price-summary" class="ticket-note" style="margin-top: 1.5rem;">
-                    <div id="price-calc">Select at least one week</div>
+                    <div id="price-calc">Select at least one week to see pricing</div>
+                </div>
+
+                <div class="form-nav">
+                    <div></div>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Contact info + how heard + referral -->
+            <div class="form-section" data-step="2">
+                <div class="question-number">Step 2 of 10</div>
+                <h2>About You</h2>
+
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="first_name">First Name <span class="required">*</span></label>
+                        <input type="text" id="first_name" name="first_name" required placeholder="First name">
+                    </div>
+                    <div>
+                        <label for="last_name">Last Name <span class="required">*</span></label>
+                        <input type="text" id="last_name" name="last_name" required placeholder="Last name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="social_media">Social Media Handles <span class="optional">(optional)</span></label>
+                    <input type="text" id="social_media" name="social_media" placeholder="@handle (please specify which platforms)">
+                </div>
+
+                <div class="form-group">
+                    <label for="how_heard">How did you hear about Valley of the Commons? <span class="required">*</span></label>
+                    <textarea id="how_heard" name="how_heard" required placeholder="Social media, friend referral, newsletter, event..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="referral_names">Referral name(s) <span class="optional">(optional)</span></label>
+                    <textarea id="referral_names" name="referral_names" placeholder="Names of people who know you or referred you" rows="2"></textarea>
                 </div>
 
                 <div class="form-nav">
@@ -592,43 +647,316 @@
                 </div>
             </div>
 
-            <!-- Q9: Anything else -->
-            <div class="form-section" data-step="9">
-                <div class="question-number">Question 9 of 9</div>
-                <h2>Anything else you'd like to add? <span class="optional">(optional)</span></h2>
+            <!-- Step 3: Affiliations -->
+            <div class="form-section" data-step="3">
+                <div class="question-number">Step 3 of 10</div>
+                <h2>What are your affiliations? <span class="required">*</span></h2>
+                <p class="hint">What projects or groups are you affiliated with?</p>
 
                 <div class="form-group">
-                    <textarea id="anything_else" name="anything_else" placeholder="Questions, accessibility needs, dietary requirements, or anything else..."></textarea>
+                    <textarea id="affiliations" name="affiliations" required placeholder="Organizations, DAOs, cooperatives, communities, projects..."></textarea>
                 </div>
 
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Why join + good fit -->
+            <div class="form-section" data-step="4">
+                <div class="question-number">Step 4 of 10</div>
+                <h2>Why would you like to join Valley of the Commons, and why are you a good fit? <span class="required">*</span></h2>
+
+                <div class="form-group">
+                    <textarea id="why_join" name="why_join" required placeholder="What draws you to this gathering? Why are you a good fit for this community?"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Current work -->
+            <div class="form-section" data-step="5">
+                <div class="question-number">Step 5 of 10</div>
+                <h2>What are you currently building, researching, or working on? <span class="required">*</span></h2>
+
+                <div class="form-group">
+                    <textarea id="current_work" name="current_work" required placeholder="Tell us about your current projects, research, or focus areas..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 6: How you'll contribute -->
+            <div class="form-section" data-step="6">
+                <div class="question-number">Step 6 of 10</div>
+                <h2>How will you contribute to Valley of the Commons? <span class="required">*</span></h2>
+                <p class="hint">Villagers co-create their experience. You can start an interest club, lead a discussion or workshop, teach a cooking class, or more.</p>
+
+                <div class="form-group">
+                    <textarea id="contribution" name="contribution" required placeholder="What skills, energy, workshops, or perspectives will you bring?"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Top 3 themes + familiarity -->
+            <div class="form-section" data-step="7">
+                <div class="question-number">Step 7 of 10</div>
+                <h2>Which themes interest you most?</h2>
+                <p class="hint">Pick up to 3 themes you're most drawn to.</p>
+
+                <div class="theme-grid">
+                    <div class="theme-option" onclick="toggleTheme(this)" data-theme="commons">
+                        <h4>The Commons</h4>
+                        <div class="desc" style="font-size: 0.8rem; color: #666;">History, theory, and practice of shared resources</div>
+                    </div>
+                    <div class="theme-option" onclick="toggleTheme(this)" data-theme="production">
+                        <h4>Post-Capitalist Production</h4>
+                        <div class="desc" style="font-size: 0.8rem; color: #666;">Alternative economies and cooperative production</div>
+                    </div>
+                    <div class="theme-option" onclick="toggleTheme(this)" data-theme="living">
+                        <h4>Future Living</h4>
+                        <div class="desc" style="font-size: 0.8rem; color: #666;">Housing, ecological design, and community building</div>
+                    </div>
+                    <div class="theme-option" onclick="toggleTheme(this)" data-theme="governance">
+                        <h4>Governance & Funding</h4>
+                        <div class="desc" style="font-size: 0.8rem; color: #666;">Decision-making, legal structures, and shared assets</div>
+                    </div>
+                </div>
+                <div class="theme-counter" id="theme-counter">0 of 3 selected</div>
+
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label for="themes_familiarity">How familiar are you with these topics? <span class="optional">(optional)</span></label>
+                    <textarea id="themes_familiarity" name="themes_familiarity" placeholder="Tell us a bit about your background with these themes — it's okay if you're new to them!" rows="3"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 8: Belief update -->
+            <div class="form-section" data-step="8">
+                <div class="question-number">Step 8 of 10</div>
+                <h2>What's a belief you've recently updated or changed your mind about? <span class="required">*</span></h2>
+                <p class="hint">We value intellectual curiosity and the ability to update one's thinking. This can be about anything — work, life, politics, a personal habit.</p>
+
+                <div class="form-group">
+                    <textarea id="belief_update" name="belief_update" required placeholder="Share something you've changed your mind about and what prompted the change..."></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 9: Accommodation + food + accessibility + volunteer + coupon + anything else + privacy -->
+            <div class="form-section" data-step="9">
+                <div class="question-number">Step 9 of 10</div>
+                <h2>Practical Details</h2>
+
+                <!-- Accommodation -->
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem;">Accommodation</h3>
+
+                <label class="week-card" onclick="toggleAddon(this, 'accommodation')" style="margin-bottom: 0.75rem;">
+                    <input type="checkbox" id="need_accommodation">
+                    <h4>Include accommodation with registration</h4>
+                    <div class="desc">On-site housing paid upfront with your registration fee.</div>
+                </label>
+
+                <div id="accommodation-options" style="display: none;">
+                    <!-- Venue selection -->
+                    <div style="padding: 0.75rem 0; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Choose your venue</label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectVenue('ch')">
+                            <input type="radio" name="venue" value="ch">
+                            <h4>Commons Hub</h4>
+                            <div class="desc">Shared community living in the main hub building.</div>
+                        </label>
+
+                        <label class="week-card" style="cursor: pointer;" onclick="selectVenue('hh')">
+                            <input type="radio" name="venue" value="hh">
+                            <h4>Herrnhof Villa</h4>
+                            <div class="desc">Private villa rooms with more comfort and privacy.</div>
+                        </label>
+                    </div>
+
+                    <!-- Commons Hub room types -->
+                    <div id="ch-rooms" style="display: none; padding: 0.75rem 0;">
+                        <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Commons Hub</label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('ch-multi')">
+                            <input type="radio" name="room_type" value="ch-multi">
+                            <h4>Bed in Multi-Room <span style="float:right; color: var(--forest); font-weight: 600;">€275/wk</span></h4>
+                            <div class="desc">Bed in a shared multi-bed room. The most affordable option.</div>
+                        </label>
+
+                        <label class="week-card" style="cursor: pointer;" onclick="selectRoom('ch-double')">
+                            <input type="radio" name="room_type" value="ch-double">
+                            <h4>Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
+                            <div class="desc">Shared with one other person.</div>
+                        </label>
+                    </div>
+
+                    <!-- Herrnhof room types -->
+                    <div id="hh-rooms" style="display: none; padding: 0.75rem 0;">
+                        <label style="font-weight: 600; margin-bottom: 0.75rem; display: block;">Room type — Herrnhof Villa</label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-living')">
+                            <input type="radio" name="room_type" value="hh-living">
+                            <h4>Bed in Living Room <span style="float:right; color: var(--forest); font-weight: 600;">€315/wk</span></h4>
+                            <div class="desc">Shared living space with flexible sleeping arrangement.</div>
+                        </label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-triple')">
+                            <input type="radio" name="room_type" value="hh-triple">
+                            <h4>Bed in Triple Room <span style="float:right; color: var(--forest); font-weight: 600;">€350/wk</span></h4>
+                            <div class="desc">Room shared between three people.</div>
+                        </label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-twin')">
+                            <input type="radio" name="room_type" value="hh-twin">
+                            <h4>Single Bed in Double Room <span style="float:right; color: var(--forest); font-weight: 600;">€420/wk</span></h4>
+                            <div class="desc">Your own bed in a room shared with one other person.</div>
+                        </label>
+
+                        <label class="week-card" style="margin-bottom: 0.5rem; cursor: pointer;" onclick="selectRoom('hh-single')">
+                            <input type="radio" name="room_type" value="hh-single">
+                            <h4>Single Room <span style="float:right; color: var(--forest); font-weight: 600;">€665/wk</span></h4>
+                            <div class="desc">Private room for one person.</div>
+                        </label>
+
+                        <label class="week-card" style="cursor: pointer;" onclick="selectRoom('hh-couple')">
+                            <input type="radio" name="room_type" value="hh-couple">
+                            <h4>Couple Room <span style="float:right; color: var(--forest); font-weight: 600;">€700/wk</span></h4>
+                            <div class="desc">Private room with double bed for couples.<br><em style="color: #666; font-size: 0.85em;">(Your partner should book without accommodation)</em></div>
+                        </label>
+                    </div>
+                </div>
+
+                <input type="hidden" id="accommodation_type" name="accommodation_type" value="">
+
+                <!-- Food preference -->
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--forest); margin-bottom: 1rem; margin-top: 2rem;">Food Preference</h3>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="food_preference" value="no-preference">
+                        <span>No preference</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="food_preference" value="vegetarian">
+                        <span>Vegetarian</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="food_preference" value="vegan">
+                        <span>Vegan</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="food_preference" value="non-vegetarian">
+                        <span>Non-vegetarian</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="food_preference" value="allergies">
+                        <span>Allergies / other</span>
+                    </label>
+                </div>
+                <div id="food-allergies-detail" style="display: none; margin-top: 0.5rem;">
+                    <input type="text" id="food_allergies_text" name="food_allergies_text" placeholder="Please describe your allergies or dietary needs">
+                </div>
+
+                <!-- Accessibility -->
                 <div class="form-group" style="margin-top: 2rem;">
+                    <label for="accessibility_needs">Accessibility needs <span class="optional">(optional)</span></label>
+                    <textarea id="accessibility_needs" name="accessibility_needs" rows="2" placeholder="Let us know if you have any accessibility requirements so we can prepare."></textarea>
+                </div>
+
+                <!-- Volunteer -->
+                <div class="form-group">
                     <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="privacy_accepted" name="privacy_accepted" required style="width: 18px; height: 18px; margin-top: 0.2rem;">
+                        <input type="checkbox" id="volunteer_interest" name="volunteer_interest" style="width: 18px; height: 18px; margin-top: 0.2rem; accent-color: var(--forest);">
+                        <span>I'm interested in volunteering (e.g. helping with setup, cooking, facilitation) in exchange for a reduced fee</span>
+                    </label>
+                </div>
+
+                <!-- Coupon code -->
+                <div class="form-group">
+                    <label for="coupon_code">Coupon code <span class="optional">(optional)</span></label>
+                    <input type="text" id="coupon_code" name="coupon_code" placeholder="Enter a coupon code if you have one">
+                </div>
+
+                <!-- Anything else -->
+                <div class="form-group">
+                    <label for="anything_else">Anything else you'd like to share? <span class="optional">(optional)</span></label>
+                    <textarea id="anything_else" name="anything_else" rows="3" placeholder="Questions, special requests, or anything else..."></textarea>
+                </div>
+
+                <!-- Privacy -->
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="privacy_accepted" name="privacy_accepted" required style="width: 18px; height: 18px; margin-top: 0.2rem; accent-color: var(--forest);">
                         <span>I agree to the <a href="privacy.html" target="_blank">privacy policy</a> and consent to my data being processed for this application <span class="required">*</span></span>
                     </label>
+                </div>
+
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue to Review</button>
+                </div>
+            </div>
+
+            <!-- Step 10: Review & Pay -->
+            <div class="form-section" data-step="10">
+                <div class="question-number">Step 10 of 10</div>
+                <h2>Review Your Application</h2>
+                <p class="hint">Please review your answers below. Click "Edit" to make changes.</p>
+
+                <div id="review-content">
+                    <!-- Populated by renderReview() -->
                 </div>
 
                 <div id="form-error" class="error-message" style="display: none;"></div>
 
                 <div class="form-nav">
                     <button type="button" class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="submit" class="btn btn-primary" id="submit-btn">Submit Application</button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn" style="font-size: 1.05rem;">Submit &amp; Pay</button>
                 </div>
             </div>
 
             <!-- Success -->
             <div class="form-section" data-step="success" style="display: none;">
-                <div class="success-message">
+                <div class="success-card">
                     <div class="success-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 6L9 17l-5-5"/>
                         </svg>
                     </div>
-                    <h2>Application Submitted!</h2>
-                    <p>Thank you for applying to Valley of the Commons.</p>
+                    <h2 id="success-heading">You're in the process!</h2>
+                    <p>Thank you for applying to Valley of the Commons, <strong id="confirm-name"></strong>.</p>
                     <p>We've sent a confirmation to <strong id="confirm-email"></strong>.</p>
-                    <p style="margin-top: 1.5rem; color: #666;">Our team will review your application and get back to you within 2-3 weeks.</p>
-                    <p style="margin-top: 2rem;">
+
+                    <div class="next-steps-box">
+                        <h3>What happens next</h3>
+                        <ol>
+                            <li>Complete payment (you'll be redirected shortly)</li>
+                            <li>Our team reviews your application within <strong>1 week</strong></li>
+                            <li>You'll receive an email with the outcome</li>
+                        </ol>
+                    </div>
+
+                    <p style="margin-top: 1.5rem;">
                         <a href="/" class="btn btn-primary">Return to Homepage</a>
                     </p>
                 </div>
@@ -637,12 +965,13 @@
     </div>
 
     <footer class="footer">
-        <p>© 2026 Commons Hub · <a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/sponsorships.html">Sponsorships</a></p>
+        <p>&copy; 2026 Commons Hub &middot; <a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a> &middot; <a href="/privacy.html">Privacy Policy</a> &middot; <a href="/sponsorships.html">Sponsorships</a></p>
     </footer>
 
     <script>
-        let currentStep = 1;
-        const totalSteps = 9;
+        let currentStep = 0; // 0 = landing screen
+        const totalSteps = 10;
+        const STORAGE_KEY = 'votc_application_v2';
         const PROCESSING_FEE_PERCENT = 0.02;
 
         // Tiered registration pricing (must match api/mollie.js)
@@ -684,17 +1013,169 @@
             'hh-couple': 'Herrnhof Villa — Couple Room',
         };
 
-        function getAccommodationPrice(accomType, weeksCount) {
-            if (!accomType || !ACCOMMODATION_PRICES[accomType]) return 0;
-            const prices = ACCOMMODATION_PRICES[accomType];
-            if (weeksCount === 4) return prices.perMonth;
-            return prices.perWeek * weeksCount;
+        const WEEK_LABELS = {
+            week1: 'Week 1: Return to the Commons (Aug 24-30)',
+            week2: 'Week 2: Post-Capitalist Production (Aug 31-Sep 6)',
+            week3: 'Week 3: Future Living (Sep 7-13)',
+            week4: 'Week 4: Governance & Funding Models (Sep 14-20)',
+        };
+
+        const THEME_LABELS = {
+            commons: 'The Commons',
+            production: 'Post-Capitalist Production',
+            living: 'Future Living',
+            governance: 'Governance & Funding',
+        };
+
+        // Set landing registration price
+        document.getElementById('landing-reg-price').innerHTML =
+            `&euro;${tierPricing.perWeek} – &euro;${REGISTRATION_PRICING.lastMin.perWeek}/wk`;
+
+        // Check for saved data on load
+        (function checkSavedProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                document.getElementById('resume-notice').style.display = 'block';
+            }
+        })();
+
+        function startForm(resume) {
+            document.getElementById('landing-screen').style.display = 'none';
+            document.getElementById('application-form').style.display = 'block';
+            document.getElementById('progress-container').style.display = 'block';
+
+            if (resume) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        restoreFormData(data);
+                    } catch (e) {
+                        console.error('Failed to restore saved data:', e);
+                    }
+                }
+            }
+
+            currentStep = 1;
+            showStep(1);
         }
 
+        // ===== Autosave =====
+        function saveFormData() {
+            try {
+                const data = collectFormData();
+                data._savedStep = currentStep;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Autosave failed:', e);
+            }
+        }
+
+        function restoreFormData(data) {
+            // Text inputs
+            if (data.first_name) document.getElementById('first_name').value = data.first_name;
+            if (data.last_name) document.getElementById('last_name').value = data.last_name;
+            if (data.email) document.getElementById('email').value = data.email;
+            if (data.social_links) document.getElementById('social_media').value = data.social_links;
+            if (data.how_heard) document.getElementById('how_heard').value = data.how_heard;
+            if (data.referral_name) document.getElementById('referral_names').value = data.referral_name;
+            if (data.affiliations) document.getElementById('affiliations').value = data.affiliations;
+            if (data.motivation) document.getElementById('why_join').value = data.motivation;
+            if (data.current_work) document.getElementById('current_work').value = data.current_work;
+            if (data.contribution) document.getElementById('contribution').value = data.contribution;
+            if (data.themes_familiarity) document.getElementById('themes_familiarity').value = data.themes_familiarity;
+            if (data.belief_update) document.getElementById('belief_update').value = data.belief_update;
+            if (data.accessibility_needs) document.getElementById('accessibility_needs').value = data.accessibility_needs;
+            if (data.coupon_code) document.getElementById('coupon_code').value = data.coupon_code;
+            if (data.anything_else) document.getElementById('anything_else').value = data.anything_else;
+
+            // Weeks
+            if (data.weeks && data.weeks.length > 0) {
+                data.weeks.forEach(w => {
+                    const cb = document.querySelector(`input[name="weeks"][value="${w}"]`);
+                    if (cb) {
+                        cb.checked = true;
+                        cb.closest('.week-card').classList.add('selected');
+                    }
+                });
+                syncSelectAll();
+                updatePriceSummary();
+            }
+
+            // Themes
+            if (data.top_themes && data.top_themes.length > 0) {
+                data.top_themes.forEach(t => {
+                    const el = document.querySelector(`.theme-option[data-theme="${t}"]`);
+                    if (el) el.classList.add('selected');
+                });
+                updateThemeCounter();
+            }
+
+            // Food preference
+            if (data.food_preference) {
+                const radio = document.querySelector(`input[name="food_preference"][value="${data.food_preference}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    if (data.food_preference === 'allergies') {
+                        document.getElementById('food-allergies-detail').style.display = 'block';
+                    }
+                }
+            }
+            if (data.food_allergies_text) {
+                document.getElementById('food_allergies_text').value = data.food_allergies_text;
+            }
+
+            // Checkboxes
+            if (data.volunteer_interest) document.getElementById('volunteer_interest').checked = true;
+            if (data.privacy_policy_accepted) document.getElementById('privacy_accepted').checked = true;
+
+            // Accommodation
+            if (data.need_accommodation) {
+                const accomCb = document.getElementById('need_accommodation');
+                accomCb.checked = true;
+                accomCb.closest('.week-card').classList.add('selected');
+                document.getElementById('accommodation-options').style.display = 'block';
+
+                if (data.accommodation_type) {
+                    const venue = data.accommodation_type.startsWith('hh') ? 'hh' : 'ch';
+                    // Select venue
+                    document.querySelectorAll('input[name="venue"]').forEach(r => {
+                        r.checked = (r.value === venue);
+                        r.closest('.week-card').classList.toggle('selected', r.checked);
+                    });
+                    document.getElementById('ch-rooms').style.display = venue === 'ch' ? 'block' : 'none';
+                    document.getElementById('hh-rooms').style.display = venue === 'hh' ? 'block' : 'none';
+
+                    // Select room
+                    document.querySelectorAll('input[name="room_type"]').forEach(r => {
+                        r.checked = (r.value === data.accommodation_type);
+                        r.closest('.week-card').classList.toggle('selected', r.checked);
+                    });
+                    document.getElementById('accommodation_type').value = data.accommodation_type;
+                    updatePriceSummary();
+                }
+            }
+        }
+
+        // Autosave on input changes
+        document.addEventListener('input', function(e) {
+            if (e.target.closest('#application-form')) {
+                saveFormData();
+            }
+        });
+        document.addEventListener('change', function(e) {
+            if (e.target.closest('#application-form')) {
+                saveFormData();
+            }
+        });
+
+        // ===== Navigation =====
         function updateProgress() {
-            const percent = Math.round(((currentStep - 1) / totalSteps) * 100);
+            if (currentStep < 1) return;
+            const percent = Math.round((currentStep / totalSteps) * 100);
             document.getElementById('progress-fill').style.width = percent + '%';
             document.getElementById('progress-percent').textContent = percent;
+            document.getElementById('progress-step').textContent = currentStep;
         }
 
         function showStep(step) {
@@ -704,6 +1185,7 @@
                 target.classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+            if (step === 10) renderReview();
             updateProgress();
         }
 
@@ -729,8 +1211,8 @@
                 emailField.style.borderColor = 'var(--error)';
             }
 
-            // Week selection (step 8)
-            if (step === 8) {
+            // Week selection (step 1)
+            if (step === 1) {
                 const checked = document.querySelectorAll('input[name="weeks"]:checked');
                 if (checked.length === 0) {
                     valid = false;
@@ -746,6 +1228,7 @@
             if (currentStep < totalSteps) {
                 currentStep++;
                 showStep(currentStep);
+                saveFormData();
             }
         }
 
@@ -756,12 +1239,20 @@
             }
         }
 
+        function jumpToStep(n) {
+            currentStep = n;
+            showStep(n);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== Week selection =====
         function toggleWeek(card) {
             const cb = card.querySelector('input');
             cb.checked = !cb.checked;
             card.classList.toggle('selected', cb.checked);
             syncSelectAll();
             updatePriceSummary();
+            saveFormData();
         }
 
         function toggleAllWeeks(card) {
@@ -775,6 +1266,7 @@
                 cb.closest('.week-card').classList.toggle('selected', selectAllCb.checked);
             });
             updatePriceSummary();
+            saveFormData();
         }
 
         function syncSelectAll() {
@@ -786,6 +1278,7 @@
             selectAllCard.classList.toggle('selected', allChecked);
         }
 
+        // ===== Accommodation =====
         function toggleAddon(card, type) {
             const cb = card.querySelector('input');
             cb.checked = !cb.checked;
@@ -795,7 +1288,6 @@
                 const opts = document.getElementById('accommodation-options');
                 opts.style.display = cb.checked ? 'block' : 'none';
                 if (!cb.checked) {
-                    // Clear accommodation selection
                     document.getElementById('accommodation_type').value = '';
                     document.querySelectorAll('input[name="venue"]').forEach(r => { r.checked = false; r.closest('.week-card').classList.remove('selected'); });
                     document.querySelectorAll('input[name="room_type"]').forEach(r => { r.checked = false; r.closest('.week-card').classList.remove('selected'); });
@@ -804,28 +1296,26 @@
                 }
             }
 
-            // Always refresh summary (food toggle also affects it)
             updatePriceSummary();
+            saveFormData();
         }
 
         function selectVenue(venue) {
-            // Update radio + card styling
             document.querySelectorAll('input[name="venue"]').forEach(r => {
                 r.checked = (r.value === venue);
                 r.closest('.week-card').classList.toggle('selected', r.checked);
             });
 
-            // Show/hide room type sections
             document.getElementById('ch-rooms').style.display = venue === 'ch' ? 'block' : 'none';
             document.getElementById('hh-rooms').style.display = venue === 'hh' ? 'block' : 'none';
 
-            // Clear previous room selection
             document.querySelectorAll('input[name="room_type"]').forEach(r => {
                 r.checked = false;
                 r.closest('.week-card').classList.remove('selected');
             });
             document.getElementById('accommodation_type').value = '';
             updatePriceSummary();
+            saveFormData();
         }
 
         function selectRoom(roomType) {
@@ -835,16 +1325,57 @@
             });
             document.getElementById('accommodation_type').value = roomType;
             updatePriceSummary();
+            saveFormData();
         }
 
-        function updatePriceSummary() {
-            const weeksCount = document.querySelectorAll('input[name="weeks"]:checked').length;
-            const el = document.getElementById('price-calc');
+        // ===== Theme picker =====
+        function getSelectedThemes() {
+            return Array.from(document.querySelectorAll('.theme-option.selected')).map(el => el.dataset.theme);
+        }
 
-            if (weeksCount === 0) {
-                el.textContent = 'Select at least one week';
-                return;
-            }
+        function updateThemeCounter() {
+            const count = getSelectedThemes().length;
+            document.getElementById('theme-counter').textContent = `${count} of 3 selected`;
+
+            // Disable unchecked when at max
+            document.querySelectorAll('.theme-option').forEach(el => {
+                if (!el.classList.contains('selected')) {
+                    el.classList.toggle('disabled-theme', count >= 3);
+                }
+            });
+        }
+
+        function toggleTheme(el) {
+            if (el.classList.contains('disabled-theme')) return;
+
+            el.classList.toggle('selected');
+            updateThemeCounter();
+            saveFormData();
+        }
+
+        // ===== Food radio =====
+        document.querySelectorAll('input[name="food_preference"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('food-allergies-detail').style.display =
+                    this.value === 'allergies' ? 'block' : 'none';
+            });
+        });
+
+        // ===== Price calculation =====
+        function getAccommodationPrice(accomType, weeksCount) {
+            if (!accomType || !ACCOMMODATION_PRICES[accomType]) return 0;
+            const prices = ACCOMMODATION_PRICES[accomType];
+            if (weeksCount === 4) return prices.perMonth;
+            return prices.perWeek * weeksCount;
+        }
+
+        function getSelectedWeeks() {
+            return Array.from(document.querySelectorAll('input[name="weeks"]:checked')).map(cb => cb.value);
+        }
+
+        function calculatePrice() {
+            const weeksCount = getSelectedWeeks().length;
+            if (weeksCount === 0) return null;
 
             const registration = weeksCount === 4 ? tierPricing.perMonth : tierPricing.perWeek * weeksCount;
             const accomType = document.getElementById('accommodation_type').value;
@@ -853,7 +1384,21 @@
             const fee = subtotal * PROCESSING_FEE_PERCENT;
             const total = subtotal + fee;
 
+            return { registration, accommodation, accomType, fee, total, weeksCount };
+        }
+
+        function updatePriceSummary() {
+            const el = document.getElementById('price-calc');
+            const pricing = calculatePrice();
+
+            if (!pricing) {
+                el.textContent = 'Select at least one week to see pricing';
+                return;
+            }
+
+            const { registration, accommodation, accomType, fee, total, weeksCount } = pricing;
             const tierLabel = TIER_LABELS[currentTier];
+
             let html = weeksCount === 4
                 ? `<strong>Registration:</strong> €${tierPricing.perMonth} (full month, ${tierLabel})`
                 : `<strong>Registration:</strong> €${tierPricing.perWeek} × ${weeksCount} wk = €${registration.toFixed(2)} (${tierLabel})`;
@@ -871,28 +1416,25 @@
             html += `<br><strong>Processing fee (2%):</strong> €${fee.toFixed(2)}`;
             html += `<br><strong style="font-size: 1.1em;">Total: €${total.toFixed(2)}</strong>`;
 
-            const wantFood = document.getElementById('want_food').checked;
-            if (wantFood) {
-                html += `<br><span style="font-size: 0.8rem; color: var(--forest);">Food: interest registered — details & costs coming soon.</span>`;
-            }
-
             el.innerHTML = html;
         }
 
-        function getSelectedWeeks() {
-            return Array.from(document.querySelectorAll('input[name="weeks"]:checked')).map(cb => cb.value);
-        }
-
+        // ===== Collect form data =====
         function collectFormData() {
             const form = document.getElementById('application-form');
             const weeks = getSelectedWeeks();
+            const foodPref = document.querySelector('input[name="food_preference"]:checked');
+            let foodValue = foodPref ? foodPref.value : null;
+            if (foodValue === 'allergies') {
+                const allergyText = document.getElementById('food_allergies_text').value.trim();
+                if (allergyText) foodValue = 'allergies: ' + allergyText;
+            }
 
             return {
                 first_name: form.first_name.value.trim(),
                 last_name: form.last_name.value.trim(),
                 email: form.email.value,
                 social_links: form.social_media.value,
-                contact_other: form.contact_other.value,
                 how_heard: form.how_heard.value,
                 referral_name: form.referral_names.value,
                 affiliations: form.affiliations.value,
@@ -901,27 +1443,189 @@
                 contribution: form.contribution.value,
                 weeks: weeks,
                 attendance_type: weeks.length === 4 ? 'full' : 'partial',
+                top_themes: getSelectedThemes(),
+                themes_familiarity: form.themes_familiarity.value,
+                belief_update: form.belief_update.value,
                 need_accommodation: document.getElementById('need_accommodation').checked,
                 accommodation_type: document.getElementById('accommodation_type').value || null,
                 accommodation_preference: document.getElementById('accommodation_type').value || null,
-                want_food: document.getElementById('want_food').checked,
+                food_preference: foodValue,
+                food_allergies_text: document.getElementById('food_allergies_text').value,
+                accessibility_needs: form.accessibility_needs.value,
+                volunteer_interest: document.getElementById('volunteer_interest').checked,
+                coupon_code: form.coupon_code.value,
                 anything_else: form.anything_else.value,
                 privacy_policy_accepted: form.privacy_accepted.checked,
-                code_of_conduct_accepted: true
+                code_of_conduct_accepted: true,
+                // Map to existing DB columns
+                commons_experience: form.affiliations.value,
+                workshops_offer: form.themes_familiarity.value,
+                projects: form.current_work.value,
+                want_food: foodValue && foodValue !== 'no-preference' ? true : false,
             };
         }
 
+        // ===== Review step =====
+        function renderReview() {
+            const data = collectFormData();
+            const pricing = calculatePrice();
+            const container = document.getElementById('review-content');
+
+            function esc(str) {
+                if (!str) return '<em style="color:#999;">—</em>';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            let html = '';
+
+            // Weeks
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Weeks Selected</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(1)">Edit</span>
+                </div>
+                <div class="review-field">
+                    <div class="review-value">${data.weeks.map(w => WEEK_LABELS[w] || w).join('<br>')}</div>
+                </div>
+            </div>`;
+
+            // Contact
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Contact Information</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(2)">Edit</span>
+                </div>
+                <div class="review-field">
+                    <div class="review-label">Name</div>
+                    <div class="review-value">${esc(data.first_name)} ${esc(data.last_name)}</div>
+                </div>
+                <div class="review-field">
+                    <div class="review-label">Email</div>
+                    <div class="review-value">${esc(data.email)}</div>
+                </div>
+                ${data.social_links ? `<div class="review-field"><div class="review-label">Social</div><div class="review-value">${esc(data.social_links)}</div></div>` : ''}
+                <div class="review-field">
+                    <div class="review-label">How heard</div>
+                    <div class="review-value">${esc(data.how_heard)}</div>
+                </div>
+                ${data.referral_name ? `<div class="review-field"><div class="review-label">Referral</div><div class="review-value">${esc(data.referral_name)}</div></div>` : ''}
+            </div>`;
+
+            // Affiliations
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Affiliations</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(3)">Edit</span>
+                </div>
+                <div class="review-field"><div class="review-value">${esc(data.affiliations)}</div></div>
+            </div>`;
+
+            // Why join
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Why Join & Good Fit</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(4)">Edit</span>
+                </div>
+                <div class="review-field"><div class="review-value">${esc(data.motivation)}</div></div>
+            </div>`;
+
+            // Current work
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Current Work</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(5)">Edit</span>
+                </div>
+                <div class="review-field"><div class="review-value">${esc(data.current_work)}</div></div>
+            </div>`;
+
+            // Contribution
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Contribution</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(6)">Edit</span>
+                </div>
+                <div class="review-field"><div class="review-value">${esc(data.contribution)}</div></div>
+            </div>`;
+
+            // Themes
+            const themeNames = data.top_themes.map(t => THEME_LABELS[t] || t);
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Themes</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(7)">Edit</span>
+                </div>
+                <div class="review-field">
+                    <div class="review-label">Top themes</div>
+                    <div class="review-value">${themeNames.length > 0 ? themeNames.join(', ') : '<em style="color:#999;">None selected</em>'}</div>
+                </div>
+                ${data.themes_familiarity ? `<div class="review-field"><div class="review-label">Familiarity</div><div class="review-value">${esc(data.themes_familiarity)}</div></div>` : ''}
+            </div>`;
+
+            // Belief update
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Belief Update</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(8)">Edit</span>
+                </div>
+                <div class="review-field"><div class="review-value">${esc(data.belief_update)}</div></div>
+            </div>`;
+
+            // Practical details
+            const foodLabel = data.food_preference ? data.food_preference.replace('allergies: ', 'Allergies: ') : 'Not specified';
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Practical Details</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(9)">Edit</span>
+                </div>
+                ${data.accommodation_type ? `<div class="review-field"><div class="review-label">Accommodation</div><div class="review-value">${ACCOMMODATION_LABELS[data.accommodation_type] || data.accommodation_type}</div></div>` : '<div class="review-field"><div class="review-label">Accommodation</div><div class="review-value">None selected</div></div>'}
+                <div class="review-field"><div class="review-label">Food preference</div><div class="review-value">${esc(foodLabel)}</div></div>
+                ${data.accessibility_needs ? `<div class="review-field"><div class="review-label">Accessibility</div><div class="review-value">${esc(data.accessibility_needs)}</div></div>` : ''}
+                ${data.volunteer_interest ? '<div class="review-field"><div class="review-label">Volunteer</div><div class="review-value">Interested in volunteering</div></div>' : ''}
+                ${data.coupon_code ? `<div class="review-field"><div class="review-label">Coupon code</div><div class="review-value">${esc(data.coupon_code)}</div></div>` : ''}
+                ${data.anything_else ? `<div class="review-field"><div class="review-label">Other notes</div><div class="review-value">${esc(data.anything_else)}</div></div>` : ''}
+            </div>`;
+
+            // Price summary
+            if (pricing) {
+                const { registration, accommodation, accomType, fee, total, weeksCount } = pricing;
+                const tierLabel = TIER_LABELS[currentTier];
+
+                html += `<div class="review-price-summary">
+                    <h3>Payment Summary</h3>
+                    <div class="price-line">
+                        <span>Registration (${weeksCount} wk, ${tierLabel})</span>
+                        <span>&euro;${registration.toFixed(2)}</span>
+                    </div>`;
+
+                if (accommodation > 0) {
+                    html += `<div class="price-line">
+                        <span>Accommodation</span>
+                        <span>&euro;${accommodation.toFixed(2)}</span>
+                    </div>`;
+                }
+
+                html += `<div class="price-line">
+                        <span>Processing fee (2%)</span>
+                        <span>&euro;${fee.toFixed(2)}</span>
+                    </div>
+                    <div class="price-line total">
+                        <span>Total</span>
+                        <span>&euro;${total.toFixed(2)}</span>
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ===== Submit handler =====
         document.getElementById('application-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const errorDiv = document.getElementById('form-error');
             const submitBtn = document.getElementById('submit-btn');
-
-            if (!document.getElementById('privacy_accepted').checked) {
-                errorDiv.textContent = 'Please accept the privacy policy.';
-                errorDiv.style.display = 'block';
-                return;
-            }
 
             errorDiv.style.display = 'none';
             submitBtn.disabled = true;
@@ -939,34 +1643,39 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Redirect to Mollie checkout if payment URL was returned
-                    if (result.checkoutUrl) {
-                        window.location.href = result.checkoutUrl;
-                        return;
-                    }
+                    // Clear saved data
+                    localStorage.removeItem(STORAGE_KEY);
 
-                    // No payment needed - show success directly
+                    // Show success state
+                    document.getElementById('confirm-name').textContent = data.first_name;
                     document.getElementById('confirm-email').textContent = data.email;
+                    document.getElementById('success-heading').textContent = `You're in the process, ${data.first_name}!`;
+
                     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
                     document.querySelector('.form-section[data-step="success"]').style.display = 'block';
                     document.querySelector('.form-section[data-step="success"]').classList.add('active');
-                    document.querySelector('.progress-container').style.display = 'none';
+                    document.getElementById('progress-container').style.display = 'none';
+
+                    // Redirect to Mollie checkout after brief display
+                    if (result.checkoutUrl) {
+                        setTimeout(() => {
+                            window.location.href = result.checkoutUrl;
+                        }, 2000);
+                    }
                 } else {
                     errorDiv.textContent = result.error || 'Something went wrong. Please try again.';
                     errorDiv.style.display = 'block';
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit Application';
+                    submitBtn.textContent = 'Submit & Pay';
                 }
             } catch (error) {
                 console.error('Submission error:', error);
                 errorDiv.textContent = 'Network error. Please check your connection.';
                 errorDiv.style.display = 'block';
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Application';
+                submitBtn.textContent = 'Submit & Pay';
             }
         });
-
-        updateProgress();
     </script>
 </body>
 </html>

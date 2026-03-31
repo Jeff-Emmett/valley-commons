@@ -87,6 +87,18 @@ async function runMigrations() {
         ADD COLUMN IF NOT EXISTS accommodation_type VARCHAR(50)
     `);
 
+    // Form restructure columns (migration 004)
+    await pool.query(`
+      ALTER TABLE applications
+        ADD COLUMN IF NOT EXISTS selected_weeks TEXT[],
+        ADD COLUMN IF NOT EXISTS top_themes TEXT[],
+        ADD COLUMN IF NOT EXISTS belief_update TEXT,
+        ADD COLUMN IF NOT EXISTS volunteer_interest BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS coupon_code TEXT,
+        ADD COLUMN IF NOT EXISTS food_preference TEXT,
+        ADD COLUMN IF NOT EXISTS accessibility_needs TEXT
+    `);
+
     // Rename resend_id → message_id in email_log (legacy column name)
     const colCheck = await pool.query(`
       SELECT column_name FROM information_schema.columns

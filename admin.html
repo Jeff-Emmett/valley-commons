@@ -792,6 +792,52 @@
                 </div>
 
                 <div class="detail-section">
+                    <h3>Themes & Beliefs</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item full-width">
+                            <label>Top Themes</label>
+                            <div class="chip-list">
+                                ${(app.top_themes || []).map(t => `<span class="chip">${t}</span>`).join('') || '-'}
+                            </div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Belief Update</label>
+                            <div class="long-text">${app.belief_update || '-'}</div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Selected Weeks</label>
+                            <div class="chip-list">
+                                ${(app.selected_weeks || []).map(w => `<span class="chip">${w}</span>`).join('') || '-'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Practical Needs</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Food Preference</label>
+                            <p>${app.food_preference || '-'}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Volunteer Interest</label>
+                            <p>${app.volunteer_interest ? '✓ Yes' : 'No'}</p>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Accessibility Needs</label>
+                            <div class="long-text">${app.accessibility_needs || '-'}</div>
+                        </div>
+                        ${app.coupon_code ? `
+                        <div class="detail-item">
+                            <label>Coupon Code</label>
+                            <p>${app.coupon_code}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="detail-section">
                     <h3>Financial & Practical</h3>
                     <div class="detail-grid">
                         <div class="detail-item">

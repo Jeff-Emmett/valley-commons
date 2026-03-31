@@ -16,6 +16,7 @@
             --color-bg: #ffffff;
             --color-accent: #000;
             --color-link: #000;
+            --color-forest: #2d5016;
             --font-sans: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
@@ -39,7 +40,7 @@
         }
 
         .header-container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
@@ -59,15 +60,15 @@
         .header a:hover { text-decoration: underline; }
 
         .content {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+            padding: 3rem 2rem 4rem;
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .page-header {
             text-align: center;
+            margin-bottom: 3rem;
         }
 
         h1 {
@@ -81,21 +82,177 @@
         .subtitle {
             font-size: 1.2rem;
             color: var(--color-text-light);
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
-        .coming-soon {
-            font-size: 1.1rem;
+        .intro-text {
+            font-size: 1.05rem;
             color: var(--color-text-light);
-            max-width: 500px;
-            margin-bottom: 2rem;
+            max-width: 650px;
+            margin: 0 auto;
         }
 
-        .contact {
-            font-size: 1rem;
+        /* Tier cards */
+        .tiers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 3rem;
         }
 
-        .contact a {
+        .tier-card {
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tier-card.featured {
+            border-color: var(--color-forest);
+            box-shadow: 0 4px 16px rgba(45, 80, 22, 0.12);
+        }
+
+        .tier-header {
+            padding: 1.5rem 1.25rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .tier-card.featured .tier-header {
+            background: var(--color-forest);
+            border-bottom-color: var(--color-forest);
+        }
+
+        .tier-card.featured .tier-name,
+        .tier-card.featured .tier-price,
+        .tier-card.featured .tier-limit {
+            color: white;
+        }
+
+        .tier-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            color: var(--color-text);
+        }
+
+        .tier-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text);
+            line-height: 1.2;
+        }
+
+        .tier-limit {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+            margin-top: 0.25rem;
+        }
+
+        .tier-body {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .tier-perk {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .tier-perk .perk-icon {
+            flex-shrink: 0;
+            width: 20px;
+            text-align: center;
+            color: var(--color-forest);
+            font-weight: 600;
+        }
+
+        .tier-perk .perk-label {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--color-text-light);
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .tier-perk.empty {
+            color: #ccc;
+        }
+
+        .tier-footer {
+            padding: 1.25rem;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+        }
+
+        .tier-cta {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: 1px solid var(--color-text);
+            color: var(--color-text);
+            transition: all 0.2s;
+        }
+
+        .tier-cta:hover {
+            background: var(--color-text);
+            color: white;
+        }
+
+        .tier-card.featured .tier-cta {
+            background: var(--color-forest);
+            color: white;
+            border-color: var(--color-forest);
+        }
+
+        .tier-card.featured .tier-cta:hover {
+            background: #3a6b1e;
+        }
+
+        /* Footnote */
+        .footnote {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            font-style: italic;
+            margin-bottom: 3rem;
+        }
+
+        /* CTA */
+        .cta-section {
+            text-align: center;
+            padding: 2.5rem;
+            background: #f9f9f6;
+            border-radius: 12px;
+        }
+
+        .cta-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-section p {
+            color: var(--color-text-light);
+            margin-bottom: 1rem;
+        }
+
+        .cta-section a {
             color: var(--color-link);
             font-weight: 600;
         }
@@ -114,25 +271,202 @@
         }
 
         .footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .tiers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .tiers {
+                grid-template-columns: 1fr;
+            }
+            .content { padding: 2rem 1rem; }
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-container">
             <a href="/">Valley of the Commons</a>
-            <a href="/apply.html">Apply Now</a>
+            <a href="/apply.html">Register Now</a>
         </div>
     </header>
 
     <div class="content">
-        <h1>Sponsorships</h1>
-        <p class="subtitle">Aug 24 – Sep 20, 2026 · Höllental, Austrian Alps</p>
-        <p class="coming-soon">Details coming soon. We're finalizing sponsorship packages for Valley of the Commons and will share more here shortly.</p>
-        <p class="contact">Interested? Reach out at <a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a></p>
+        <div class="page-header">
+            <h1>Sponsorship Tiers</h1>
+            <p class="subtitle">Aug 24 &ndash; Sep 20, 2026 &middot; H&ouml;llental, Austrian Alps</p>
+            <p class="intro-text">Support the commons and gain visibility with a community of practitioners, researchers, and builders shaping life beyond extractive systems.</p>
+        </div>
+
+        <div class="tiers">
+            <!-- Friend of the Commons -->
+            <div class="tier-card">
+                <div class="tier-header">
+                    <div class="tier-name">Friend of<br>the Commons</div>
+                    <div class="tier-price">&euro;1,000</div>
+                    <div class="tier-limit">Unlimited spots</div>
+                </div>
+                <div class="tier-body">
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Ticket Voucher</span>&euro;250</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Visibility</span>Name on sponsor list</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Public Gratitude</span>Social media recognition</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Stage Access</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Video Assets</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Branded Handouts</div>
+                    </div>
+                </div>
+                <div class="tier-footer">
+                    <a href="mailto:team@valleyofthecommons.com?subject=Sponsorship%20—%20Friend%20of%20the%20Commons" class="tier-cta">Get in Touch</a>
+                </div>
+            </div>
+
+            <!-- Symbiont Supporter -->
+            <div class="tier-card">
+                <div class="tier-header">
+                    <div class="tier-name">Symbiont<br>Supporter</div>
+                    <div class="tier-price">&euro;2,500</div>
+                    <div class="tier-limit">10 spots</div>
+                </div>
+                <div class="tier-body">
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Ticket Voucher</span>&euro;625</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Visibility</span>Small logo on website</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Public Gratitude</span>Social media recognition</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Stage Access</span>25 min exclusive session (no competing sessions)</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Video Assets</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Branded Handouts</div>
+                    </div>
+                </div>
+                <div class="tier-footer">
+                    <a href="mailto:team@valleyofthecommons.com?subject=Sponsorship%20—%20Symbiont%20Supporter" class="tier-cta">Get in Touch</a>
+                </div>
+            </div>
+
+            <!-- Spore Partner -->
+            <div class="tier-card featured">
+                <div class="tier-header">
+                    <div class="tier-name">Spore<br>Partner</div>
+                    <div class="tier-price">&euro;5,000</div>
+                    <div class="tier-limit">5 spots</div>
+                </div>
+                <div class="tier-body">
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Ticket Voucher</span>&euro;1,250</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Visibility</span>Mid-sized logo on website &amp; signage</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Public Gratitude</span>Social media recognition + naming in opening &amp; closing ceremony</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Stage Access</span>45 min exclusive session</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Video Assets</span>Short clip for your socials</div>
+                    </div>
+                    <div class="tier-perk empty">
+                        <span class="perk-icon">&mdash;</span>
+                        <div>Branded Handouts</div>
+                    </div>
+                </div>
+                <div class="tier-footer">
+                    <a href="mailto:team@valleyofthecommons.com?subject=Sponsorship%20—%20Spore%20Partner" class="tier-cta">Get in Touch</a>
+                </div>
+            </div>
+
+            <!-- Mycelium Partner -->
+            <div class="tier-card">
+                <div class="tier-header">
+                    <div class="tier-name">Mycelium<br>Partner</div>
+                    <div class="tier-price">&euro;10,000</div>
+                    <div class="tier-limit">3 spots</div>
+                </div>
+                <div class="tier-body">
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Ticket Voucher</span>&euro;2,500</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Visibility</span>Central logo on website &amp; signage</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Public Gratitude</span>Social media recognition + naming in opening &amp; closing ceremony</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Stage Access</span>2&times; 45 min exclusive session</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Video Assets</span>Extended feature</div>
+                    </div>
+                    <div class="tier-perk">
+                        <span class="perk-icon">&check;</span>
+                        <div><span class="perk-label">Branded Handouts</span>Cosmo-local gimmicks* produced in our fablab</div>
+                    </div>
+                </div>
+                <div class="tier-footer">
+                    <a href="mailto:team@valleyofthecommons.com?subject=Sponsorship%20—%20Mycelium%20Partner" class="tier-cta">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+
+        <p class="footnote">* Customized to your specific needs</p>
+
+        <div class="cta-section">
+            <h2>Interested in sponsoring?</h2>
+            <p>We'd love to discuss how we can work together. Every tier is customizable.</p>
+            <p><a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a></p>
+        </div>
     </div>
 
     <footer class="footer">
-        <p>&copy; 2026 Commons Hub · <a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/">Home</a></p>
+        <p>&copy; 2026 Commons Hub &middot; <a href="mailto:team@valleyofthecommons.com">team@valleyofthecommons.com</a> &middot; <a href="/privacy.html">Privacy Policy</a> &middot; <a href="/">Home</a></p>
     </footer>
 </body>
 </html>
