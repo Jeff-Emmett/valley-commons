@@ -500,6 +500,48 @@
 
         .next-steps-box li { margin-bottom: 0.5rem; }
 
+        /* ===== Welcome-back modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-box h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--forest);
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+        .modal-box p { font-size: 0.95rem; color: #555; margin-bottom: 1.5rem; }
+        .modal-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+        .modal-actions .btn { min-width: 160px; }
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border: 2px solid var(--forest);
+            color: var(--forest);
+            background: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-secondary:hover { background: rgba(45, 80, 22, 0.05); }
+
         @media (max-width: 600px) {
             .container { padding: 1rem; }
             .form-section, .landing { padding: 1.5rem; }
@@ -549,6 +591,18 @@
         <div class="progress-container" id="progress-container">
             <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
             <div class="progress-text">Step <span id="progress-step">1</span> of 10 — <span id="progress-percent">10</span>%</div>
+        </div>
+
+        <!-- Welcome-back modal -->
+        <div class="modal-overlay" id="welcome-back-modal">
+            <div class="modal-box">
+                <h3 id="welcome-back-heading">Welcome back!</h3>
+                <p>We found your previous application. Would you like to load it and continue where you left off?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" onclick="loadExistingApplication()">Load my application</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeWelcomeModal()">Cancel</button>
+                </div>
+            </div>
         </div>
 
         <form id="application-form" style="display: none;">
@@ -887,7 +941,7 @@
                 <div class="form-group">
                     <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
                         <input type="checkbox" id="volunteer_interest" name="volunteer_interest" style="width: 18px; height: 18px; margin-top: 0.2rem; accent-color: var(--forest);">
-                        <span>I'm interested in volunteering (e.g. helping with setup, cooking, facilitation) in exchange for a reduced fee</span>
+                        <span>I'm interested in volunteering (e.g. helping with setup, cooking, facilitation)</span>
                     </label>
                 </div>
 
@@ -1111,17 +1165,24 @@
                 updateThemeCounter();
             }
 
-            // Food preference
+            // Food preference — handle "allergies: <text>" from DB
             if (data.food_preference) {
-                const radio = document.querySelector(`input[name="food_preference"][value="${data.food_preference}"]`);
+                let foodVal = data.food_preference;
+                let allergyText = '';
+                if (foodVal.startsWith('allergies: ')) {
+                    allergyText = foodVal.substring('allergies: '.length);
+                    foodVal = 'allergies';
+                }
+                const radio = document.querySelector(`input[name="food_preference"][value="${foodVal}"]`);
                 if (radio) {
                     radio.checked = true;
-                    if (data.food_preference === 'allergies') {
+                    if (foodVal === 'allergies') {
                         document.getElementById('food-allergies-detail').style.display = 'block';
+                        if (allergyText) document.getElementById('food_allergies_text').value = allergyText;
                     }
                 }
             }
-            if (data.food_allergies_text) {
+            if (data.food_allergies_text && !document.getElementById('food_allergies_text').value) {
                 document.getElementById('food_allergies_text').value = data.food_allergies_text;
             }
 
@@ -1223,13 +1284,65 @@
             return valid;
         }
 
-        function nextStep() {
+        // State for existing application resume flow
+        window._existingApplicationId = null;
+        window._pendingLookupData = null;
+
+        async function nextStep() {
             if (!validateStep(currentStep)) return;
+
+            // Email check when leaving step 2
+            if (currentStep === 2 && !window._existingApplicationId) {
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                if (email) {
+                    try {
+                        const resp = await fetch('/api/application/lookup?email=' + encodeURIComponent(email));
+                        if (resp.ok) {
+                            const result = await resp.json();
+                            if (result.found) {
+                                if (result.application.payment_status === 'paid') {
+                                    alert('This email already has a completed (paid) application. Contact us at contact@valleyofthecommons.com if you need to make changes.');
+                                    return;
+                                }
+                                // Show welcome-back modal
+                                window._pendingLookupData = result.application;
+                                const heading = document.getElementById('welcome-back-heading');
+                                heading.textContent = `Welcome back, ${result.application.first_name}!`;
+                                document.getElementById('welcome-back-modal').classList.add('visible');
+                                return; // Don't advance until user decides
+                            }
+                        }
+                        // 404 = no existing application, continue normally
+                    } catch (e) {
+                        console.error('Email lookup failed:', e);
+                        // Non-blocking — continue with new application
+                    }
+                }
+            }
+
             if (currentStep < totalSteps) {
                 currentStep++;
                 showStep(currentStep);
                 saveFormData();
             }
+        }
+
+        function loadExistingApplication() {
+            const data = window._pendingLookupData;
+            if (!data) return;
+            window._existingApplicationId = data.id;
+            restoreFormData(data);
+            saveFormData();
+            document.getElementById('welcome-back-modal').classList.remove('visible');
+            // Advance to step 3
+            currentStep = 3;
+            showStep(3);
+        }
+
+        function closeWelcomeModal() {
+            window._pendingLookupData = null;
+            document.getElementById('welcome-back-modal').classList.remove('visible');
+            // Stay on step 2 — user can change their email
         }
 
         function prevStep() {
@@ -1629,13 +1742,14 @@
 
             errorDiv.style.display = 'none';
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+            const isUpdate = !!window._existingApplicationId;
+            submitBtn.textContent = isUpdate ? 'Updating...' : 'Submitting...';
 
             try {
                 const data = collectFormData();
 
                 const response = await fetch('/api/application', {
-                    method: 'POST',
+                    method: isUpdate ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
@@ -1649,7 +1763,9 @@
                     // Show success state
                     document.getElementById('confirm-name').textContent = data.first_name;
                     document.getElementById('confirm-email').textContent = data.email;
-                    document.getElementById('success-heading').textContent = `You're in the process, ${data.first_name}!`;
+                    document.getElementById('success-heading').textContent = isUpdate
+                        ? `Application updated, ${data.first_name}!`
+                        : `You're in the process, ${data.first_name}!`;
 
                     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
                     document.querySelector('.form-section[data-step="success"]').style.display = 'block';

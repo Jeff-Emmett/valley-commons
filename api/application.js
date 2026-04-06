@@ -196,7 +196,7 @@ async function logEmail(recipientEmail, recipientName, emailType, subject, messa
 module.exports = async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -469,5 +469,241 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // PUT - Update existing application
+  if (req.method === 'PUT') {
+    try {
+      const data = req.body;
+
+      // Validate required fields
+      const required = ['first_name', 'last_name', 'email', 'motivation', 'belief_update', 'privacy_policy_accepted'];
+      for (const field of required) {
+        if (!data[field]) {
+          return res.status(400).json({ error: `Missing required field: ${field}` });
+        }
+      }
+
+      // Find existing application by email
+      const existing = await pool.query(
+        'SELECT id, payment_status, submitted_at, status FROM applications WHERE email = $1',
+        [data.email.toLowerCase().trim()]
+      );
+
+      if (existing.rows.length === 0) {
+        return res.status(404).json({ error: 'No application found with this email' });
+      }
+
+      const app = existing.rows[0];
+
+      // If already paid, don't allow re-submission
+      if (app.payment_status === 'paid') {
+        return res.status(400).json({
+          error: 'This application has already been paid. Contact us if you need to make changes.',
+          paid: true,
+          applicationId: app.id
+        });
+      }
+
+      // Prepare arrays for PostgreSQL
+      const skills = Array.isArray(data.skills) ? data.skills : (data.skills ? [data.skills] : null);
+      const languages = Array.isArray(data.languages) ? data.languages : (data.languages ? [data.languages] : null);
+      const dietary = Array.isArray(data.dietary_requirements) ? data.dietary_requirements : (data.dietary_requirements ? [data.dietary_requirements] : null);
+      const governance = Array.isArray(data.governance_interest) ? data.governance_interest : (data.governance_interest ? [data.governance_interest] : null);
+      const previousEvents = Array.isArray(data.previous_events) ? data.previous_events : (data.previous_events ? [data.previous_events] : null);
+      const selectedWeeks = Array.isArray(data.weeks) ? data.weeks : (data.weeks ? [data.weeks] : []);
+      const topThemes = Array.isArray(data.top_themes) ? data.top_themes : (data.top_themes ? [data.top_themes] : null);
+
+      // Update the application
+      await pool.query(
+        `UPDATE applications SET
+          first_name = $1, last_name = $2, phone = $3, country = $4, city = $5,
+          pronouns = $6, date_of_birth = $7, occupation = $8, organization = $9,
+          skills = $10, languages = $11, website = $12, social_links = $13,
+          attendance_type = $14, arrival_date = $15, departure_date = $16,
+          accommodation_preference = $17, dietary_requirements = $18, dietary_notes = $19,
+          motivation = $20, contribution = $21, projects = $22, workshops_offer = $23,
+          commons_experience = $24, community_experience = $25, governance_interest = $26,
+          how_heard = $27, referral_name = $28, previous_events = $29,
+          emergency_name = $30, emergency_phone = $31, emergency_relationship = $32,
+          code_of_conduct_accepted = $33, privacy_policy_accepted = $34, photo_consent = $35,
+          scholarship_needed = $36, scholarship_reason = $37, need_accommodation = $38,
+          want_food = $39, accommodation_type = $40, selected_weeks = $41,
+          top_themes = $42, belief_update = $43, volunteer_interest = $44,
+          coupon_code = $45, food_preference = $46, accessibility_needs = $47
+        WHERE id = $48`,
+        [
+          data.first_name?.trim(),
+          data.last_name?.trim(),
+          data.phone?.trim() || null,
+          data.country?.trim() || null,
+          data.city?.trim() || null,
+          data.pronouns?.trim() || null,
+          data.date_of_birth || null,
+          data.occupation?.trim() || null,
+          data.organization?.trim() || null,
+          skills,
+          languages,
+          data.website?.trim() || null,
+          data.social_links ? JSON.stringify(data.social_links) : null,
+          data.attendance_type || 'full',
+          data.arrival_date || null,
+          data.departure_date || null,
+          data.accommodation_preference || null,
+          dietary,
+          data.dietary_notes?.trim() || null,
+          data.motivation?.trim(),
+          data.contribution?.trim() || null,
+          data.projects?.trim() || null,
+          data.workshops_offer?.trim() || null,
+          data.commons_experience?.trim() || null,
+          data.community_experience?.trim() || null,
+          governance,
+          data.how_heard?.trim() || null,
+          data.referral_name?.trim() || null,
+          previousEvents,
+          data.emergency_name?.trim() || null,
+          data.emergency_phone?.trim() || null,
+          data.emergency_relationship?.trim() || null,
+          data.code_of_conduct_accepted || false,
+          data.privacy_policy_accepted || false,
+          data.photo_consent || false,
+          data.scholarship_needed || false,
+          data.scholarship_reason?.trim() || null,
+          data.need_accommodation || false,
+          data.want_food || false,
+          data.accommodation_type || null,
+          selectedWeeks.length > 0 ? selectedWeeks : null,
+          topThemes,
+          data.belief_update?.trim() || null,
+          data.volunteer_interest || false,
+          data.coupon_code?.trim() || null,
+          data.food_preference?.trim() || null,
+          data.accessibility_needs?.trim() || null,
+          app.id
+        ]
+      );
+
+      const application = {
+        id: app.id,
+        submitted_at: app.submitted_at,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        weeks: selectedWeeks,
+        accommodation_type: data.accommodation_type || null,
+      };
+
+      // Create Mollie payment
+      let checkoutUrl = null;
+      if (selectedWeeks.length > 0 && process.env.MOLLIE_API_KEY) {
+        try {
+          const paymentResult = await createPayment(
+            app.id,
+            'registration',
+            selectedWeeks.length,
+            data.email.toLowerCase().trim(),
+            data.first_name,
+            data.last_name,
+            data.accommodation_type,
+            selectedWeeks
+          );
+          checkoutUrl = paymentResult.checkoutUrl;
+          console.log(`Mollie payment created (update): ${paymentResult.paymentId} (€${paymentResult.amount})`);
+        } catch (paymentError) {
+          console.error('Failed to create Mollie payment:', paymentError);
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Application updated successfully',
+        applicationId: app.id,
+        checkoutUrl,
+      });
+
+    } catch (error) {
+      console.error('Application update error:', error);
+      return res.status(500).json({ error: 'Failed to update application. Please try again.' });
+    }
+  }
+
   return res.status(405).json({ error: 'Method not allowed' });
+};
+
+// Lookup handler - public endpoint to check if an application exists by email
+module.exports.lookup = async function lookupHandler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const email = (req.query.email || '').toLowerCase().trim();
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ error: 'Valid email is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT id, first_name, last_name, email, phone, country, city, pronouns,
+              date_of_birth, occupation, organization, skills, languages, website,
+              social_links, attendance_type, arrival_date, departure_date,
+              accommodation_preference, dietary_requirements, dietary_notes,
+              motivation, contribution, projects, workshops_offer, commons_experience,
+              community_experience, governance_interest, how_heard, referral_name,
+              previous_events, emergency_name, emergency_phone, emergency_relationship,
+              code_of_conduct_accepted, privacy_policy_accepted, photo_consent,
+              scholarship_needed, scholarship_reason, need_accommodation, want_food,
+              accommodation_type, selected_weeks, top_themes, belief_update,
+              volunteer_interest, coupon_code, food_preference, accessibility_needs,
+              payment_status, submitted_at
+       FROM applications WHERE email = $1`,
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ found: false });
+    }
+
+    const row = result.rows[0];
+
+    // Map DB column names to frontend form field names that restoreFormData() expects
+    const mapped = {
+      id: row.id,
+      first_name: row.first_name,
+      last_name: row.last_name,
+      email: row.email,
+      social_links: row.social_links,
+      how_heard: row.how_heard,
+      referral_name: row.referral_name,
+      affiliations: row.commons_experience,
+      motivation: row.motivation,
+      current_work: row.projects,
+      contribution: row.contribution,
+      themes_familiarity: row.workshops_offer,
+      belief_update: row.belief_update,
+      weeks: row.selected_weeks || [],
+      top_themes: row.top_themes || [],
+      need_accommodation: row.need_accommodation,
+      accommodation_type: row.accommodation_type,
+      food_preference: row.food_preference,
+      accessibility_needs: row.accessibility_needs,
+      volunteer_interest: row.volunteer_interest,
+      coupon_code: row.coupon_code,
+      privacy_policy_accepted: row.privacy_policy_accepted,
+      payment_status: row.payment_status,
+      submitted_at: row.submitted_at,
+    };
+
+    return res.status(200).json({ found: true, application: mapped });
+
+  } catch (error) {
+    console.error('Application lookup error:', error);
+    return res.status(500).json({ error: 'Lookup failed' });
+  }
 };

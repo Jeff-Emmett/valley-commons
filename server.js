@@ -11,8 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 // CORS middleware
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -23,6 +23,7 @@ app.use((req, res, next) => {
 const waitlistHandler = require('./api/waitlist-db');
 const newsletterHandler = require('./api/newsletter');
 const applicationHandler = require('./api/application');
+const applicationLookupHandler = require('./api/application').lookup;
 const gameChatHandler = require('./api/game-chat');
 const shareToGithubHandler = require('./api/share-to-github');
 const { handleWebhook, getPaymentStatus, resumePayment } = require('./api/mollie');
@@ -42,6 +43,7 @@ const vercelToExpress = (handler) => async (req, res) => {
 app.all('/api/waitlist', vercelToExpress(waitlistHandler));
 app.all('/api/newsletter', vercelToExpress(newsletterHandler));
 app.all('/api/application', vercelToExpress(applicationHandler));
+app.get('/api/application/lookup', vercelToExpress(applicationLookupHandler));
 app.all('/api/game-chat', vercelToExpress(gameChatHandler));
 app.all('/api/share-to-github', vercelToExpress(shareToGithubHandler));
 app.post('/api/mollie/webhook', vercelToExpress(handleWebhook));
