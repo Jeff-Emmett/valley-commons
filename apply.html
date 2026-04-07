@@ -580,6 +580,11 @@
 
             <div class="time-estimate">This application takes approximately 15–20 minutes to complete.</div>
 
+            <div id="resume-notice" class="resume-notice" style="display: none;">
+                You have saved progress from a previous session.
+                <a href="#" onclick="startFormAndResume(); return false;" style="color: var(--forest); font-weight: 600;">Resume where you left off</a>
+            </div>
+
             <button class="btn btn-primary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Begin Application</button>
         </div>
 
@@ -1081,16 +1086,35 @@
         document.getElementById('landing-reg-price').innerHTML =
             `&euro;${tierPricing.perWeek} – &euro;${REGISTRATION_PRICING.lastMin.perWeek}/wk`;
 
+        // Show resume notice if there's saved progress
+        (function checkSavedProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                document.getElementById('resume-notice').style.display = 'block';
+            }
+        })();
+
         function startForm() {
             document.getElementById('landing-screen').style.display = 'none';
             document.getElementById('application-form').style.display = 'block';
             document.getElementById('progress-container').style.display = 'block';
+            currentStep = 1;
+            showStep(1);
+        }
 
-            // Silently restore any locally saved progress
+        async function startFormAndResume() {
+            document.getElementById('landing-screen').style.display = 'none';
+            document.getElementById('application-form').style.display = 'block';
+            document.getElementById('progress-container').style.display = 'block';
+
+            // Restore locally saved progress
             const saved = localStorage.getItem(STORAGE_KEY);
+            let email = null;
             if (saved) {
                 try {
-                    restoreFormData(JSON.parse(saved));
+                    const data = JSON.parse(saved);
+                    restoreFormData(data);
+                    email = data.email;
                 } catch (e) {
                     console.error('Failed to restore saved data:', e);
                 }
@@ -1098,6 +1122,27 @@
 
             currentStep = 1;
             showStep(1);
+
+            // If we have an email, check server for existing application
+            if (email) {
+                try {
+                    const resp = await fetch('/api/application/lookup?email=' + encodeURIComponent(email));
+                    if (resp.ok) {
+                        const result = await resp.json();
+                        if (result.found) {
+                            if (result.application.payment_status === 'paid') {
+                                alert('This email already has a completed (paid) application. Contact us at contact@valleyofthecommons.com if you need to make changes.');
+                                return;
+                            }
+                            window._pendingLookupData = result.application;
+                            document.getElementById('welcome-back-heading').textContent = `Welcome back, ${result.application.first_name}!`;
+                            document.getElementById('welcome-back-modal').classList.add('visible');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Email lookup failed:', e);
+                }
+            }
         }
 
         // ===== Autosave =====
