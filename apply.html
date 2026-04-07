@@ -1082,7 +1082,7 @@
             currentStep = 1;
             showStep(1);
 
-            // If we have an email, check server for existing application
+            // If we have an email, check if application exists in DB (just set the update flag)
             if (email) {
                 try {
                     const resp = await fetch('/api/application/lookup?email=' + encodeURIComponent(email));
@@ -1093,10 +1093,8 @@
                                 alert('This email already has a completed (paid) application. Contact us at contact@valleyofthecommons.com if you need to make changes.');
                                 return;
                             }
-                            // Silently load server data over localStorage data
+                            // Just flag for PUT on submit — localStorage already has the latest edits
                             window._existingApplicationId = result.application.id;
-                            restoreFormData(result.application);
-                            saveFormData();
                         }
                     }
                 } catch (e) {
@@ -1722,8 +1720,8 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Clear saved data
-                    localStorage.removeItem(STORAGE_KEY);
+                    // Save submitted data so "Resume" works on next visit
+                    saveFormData();
 
                     // Show success state
                     document.getElementById('confirm-name').textContent = data.first_name;
