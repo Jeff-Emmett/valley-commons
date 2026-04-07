@@ -500,35 +500,6 @@
 
         .next-steps-box li { margin-bottom: 0.5rem; }
 
-        /* ===== Welcome-back modal ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.visible { display: flex; }
-        .modal-box {
-            background: #fff;
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 480px;
-            width: 90%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .modal-box h3 {
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--forest);
-            font-size: 1.4rem;
-            margin-bottom: 0.75rem;
-        }
-        .modal-box p { font-size: 0.95rem; color: #555; margin-bottom: 1.5rem; }
-        .modal-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-        .modal-actions .btn { min-width: 160px; }
         .btn-secondary {
             display: inline-block;
             padding: 0.75rem 2rem;
@@ -585,24 +556,12 @@
                 <a href="#" onclick="startFormAndResume(); return false;" style="color: var(--forest); font-weight: 600;">Resume where you left off</a>
             </div>
 
-            <button class="btn btn-primary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Begin Application</button>
+            <button class="btn btn-secondary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Restart Application</button>
         </div>
 
         <div class="progress-container" id="progress-container">
             <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
             <div class="progress-text">Step <span id="progress-step">1</span> of 10 — <span id="progress-percent">10</span>%</div>
-        </div>
-
-        <!-- Welcome-back modal -->
-        <div class="modal-overlay" id="welcome-back-modal">
-            <div class="modal-box">
-                <h3 id="welcome-back-heading">Welcome back!</h3>
-                <p>We found your previous application. Would you like to load it and continue where you left off?</p>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-primary" onclick="loadExistingApplication()">Load my application</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeWelcomeModal()">Cancel</button>
-                </div>
-            </div>
         </div>
 
         <form id="application-form" style="display: none;">
@@ -1134,9 +1093,10 @@
                                 alert('This email already has a completed (paid) application. Contact us at contact@valleyofthecommons.com if you need to make changes.');
                                 return;
                             }
-                            window._pendingLookupData = result.application;
-                            document.getElementById('welcome-back-heading').textContent = `Welcome back, ${result.application.first_name}!`;
-                            document.getElementById('welcome-back-modal').classList.add('visible');
+                            // Silently load server data over localStorage data
+                            window._existingApplicationId = result.application.id;
+                            restoreFormData(result.application);
+                            saveFormData();
                         }
                     }
                 } catch (e) {
@@ -1317,12 +1277,11 @@
 
         // State for existing application resume flow
         window._existingApplicationId = null;
-        window._pendingLookupData = null;
 
         async function nextStep() {
             if (!validateStep(currentStep)) return;
 
-            // Email check when leaving step 1
+            // Silent email check when leaving step 1 — load existing application data
             if (currentStep === 1 && !window._existingApplicationId) {
                 const email = document.getElementById('email').value.trim().toLowerCase();
                 if (email) {
@@ -1335,18 +1294,14 @@
                                     alert('This email already has a completed (paid) application. Contact us at contact@valleyofthecommons.com if you need to make changes.');
                                     return;
                                 }
-                                // Show welcome-back modal
-                                window._pendingLookupData = result.application;
-                                const heading = document.getElementById('welcome-back-heading');
-                                heading.textContent = `Welcome back, ${result.application.first_name}!`;
-                                document.getElementById('welcome-back-modal').classList.add('visible');
-                                return; // Don't advance until user decides
+                                // Silently load server data
+                                window._existingApplicationId = result.application.id;
+                                restoreFormData(result.application);
+                                saveFormData();
                             }
                         }
-                        // 404 = no existing application, continue normally
                     } catch (e) {
                         console.error('Email lookup failed:', e);
-                        // Non-blocking — continue with new application
                     }
                 }
             }
@@ -1356,24 +1311,6 @@
                 showStep(currentStep);
                 saveFormData();
             }
-        }
-
-        function loadExistingApplication() {
-            const data = window._pendingLookupData;
-            if (!data) return;
-            window._existingApplicationId = data.id;
-            restoreFormData(data);
-            saveFormData();
-            document.getElementById('welcome-back-modal').classList.remove('visible');
-            // Advance to step 2 (weeks)
-            currentStep = 2;
-            showStep(2);
-        }
-
-        function closeWelcomeModal() {
-            window._pendingLookupData = null;
-            document.getElementById('welcome-back-modal').classList.remove('visible');
-            // Stay on step 2 — user can change their email
         }
 
         function prevStep() {
