@@ -223,7 +223,7 @@ module.exports = async function handler(req, res) {
 
       // Check for duplicate application
       const existing = await pool.query(
-        'SELECT id FROM applications WHERE email = $1',
+        'SELECT id FROM applications WHERE email = $1 ORDER BY submitted_at DESC LIMIT 1',
         [data.email.toLowerCase().trim()]
       );
 
@@ -484,7 +484,7 @@ module.exports = async function handler(req, res) {
 
       // Find existing application by email
       const existing = await pool.query(
-        'SELECT id, payment_status, submitted_at, status FROM applications WHERE email = $1',
+        'SELECT id, payment_status, submitted_at, status FROM applications WHERE email = $1 ORDER BY submitted_at DESC LIMIT 1',
         [data.email.toLowerCase().trim()]
       );
 
@@ -662,7 +662,8 @@ module.exports.lookup = async function lookupHandler(req, res) {
               accommodation_type, selected_weeks, top_themes, belief_update,
               volunteer_interest, coupon_code, food_preference, accessibility_needs,
               payment_status, submitted_at
-       FROM applications WHERE email = $1`,
+       FROM applications WHERE email = $1
+       ORDER BY submitted_at DESC LIMIT 1`,
       [email]
     );
 
