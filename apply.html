@@ -607,8 +607,51 @@
 
         <form id="application-form" style="display: none;">
             <!-- Step 1: Which weeks + price calculator -->
+            <!-- Step 1: Contact info + how heard + referral -->
             <div class="form-section" data-step="1">
                 <div class="question-number">Step 1 of 10</div>
+                <h2>About You</h2>
+
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="first_name">First Name <span class="required">*</span></label>
+                        <input type="text" id="first_name" name="first_name" required placeholder="First name">
+                    </div>
+                    <div>
+                        <label for="last_name">Last Name <span class="required">*</span></label>
+                        <input type="text" id="last_name" name="last_name" required placeholder="Last name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="social_media">Social Media Handles <span class="optional">(optional)</span></label>
+                    <input type="text" id="social_media" name="social_media" placeholder="@handle (please specify which platforms)">
+                </div>
+
+                <div class="form-group">
+                    <label for="how_heard">How did you hear about Valley of the Commons? <span class="optional">(optional)</span></label>
+                    <textarea id="how_heard" name="how_heard" placeholder="Social media, friend referral, newsletter, event..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="referral_names">Referral name(s) <span class="optional">(optional)</span></label>
+                    <textarea id="referral_names" name="referral_names" placeholder="Names of people who know you or referred you" rows="2"></textarea>
+                </div>
+
+                <div class="form-nav">
+                    <div></div>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Week selection -->
+            <div class="form-section" data-step="2">
+                <div class="question-number">Step 2 of 10</div>
                 <h2>Which week(s) would you like to attend? <span class="required">*</span></h2>
                 <p class="hint">Select the weeks you'd like to join. Prices update as you choose.</p>
 
@@ -651,48 +694,6 @@
                 <!-- Price summary -->
                 <div id="price-summary" class="ticket-note" style="margin-top: 1.5rem;">
                     <div id="price-calc">Select at least one week to see pricing</div>
-                </div>
-
-                <div class="form-nav">
-                    <div></div>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Step 2: Contact info + how heard + referral -->
-            <div class="form-section" data-step="2">
-                <div class="question-number">Step 2 of 10</div>
-                <h2>About You</h2>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label for="first_name">First Name <span class="required">*</span></label>
-                        <input type="text" id="first_name" name="first_name" required placeholder="First name">
-                    </div>
-                    <div>
-                        <label for="last_name">Last Name <span class="required">*</span></label>
-                        <input type="text" id="last_name" name="last_name" required placeholder="Last name">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="social_media">Social Media Handles <span class="optional">(optional)</span></label>
-                    <input type="text" id="social_media" name="social_media" placeholder="@handle (please specify which platforms)">
-                </div>
-
-                <div class="form-group">
-                    <label for="how_heard">How did you hear about Valley of the Commons? <span class="required">*</span></label>
-                    <textarea id="how_heard" name="how_heard" required placeholder="Social media, friend referral, newsletter, event..." rows="3"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="referral_names">Referral name(s) <span class="optional">(optional)</span></label>
-                    <textarea id="referral_names" name="referral_names" placeholder="Names of people who know you or referred you" rows="2"></textarea>
                 </div>
 
                 <div class="form-nav">
@@ -1272,8 +1273,8 @@
                 emailField.style.borderColor = 'var(--error)';
             }
 
-            // Week selection (step 1)
-            if (step === 1) {
+            // Week selection (step 2)
+            if (step === 2) {
                 const checked = document.querySelectorAll('input[name="weeks"]:checked');
                 if (checked.length === 0) {
                     valid = false;
@@ -1291,8 +1292,8 @@
         async function nextStep() {
             if (!validateStep(currentStep)) return;
 
-            // Email check when leaving step 2
-            if (currentStep === 2 && !window._existingApplicationId) {
+            // Email check when leaving step 1
+            if (currentStep === 1 && !window._existingApplicationId) {
                 const email = document.getElementById('email').value.trim().toLowerCase();
                 if (email) {
                     try {
@@ -1334,9 +1335,9 @@
             restoreFormData(data);
             saveFormData();
             document.getElementById('welcome-back-modal').classList.remove('visible');
-            // Advance to step 3
-            currentStep = 3;
-            showStep(3);
+            // Advance to step 2 (weeks)
+            currentStep = 2;
+            showStep(2);
         }
 
         function closeWelcomeModal() {
@@ -1593,22 +1594,11 @@
 
             let html = '';
 
-            // Weeks
-            html += `<div class="review-section">
-                <div class="review-section-header">
-                    <h3>Weeks Selected</h3>
-                    <span class="review-edit-link" onclick="jumpToStep(1)">Edit</span>
-                </div>
-                <div class="review-field">
-                    <div class="review-value">${data.weeks.map(w => WEEK_LABELS[w] || w).join('<br>')}</div>
-                </div>
-            </div>`;
-
-            // Contact
+            // Contact (step 1)
             html += `<div class="review-section">
                 <div class="review-section-header">
                     <h3>Contact Information</h3>
-                    <span class="review-edit-link" onclick="jumpToStep(2)">Edit</span>
+                    <span class="review-edit-link" onclick="jumpToStep(1)">Edit</span>
                 </div>
                 <div class="review-field">
                     <div class="review-label">Name</div>
@@ -1619,11 +1609,19 @@
                     <div class="review-value">${esc(data.email)}</div>
                 </div>
                 ${data.social_links ? `<div class="review-field"><div class="review-label">Social</div><div class="review-value">${esc(data.social_links)}</div></div>` : ''}
-                <div class="review-field">
-                    <div class="review-label">How heard</div>
-                    <div class="review-value">${esc(data.how_heard)}</div>
-                </div>
+                ${data.how_heard ? `<div class="review-field"><div class="review-label">How heard</div><div class="review-value">${esc(data.how_heard)}</div></div>` : ''}
                 ${data.referral_name ? `<div class="review-field"><div class="review-label">Referral</div><div class="review-value">${esc(data.referral_name)}</div></div>` : ''}
+            </div>`;
+
+            // Weeks (step 2)
+            html += `<div class="review-section">
+                <div class="review-section-header">
+                    <h3>Weeks Selected</h3>
+                    <span class="review-edit-link" onclick="jumpToStep(2)">Edit</span>
+                </div>
+                <div class="review-field">
+                    <div class="review-value">${data.weeks.map(w => WEEK_LABELS[w] || w).join('<br>')}</div>
+                </div>
             </div>`;
 
             // Affiliations
