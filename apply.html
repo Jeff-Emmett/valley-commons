@@ -580,12 +580,7 @@
 
             <div class="time-estimate">This application takes approximately 15–20 minutes to complete.</div>
 
-            <div id="resume-notice" class="resume-notice" style="display: none;">
-                You have saved progress from a previous session.
-                <a href="#" onclick="startForm(true); return false;" style="color: var(--forest); font-weight: 600;">Resume where you left off</a>
-            </div>
-
-            <button class="btn btn-primary" onclick="startForm(false)" style="font-size: 1.1rem; padding: 1rem 3rem;">Begin Application</button>
+            <button class="btn btn-primary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Begin Application</button>
         </div>
 
         <div class="progress-container" id="progress-container">
@@ -1086,28 +1081,18 @@
         document.getElementById('landing-reg-price').innerHTML =
             `&euro;${tierPricing.perWeek} – &euro;${REGISTRATION_PRICING.lastMin.perWeek}/wk`;
 
-        // Check for saved data on load
-        (function checkSavedProgress() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                document.getElementById('resume-notice').style.display = 'block';
-            }
-        })();
-
-        function startForm(resume) {
+        function startForm() {
             document.getElementById('landing-screen').style.display = 'none';
             document.getElementById('application-form').style.display = 'block';
             document.getElementById('progress-container').style.display = 'block';
 
-            if (resume) {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    try {
-                        const data = JSON.parse(saved);
-                        restoreFormData(data);
-                    } catch (e) {
-                        console.error('Failed to restore saved data:', e);
-                    }
+            // Silently restore any locally saved progress
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    restoreFormData(JSON.parse(saved));
+                } catch (e) {
+                    console.error('Failed to restore saved data:', e);
                 }
             }
 
