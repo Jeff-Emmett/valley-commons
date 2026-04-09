@@ -556,7 +556,7 @@
                 <a href="#" onclick="startFormAndResume(); return false;" style="color: var(--forest); font-weight: 600;">Resume where you left off</a>
             </div>
 
-            <button class="btn btn-secondary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Restart Application</button>
+            <button id="start-btn" class="btn btn-primary" onclick="startForm()" style="font-size: 1.1rem; padding: 1rem 3rem;">Start Application</button>
         </div>
 
         <div class="progress-container" id="progress-container">
@@ -1050,6 +1050,10 @@
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 document.getElementById('resume-notice').style.display = 'block';
+                const btn = document.getElementById('start-btn');
+                btn.textContent = 'Restart Application';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
             }
         })();
 
