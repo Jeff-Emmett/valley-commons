@@ -101,17 +101,20 @@ async function parseBookingSheet() {
   }
 
   const sheetId = process.env.BOOKING_SHEET_ID || process.env.GOOGLE_SHEET_ID;
-  const sheetName = process.env.BOOKING_SHEET_TAB || 'Booking Sheet';
+  const sheetName = process.env.BOOKING_SHEET_TAB || 'VotC26 Occupancy';
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: `${sheetName}!A:G`,
+    range: `${sheetName}!A:L`,
   });
 
   const rows = response.data.values || [];
   const beds = [];
   let currentVenue = null;
   let weekColIndexes = {};
+  let currentRoom = null;
+  let bedTypeCol = -1;
+  let roomCol = -1;
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -119,34 +122,50 @@ async function parseBookingSheet() {
       // Empty row — reset venue context
       currentVenue = null;
       weekColIndexes = {};
+      currentRoom = null;
+      bedTypeCol = -1;
+      roomCol = -1;
       continue;
     }
 
     const firstCell = (row[0] || '').toString().trim();
 
     // Check if this is a venue header
-    if (firstCell === 'Commons Hub' || firstCell === 'Herrnhof Villa') {
-      currentVenue = firstCell;
+    if (firstCell.startsWith('Occupancy Commons Hub') || firstCell === 'Commons Hub') {
+      currentVenue = 'Commons Hub';
       weekColIndexes = {};
+      currentRoom = null;
+      continue;
+    }
+    if (firstCell === 'Herrnhof Villa') {
+      currentVenue = 'Herrnhof Villa';
+      weekColIndexes = {};
+      currentRoom = null;
       continue;
     }
 
-    // Check if this is the column header row (contains "Room" and week columns)
-    if (firstCell.toLowerCase() === 'room' && currentVenue) {
+    // Check if this is the column header row (look for week headers)
+    if (currentVenue && !Object.keys(weekColIndexes).length) {
+      let foundWeeks = false;
       for (let c = 0; c < row.length; c++) {
         const header = (row[c] || '').toString().trim();
         if (WEEK_COLUMNS.includes(header)) {
           weekColIndexes[header] = c;
+          foundWeeks = true;
         }
+        if (header.toLowerCase() === 'room #' || header.toLowerCase() === 'room') roomCol = c;
+        if (header.toLowerCase() === 'bed type') bedTypeCol = c;
       }
-      continue;
+      if (foundWeeks) continue;
     }
 
     // If we have a venue and week columns, this is a bed row
-    if (currentVenue && Object.keys(weekColIndexes).length > 0 && firstCell) {
-      const room = firstCell;
-      const bedType = (row[1] || '').toString().trim();
-      if (!bedType) continue;
+    if (currentVenue && Object.keys(weekColIndexes).length > 0 && roomCol >= 0 && bedTypeCol >= 0) {
+      const roomCell = (row[roomCol] || '').toString().trim();
+      if (roomCell) currentRoom = roomCell;
+
+      const bedType = (row[bedTypeCol] || '').toString().trim();
+      if (!bedType || !currentRoom) continue;
 
       const occupancy = {};
       for (const [week, colIdx] of Object.entries(weekColIndexes)) {
@@ -156,7 +175,7 @@ async function parseBookingSheet() {
 
       beds.push({
         venue: currentVenue,
-        room,
+        room: currentRoom,
         bedType,
         rowIndex: i,
         weekColumns: { ...weekColIndexes },
@@ -265,7 +284,7 @@ async function assignBooking(guestName, accommodationType, selectedWeeks) {
     // Write guest name to the selected week columns
     const sheets = await getSheetsClient();
     const sheetId = process.env.BOOKING_SHEET_ID || process.env.GOOGLE_SHEET_ID;
-    const sheetName = process.env.BOOKING_SHEET_TAB || 'Booking Sheet';
+    const sheetName = process.env.BOOKING_SHEET_TAB || 'VotC26 Occupancy';
 
     // Convert week values to column headers
     const weekHeaders = selectedWeeks.map(w => `Week ${w.replace('week', '')}`);

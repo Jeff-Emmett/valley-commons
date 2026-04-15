@@ -20,6 +20,8 @@ services:
       - SMTP_USER=contact@valleyofthecommons.com
       - SMTP_PASS=${SMTP_PASS}
       - EMAIL_FROM=Valley of the Commons <contact@valleyofthecommons.com>
+      - BOOKING_SHEET_ID=1kjVy5jfGSG2vcavqkbrw_CHSn4-HY-OE3NAgyjUUpkk
+      - BOOKING_SHEET_TAB=VotC26 Occupancy
     depends_on:
       votc-db:
         condition: service_healthy
