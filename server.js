@@ -50,6 +50,30 @@ app.post('/api/mollie/webhook', vercelToExpress(handleWebhook));
 app.all('/api/mollie/status', vercelToExpress(getPaymentStatus));
 app.get('/api/mollie/resume', vercelToExpress(resumePayment));
 
+// Accommodation availability check
+const { checkAvailability } = require('./api/booking-sheet');
+const VALID_WEEKS = new Set(['week1', 'week2', 'week3', 'week4']);
+app.get('/api/accommodation-availability', async (req, res) => {
+  try {
+    const weeksParam = (req.query.weeks || '').trim();
+    if (!weeksParam) {
+      return res.status(400).json({ error: 'weeks parameter required (e.g. week1,week2)' });
+    }
+    const selectedWeeks = weeksParam.split(',').filter(w => VALID_WEEKS.has(w));
+    if (selectedWeeks.length === 0) {
+      return res.status(400).json({ error: 'No valid weeks provided' });
+    }
+    const availability = await checkAvailability(selectedWeeks);
+    if (!availability) {
+      return res.status(503).json({ error: 'Booking sheet not configured' });
+    }
+    res.json(availability);
+  } catch (error) {
+    console.error('Availability check error:', error);
+    res.status(500).json({ error: 'Failed to check availability' });
+  }
+});
+
 // Static files
 app.use(express.static(path.join(__dirname), {
   extensions: ['html'],

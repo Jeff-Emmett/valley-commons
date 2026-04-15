@@ -371,9 +371,10 @@ async function handleWebhook(req, res) {
               };
 
               try {
+                const bookingAlertEmail = process.env.BOOKING_ALERT_EMAIL || 'jeff@jeffemmett.com';
                 await smtp.sendMail({
                   from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
-                  to: 'team@valleyofthecommons.com',
+                  to: bookingAlertEmail,
                   subject: bookingNotification.subject,
                   html: bookingNotification.html,
                 });

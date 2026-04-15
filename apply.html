@@ -177,6 +177,28 @@
         .week-card .dates { font-size: 0.8rem; color: #666; margin-bottom: 0.5rem; }
         .week-card .desc { font-size: 0.85rem; color: #555; }
 
+        .week-card.sold-out {
+            opacity: 0.5;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .week-card.sold-out::after {
+            content: 'Sold Out';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(200, 50, 50, 0.12);
+            border: 1px solid rgba(200, 50, 50, 0.4);
+            color: #c83232;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
         /* Select-all card */
         .select-all-card {
             border-style: dashed;
@@ -1329,6 +1351,34 @@
         }
 
         // ===== Week selection =====
+        // Fetch and apply accommodation availability based on selected weeks
+        async function fetchAndApplyAvailability() {
+            const weeks = getSelectedWeeks();
+            if (weeks.length === 0) return;
+            try {
+                const res = await fetch(`/api/accommodation-availability?weeks=${encodeURIComponent(weeks.join(','))}`);
+                if (!res.ok) return;
+                const availability = await res.json();
+                document.querySelectorAll('input[name="room_type"]').forEach(radio => {
+                    const type = radio.value;
+                    const card = radio.closest('.week-card');
+                    if (type in availability && !availability[type]) {
+                        card.classList.add('sold-out');
+                        card.classList.remove('selected');
+                        radio.checked = false;
+                        if (document.getElementById('accommodation_type').value === type) {
+                            document.getElementById('accommodation_type').value = '';
+                            updatePriceSummary();
+                        }
+                    } else {
+                        card.classList.remove('sold-out');
+                    }
+                });
+            } catch (e) {
+                // Network error — leave all options enabled
+            }
+        }
+
         function toggleWeek(card) {
             const cb = card.querySelector('input');
             cb.checked = !cb.checked;
@@ -1336,6 +1386,8 @@
             syncSelectAll();
             updatePriceSummary();
             saveFormData();
+            // Re-check availability when weeks change
+            if (document.getElementById('need_accommodation').checked) fetchAndApplyAvailability();
         }
 
         function toggleAllWeeks(card) {
@@ -1350,6 +1402,7 @@
             });
             updatePriceSummary();
             saveFormData();
+            if (document.getElementById('need_accommodation').checked) fetchAndApplyAvailability();
         }
 
         function syncSelectAll() {
@@ -1376,6 +1429,8 @@
                     document.querySelectorAll('input[name="room_type"]').forEach(r => { r.checked = false; r.closest('.week-card').classList.remove('selected'); });
                     document.getElementById('ch-rooms').style.display = 'none';
                     document.getElementById('hh-rooms').style.display = 'none';
+                } else {
+                    fetchAndApplyAvailability();
                 }
             }
 
@@ -1402,6 +1457,10 @@
         }
 
         function selectRoom(roomType) {
+            // Prevent selecting sold-out rooms
+            const radio = document.querySelector(`input[name="room_type"][value="${roomType}"]`);
+            if (radio && radio.closest('.week-card').classList.contains('sold-out')) return;
+
             document.querySelectorAll('input[name="room_type"]').forEach(r => {
                 r.checked = (r.value === roomType);
                 r.closest('.week-card').classList.toggle('selected', r.checked);

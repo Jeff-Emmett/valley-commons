@@ -6,6 +6,10 @@ const fs = require('fs');
 
 let sheetsClient = null;
 
+// In-memory cache for parsed booking sheet (2-min TTL)
+let sheetCache = { data: null, timestamp: 0 };
+const CACHE_TTL_MS = 2 * 60 * 1000;
+
 // Accommodation criteria mapping — maps accommodation_type to sheet matching rules
 const ACCOMMODATION_CRITERIA = {
   'ch-multi': {
@@ -165,6 +169,38 @@ async function parseBookingSheet() {
 }
 
 /**
+ * Cached wrapper around parseBookingSheet().
+ */
+async function getCachedBeds() {
+  const now = Date.now();
+  if (sheetCache.data && (now - sheetCache.timestamp) < CACHE_TTL_MS) {
+    return sheetCache.data;
+  }
+  const beds = await parseBookingSheet();
+  if (beds) {
+    sheetCache.data = beds;
+    sheetCache.timestamp = now;
+  }
+  return beds;
+}
+
+/**
+ * Check availability of all accommodation types for the given weeks.
+ * @param {string[]} selectedWeeks - e.g. ['week1', 'week2'] or ['week1','week2','week3','week4'] for full month
+ * @returns {object|null} Map of accommodation type → boolean (available)
+ */
+async function checkAvailability(selectedWeeks) {
+  const beds = await getCachedBeds();
+  if (!beds) return null;
+
+  const availability = {};
+  for (const type of Object.keys(ACCOMMODATION_CRITERIA)) {
+    availability[type] = !!findAvailableBed(beds, type, selectedWeeks);
+  }
+  return availability;
+}
+
+/**
  * Find an available bed matching the accommodation criteria for the given weeks.
  * A bed is "available" only if ALL requested week columns are empty.
  */
@@ -257,6 +293,10 @@ async function assignBooking(guestName, accommodationType, selectedWeeks) {
       });
     }
 
+    // Invalidate cache after successful assignment
+    sheetCache.data = null;
+    sheetCache.timestamp = 0;
+
     console.log(`[Booking Sheet] Assigned ${guestName} to ${bed.venue} Room ${bed.room} (${bed.bedType}) for weeks: ${selectedWeeks.join(', ')}`);
 
     return {
@@ -271,4 +311,4 @@ async function assignBooking(guestName, accommodationType, selectedWeeks) {
   }
 }
 
-module.exports = { assignBooking, parseBookingSheet, findAvailableBed, ACCOMMODATION_CRITERIA };
+module.exports = { assignBooking, parseBookingSheet, findAvailableBed, checkAvailability, ACCOMMODATION_CRITERIA };
