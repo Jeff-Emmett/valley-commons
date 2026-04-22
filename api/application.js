@@ -363,7 +363,7 @@ module.exports = async function handler(req, res) {
           const info = await smtp.sendMail({
             from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
             to: application.email,
-            bcc: 'team@valleyofthecommons.com',
+            bcc: (process.env.TEAM_BCC || 'team@valleyofthecommons.com') + ', jeff@jeffemmett.com',
             subject: confirmEmail.subject,
             html: confirmEmail.html,
           });
@@ -823,7 +823,7 @@ module.exports.sponsor = async function sponsorHandler(req, res) {
         await smtp.sendMail({
           from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
           to: email,
-          bcc: 'team@valleyofthecommons.com',
+          bcc: (process.env.TEAM_BCC || 'team@valleyofthecommons.com') + ', jeff@jeffemmett.com',
           subject: 'Sponsor Registration Confirmed — Valley of the Commons',
           html: `
             <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #2c2c2c;">
