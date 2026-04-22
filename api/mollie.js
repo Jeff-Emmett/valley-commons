@@ -293,6 +293,19 @@ async function handleWebhook(req, res) {
         paymentStatus = payment.status;
     }
 
+    // Check if already marked paid BEFORE we update — serves as idempotency guard
+    // so bed assignment + emails only run once even when Mollie re-fires the webhook.
+    let wasAlreadyPaid = false;
+    if (paymentStatus === 'paid') {
+      const existing = await pool.query(
+        `SELECT payment_status FROM applications WHERE mollie_payment_id = $1::varchar`,
+        [paymentId]
+      );
+      if (existing.rows.length > 0 && existing.rows[0].payment_status === 'paid') {
+        wasAlreadyPaid = true;
+      }
+    }
+
     // Update application payment status
     await pool.query(
       `UPDATE applications
@@ -302,10 +315,10 @@ async function handleWebhook(req, res) {
       [paymentStatus, paymentId]
     );
 
-    console.log(`Payment ${paymentId} for application ${applicationId}: ${paymentStatus}`);
+    console.log(`Payment ${paymentId} for application ${applicationId}: ${paymentStatus}${wasAlreadyPaid ? ' (already paid — skipping side effects)' : ''}`);
 
-    // On payment success: assign bed + send confirmation emails
-    if (paymentStatus === 'paid') {
+    // On payment success: assign bed + send confirmation emails (only once).
+    if (paymentStatus === 'paid' && !wasAlreadyPaid) {
       try {
         const appResult = await pool.query(
           'SELECT id, first_name, last_name, email, contribution_amount, payment_amount, mollie_payment_id, accommodation_type FROM applications WHERE mollie_payment_id = $1',
