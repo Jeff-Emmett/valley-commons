@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Confirmation - Valley of the Commons</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-light: #4a7c23;
+            --cream: #faf8f5;
+            --sand: #f5f5f0;
+            --charcoal: #2c2c2c;
+            --error: #c53030;
+            --amber: #b45309;
+            --amber-bg: #fef3c7;
+            --amber-border: #fcd34d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--forest);
+        }
+
+        .header a { color: var(--forest); text-decoration: none; }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .intro {
+            margin-bottom: 2rem;
+        }
+
+        .intro h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 400;
+            color: var(--forest);
+            margin-bottom: 0.5rem;
+        }
+
+        .banner {
+            background: var(--amber-bg);
+            border: 1px solid var(--amber-border);
+            color: var(--amber);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .banner small {
+            display: block;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--forest);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .required::after { content: " *"; color: var(--error); }
+
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            background: var(--sand);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--charcoal);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus { border-color: var(--forest); }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+
+        .checkbox-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .checkbox-group input[type="checkbox"] { margin-top: 0.25rem; }
+        .checkbox-group label { margin-bottom: 0; font-weight: 400; color: var(--charcoal); }
+
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 1.5rem;
+            background: var(--forest);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn:hover { background: var(--forest-light); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .msg {
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .msg.error { background: #fee; color: var(--error); display: block; }
+        .msg.success { background: #e7f5ea; color: var(--forest); display: block; }
+
+        .sub { font-size: 0.8rem; color: #666; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1><a href="/">Valley of the Commons</a></h1>
+            <a href="/">Back to site</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            <h2>Sponsor Confirmation</h2>
+            <p>Thank you for supporting Valley of the Commons. Let us know which weeks you'll be with us.</p>
+        </div>
+
+        <div class="banner">
+            Sponsor complimentary registration — no payment required 🙏
+            <small>Accommodation is opt-in; tick the box below if you'd like a bed at one of our venues.</small>
+        </div>
+
+        <form id="sponsorForm" class="card">
+            <div class="row">
+                <div class="form-group">
+                    <label for="first_name" class="required">First name</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name" class="required">Last name</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="required">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="organization">Organisation (optional)</label>
+                <input type="text" id="organization" name="organization" placeholder="The org you're sponsoring on behalf of">
+            </div>
+
+            <div class="form-group">
+                <label class="required">Which weeks will you attend?</label>
+                <div class="weeks-grid">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="week1" name="weeks" value="week1">
+                        <label for="week1">Week 1: Return to the Commons (Aug 24–30)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="week2" name="weeks" value="week2">
+                        <label for="week2">Week 2: Post-Capitalist Production (Aug 31–Sep 6)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="week3" name="weeks" value="week3">
+                        <label for="week3">Week 3: Future Living (Sep 7–13)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="week4" name="weeks" value="week4">
+                        <label for="week4">Week 4: Governance & Funding Models (Sep 14–20)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="need_accommodation" name="need_accommodation">
+                    <label for="need_accommodation">I'd like on-site accommodation</label>
+                </div>
+                <div id="accom-options" style="display:none; margin-top: 0.75rem;">
+                    <label for="accommodation_type">Accommodation preference</label>
+                    <select id="accommodation_type" name="accommodation_type">
+                        <option value="">— Select —</option>
+                        <option value="ch-multi">Commons Hub — Bed in Multi-Room</option>
+                        <option value="ch-double">Commons Hub — Bed in Double Room</option>
+                        <option value="hh-living">Herrnhof Villa — Bed in Living Room</option>
+                        <option value="hh-triple">Herrnhof Villa — Bed in Triple Room</option>
+                        <option value="hh-twin">Herrnhof Villa — Single Bed in Double Room</option>
+                        <option value="hh-single">Herrnhof Villa — Single Room</option>
+                        <option value="hh-couple">Herrnhof Villa — Couple Room</option>
+                    </select>
+                    <p class="sub">Accommodation is opt-in and will be billed separately; our team will follow up with pricing and availability.</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dietary_notes">Dietary requirements or accessibility needs (optional)</label>
+                <textarea id="dietary_notes" name="dietary_notes" rows="3" placeholder="Let us know anything we should plan for"></textarea>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="code_of_conduct_accepted" name="code_of_conduct_accepted" required>
+                    <label for="code_of_conduct_accepted" class="required">I accept the <a href="/code-of-conduct.html" target="_blank" style="color: var(--forest);">code of conduct</a></label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">Confirm Sponsor Registration</button>
+            <div id="formMsg" class="msg"></div>
+        </form>
+    </div>
+
+    <script>
+        const needAccom = document.getElementById('need_accommodation');
+        const accomOptions = document.getElementById('accom-options');
+        needAccom.addEventListener('change', () => {
+            accomOptions.style.display = needAccom.checked ? 'block' : 'none';
+            if (!needAccom.checked) document.getElementById('accommodation_type').value = '';
+        });
+
+        const form = document.getElementById('sponsorForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formMsg = document.getElementById('formMsg');
+
+        function showMsg(text, type) {
+            formMsg.textContent = text;
+            formMsg.className = 'msg ' + type;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            formMsg.className = 'msg';
+            formMsg.textContent = '';
+
+            const selectedWeeks = Array.from(document.querySelectorAll('input[name="weeks"]:checked')).map(c => c.value);
+            if (selectedWeeks.length === 0) {
+                showMsg('Please select at least one week.', 'error');
+                return;
+            }
+
+            const payload = {
+                first_name: document.getElementById('first_name').value.trim(),
+                last_name: document.getElementById('last_name').value.trim(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                organization: document.getElementById('organization').value.trim() || null,
+                selected_weeks: selectedWeeks,
+                need_accommodation: needAccom.checked,
+                accommodation_type: needAccom.checked ? (document.getElementById('accommodation_type').value || null) : null,
+                dietary_notes: document.getElementById('dietary_notes').value.trim() || null,
+                code_of_conduct_accepted: document.getElementById('code_of_conduct_accepted').checked,
+                promo_code: 'weloveoursponsors',
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Confirming...';
+
+            try {
+                const res = await fetch('/api/application/sponsor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const result = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(result.error || 'Failed to confirm registration');
+                }
+
+                window.location.href = `/payment-return.html?id=${result.applicationId}&sponsor=1`;
+            } catch (err) {
+                showMsg(err.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm Sponsor Registration';
+            }
+        });
+    </script>
+</body>
+</html>

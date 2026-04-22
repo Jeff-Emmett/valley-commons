@@ -708,3 +708,166 @@ module.exports.lookup = async function lookupHandler(req, res) {
     return res.status(500).json({ error: 'Lookup failed' });
   }
 };
+
+// Sponsor comp registration — skips Mollie entirely.
+// Lives at POST /api/application/sponsor. Creates an application row with
+// payment_status='paid', payment_amount=0, and immediately assigns a bed
+// (if requested) + sends confirmation emails, mirroring what the Mollie
+// webhook does on a successful paid payment.
+module.exports.sponsor = async function sponsorHandler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  try {
+    const data = req.body || {};
+    const required = ['first_name', 'last_name', 'email'];
+    for (const field of required) {
+      if (!data[field]) return res.status(400).json({ error: `Missing required field: ${field}` });
+    }
+    if (!data.email.includes('@')) return res.status(400).json({ error: 'Invalid email address' });
+
+    const selectedWeeks = Array.isArray(data.selected_weeks) ? data.selected_weeks : [];
+    if (selectedWeeks.length === 0) {
+      return res.status(400).json({ error: 'Please select at least one week' });
+    }
+
+    const email = data.email.toLowerCase().trim();
+
+    // Block duplicate applications from the same email.
+    const existing = await pool.query(
+      'SELECT id FROM applications WHERE email = $1 ORDER BY submitted_at DESC LIMIT 1',
+      [email]
+    );
+    if (existing.rows.length > 0) {
+      return res.status(409).json({
+        error: 'An application with this email already exists',
+        applicationId: existing.rows[0].id,
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO applications (
+        first_name, last_name, email, organization,
+        attendance_type, dietary_notes, code_of_conduct_accepted, privacy_policy_accepted,
+        contribution_amount, ip_address, user_agent,
+        need_accommodation, accommodation_type, selected_weeks,
+        coupon_code, payment_status, payment_amount, payment_paid_at
+      ) VALUES (
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'paid',0.00, CURRENT_TIMESTAMP
+      ) RETURNING id, submitted_at`,
+      [
+        data.first_name.trim(),
+        data.last_name.trim(),
+        email,
+        data.organization?.trim() || null,
+        'full',
+        data.dietary_notes?.trim() || null,
+        !!data.code_of_conduct_accepted,
+        true,
+        'sponsor_comp',
+        req.headers['x-forwarded-for'] || req.connection?.remoteAddress || null,
+        req.headers['user-agent'] || null,
+        !!data.need_accommodation,
+        data.accommodation_type || null,
+        selectedWeeks,
+        'weloveoursponsors',
+      ]
+    );
+
+    const application = {
+      id: result.rows[0].id,
+      submitted_at: result.rows[0].submitted_at,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email,
+      accommodation_type: data.accommodation_type || null,
+      payment_amount: '0.00',
+      mollie_payment_id: `sponsor-${result.rows[0].id}`,
+    };
+
+    // Bed assignment if requested — non-fatal.
+    let bookingResult = null;
+    if (application.accommodation_type) {
+      try {
+        const { assignBooking } = require('./booking-sheet');
+        bookingResult = await assignBooking(
+          `${application.first_name} ${application.last_name}`,
+          application.accommodation_type,
+          selectedWeeks
+        );
+      } catch (err) {
+        console.error('[Sponsor] Bed assignment error (non-fatal):', err.message);
+        bookingResult = { success: false, reason: err.message };
+      }
+    }
+
+    // Sync to sheets + Listmonk — fire and forget.
+    syncApplication({
+      ...application,
+      weeks: selectedWeeks,
+      need_accommodation: !!data.need_accommodation,
+      contribution_amount: 'sponsor_comp',
+    });
+    addToListmonk(email, `${application.first_name} ${application.last_name}`, {
+      source: 'sponsor',
+      weeks: selectedWeeks,
+    }).catch((err) => console.error('[Listmonk] Sponsor sync failed:', err.message));
+
+    // Confirmation + internal notification emails.
+    if (process.env.SMTP_PASS) {
+      try {
+        await smtp.sendMail({
+          from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
+          to: email,
+          bcc: 'team@valleyofthecommons.com',
+          subject: 'Sponsor Registration Confirmed — Valley of the Commons',
+          html: `
+            <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #2c2c2c;">
+              <h1 style="color: #2d5016;">Thank you for sponsoring Valley of the Commons</h1>
+              <p>Dear ${application.first_name},</p>
+              <p>Your complimentary sponsor registration is confirmed. We're delighted you'll be with us.</p>
+              <p><strong>Weeks attending:</strong> ${selectedWeeks.join(', ')}</p>
+              ${application.accommodation_type ? `<p><strong>Accommodation request:</strong> ${application.accommodation_type}${bookingResult?.success ? ` — assigned to ${bookingResult.venue} Room ${bookingResult.room} (${bookingResult.bedType})` : ' — our team will follow up with your room assignment'}</p>` : ''}
+              <p>If you have any questions, reply to this email.</p>
+              <p style="margin-top: 32px;">With warmth,<br><strong>The Valley of the Commons Team</strong></p>
+            </div>`,
+        });
+      } catch (err) {
+        console.error('[Sponsor] Confirmation email failed:', err.message);
+      }
+
+      try {
+        const adminRecipients = (process.env.ADMIN_EMAILS || 'jeff@jeffemmett.com').split(',');
+        await smtp.sendMail({
+          from: process.env.EMAIL_FROM || 'Valley of the Commons <contact@valleyofthecommons.com>',
+          to: adminRecipients.join(', '),
+          subject: `Sponsor registration: ${application.first_name} ${application.last_name}`,
+          html: `
+            <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2>New sponsor registration</h2>
+              <p><strong>Name:</strong> ${application.first_name} ${application.last_name}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Organisation:</strong> ${data.organization || '—'}</p>
+              <p><strong>Weeks:</strong> ${selectedWeeks.join(', ')}</p>
+              <p><strong>Accommodation:</strong> ${application.accommodation_type || 'none'}</p>
+              ${bookingResult ? `<p><strong>Bed:</strong> ${bookingResult.success ? `${bookingResult.venue} Room ${bookingResult.room} (${bookingResult.bedType})` : `MANUAL ASSIGNMENT NEEDED — ${bookingResult.reason || 'n/a'}`}</p>` : ''}
+            </div>`,
+        });
+      } catch (err) {
+        console.error('[Sponsor] Admin notification failed:', err.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      applicationId: application.id,
+    });
+  } catch (error) {
+    console.error('Sponsor registration error:', error);
+    return res.status(500).json({ error: 'Failed to confirm sponsor registration' });
+  }
+};
